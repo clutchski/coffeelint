@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CoffeeLint - Lint your CoffeeScript</title>
+    <link rel="stylesheet" type="text/css" href="css/coffeelint.css" />
+  </head>
+  <body>
+
+    <!-- HEADER -->
+    <div class="header">
+      <div class="container">
+        <h1 class="title">
+          <a href="#">CoffeeLint</a>
+        </h1>
+        <ul class="header_links">
+          <li><a href="#install">Install</a></li>
+          <li><a href="#usage">Usage</a></li>
+          <li><a href="#options">Options</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="https://github.com/clutchski/coffeelint">Source</a></li>
+        </ul>
+        <div class="clear">&nbsp;</div>
+      </div>
+    </div>
+    <div class="container">
+
+      <div id="code_container">
+        <!-- EDITOR -->
+        <div class="row">
+          <div class="code">
+            <div class="run">Run</div>
+<textarea class="editor" spellcheck="false"># Lint your CoffeeScript!
+
+class Gangster
+
+  wasItAGoodDay : () ->
+    yes
+</textarea>
+          </div>
+        </div>
+        <div class="row report_row">
+          <div class="report_container diatribe_container">
+          <div class="report diatribe">
+            <h1 class="diatribe_title"></h1>
+            <div class="diatribe_body"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="diatribe_container">
+          <div class="diatribe">
+            <h2 class="diatribe_title" id="install">Installation</h2>
+            <p class="diatribe_body">
+              To install, make sure you have a working version of the lastest
+              stable version of <a href="http://nodejs.org/">Node</a> and
+              <a href="http://npmjs.org/">NPM</a> (the Node Package Manager). Then
+              you can run:
+              <code>
+              npm install -g coffeelint
+              </code>
+              Leave off the '-g' if you do not want to install globally.
+            </p>
+          </div>
+        </div>
+
+        <div class="diatribe_container">
+          <div class="diatribe">
+            <h2 class="diatribe_title" id="usage">Usage</h2>
+            <p class="diatribe_body">
+              Once you have Coffeelint installed, to lint your scripts, run:
+              <code>
+              coffeelint application.coffee
+              </code>
+              To specify your own configuration file, do the following:
+              <code>
+              coffeelint -f config.json application.coffee
+              </code>
+            </p>
+          </div>
+        </div>
+
+        <div class="diatribe_container">
+          <div class="diatribe">
+            <h2 class="diatribe_title" id="options">Options</h2>
+            <p class="diatribe_body">
+
+            </p>
+          </div>
+        </div>
+
+        <div class="diatribe_container">
+          <div class="diatribe">
+            <h2 class="diatribe_title" id="about">About</h2>
+            <p class="diatribe_body">
+              CoffeeLint is open sourced unde the MIT License. If you want to
+              hack on the code, report a bug or suggest a new feature, head on
+              over
+              <a
+              href="http://github.com/clutchski/coffeelint">here</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+
+
+
+    <a href="http://github.com/clutchski/coffeelint">
+      <img class="forkme"
+             src="http://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"
+             alt="Fork me on GitHub"/>
+    </a>
+
+    <script type="text/javascript" src="js/vendor/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="js/vendor/coffee-script.js"></script>
+    <script type="text/javascript" src="js/coffeelint.js"></script>
+    <script type="text/javascript" src="js/trycoffeelint.js"></script>
+  </body>
+</html>
+
