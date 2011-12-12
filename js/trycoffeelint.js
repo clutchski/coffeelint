@@ -42,6 +42,7 @@
     };
 
     $(document).ready(function () {
+        $('.editor').focus();
         $('.run').click(runLinter);
     });
 
