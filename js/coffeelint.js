@@ -1,16 +1,16 @@
 (function() {
+
   /*
   CoffeeLint
   
   Copyright (c) 2011 Matthew Perpick.
   CoffeeLint is freely distributable under the MIT license.
   */
-  var CoffeeScript, DEFAULT_CONFIG, LexicalLinter, LineLinter, MESSAGES, coffeelint, defaults, extend, regexes,
-    __slice = Array.prototype.slice;
+
+  var CoffeeScript, DEFAULT_CONFIG, LexicalLinter, LineLinter, MESSAGES, coffeelint, defaults, extend, regexes;
+  var __slice = Array.prototype.slice;
 
   coffeelint = {};
-
-  coffeelint.VERSION = "0.0.3";
 
   if (typeof exports !== "undefined" && exports !== null) {
     coffeelint = exports;
@@ -19,6 +19,8 @@
     this.coffeelint = coffeelint;
     CoffeeScript = this.CoffeeScript;
   }
+
+  coffeelint.VERSION = "0.0.3";
 
   DEFAULT_CONFIG = {
     tabs: false,
@@ -236,7 +238,7 @@
   })();
 
   coffeelint.lint = function(source, userConfig) {
-    var config, lexErrors, lexicalLinter, lineErrors, lineLinter, tokensByLine;
+    var config, errors, lexErrors, lexicalLinter, lineErrors, lineLinter, tokensByLine;
     if (userConfig == null) userConfig = {};
     config = defaults(userConfig);
     if (config.tabs) config.indent = 1;
@@ -245,7 +247,11 @@
     tokensByLine = lexicalLinter.tokensByLine;
     lineLinter = new LineLinter(source, config, tokensByLine);
     lineErrors = lineLinter.lint();
-    return lexErrors.concat(lineErrors);
+    errors = lexErrors.concat(lineErrors);
+    errors.sort(function(a, b) {
+      return a.line - b.line;
+    });
+    return errors;
   };
 
   MESSAGES = {

@@ -2,10 +2,6 @@
 
     var buildReportTable = function (errors) {
 
-        errors = errors.sort(function (a, b) {
-            return a.line - b.line;
-        });
-
         var table = $('<div class="error_report">');
         $.each(errors, function (index, error) {
             var row = $('<div></div>');
