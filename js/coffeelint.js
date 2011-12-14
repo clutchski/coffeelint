@@ -28,7 +28,8 @@
     lineLength: 80,
     indent: 2,
     camelCaseClasses: true,
-    trailingSemicolons: false
+    trailingSemicolons: false,
+    implicitBraces: false
   };
 
   regexes = {
@@ -51,8 +52,8 @@
     return destination;
   };
 
-  defaults = function(userConfig) {
-    return extend({}, DEFAULT_CONFIG, userConfig);
+  defaults = function(source, defaults) {
+    return extend({}, defaults, source);
   };
 
   LineLinter = (function() {
@@ -103,14 +104,6 @@
       }
     };
 
-    LineLinter.prototype.lineHasToken = function() {
-      return this.tokensByLine[this.lineNumber] != null;
-    };
-
-    LineLinter.prototype.getLineTokens = function() {
-      return this.tokensByLine[this.lineNumber] || [];
-    };
-
     LineLinter.prototype.checkTrailingWhitespace = function() {
       if (!this.config.trailing && regexes.trailingWhitespace.test(this.line)) {
         return {
@@ -146,6 +139,14 @@
       }
     };
 
+    LineLinter.prototype.lineHasToken = function() {
+      return this.tokensByLine[this.lineNumber] != null;
+    };
+
+    LineLinter.prototype.getLineTokens = function() {
+      return this.tokensByLine[this.lineNumber] || [];
+    };
+
     return LineLinter;
 
   })();
@@ -166,7 +167,6 @@
       _ref = this.tokens;
       for (i = 0, _len = _ref.length; i < _len; i++) {
         token = _ref[i];
-        if (!(!(token.generated != null))) continue;
         this.i = i;
         error = this.lintToken(token);
         if (error) errors.push(error);
@@ -184,17 +184,33 @@
           return this.lintIndentation(token);
         case "CLASS":
           return this.lintClass(token);
+        case "{":
+          return this.lintBrace(token);
         default:
           return null;
+      }
+    };
+
+    LexicalLinter.prototype.lintBrace = function(token) {
+      var line, numIndents, type;
+      type = token[0], numIndents = token[1], line = token[2];
+      if (this.config.implicitBraces && token.generated) {
+        return {
+          reason: 'Implicit braces are forbidden',
+          line: line
+        };
+      } else {
+        return null;
       }
     };
 
     LexicalLinter.prototype.lintIndentation = function(token) {
       var error, inInterp, info, line, numIndents, previousToken, type;
       type = token[0], numIndents = token[1], line = token[2];
+      if (!this.config.indent || (token.generated != null)) return null;
       previousToken = this.peek(-2);
       inInterp = previousToken && previousToken[0] === '+';
-      if (this.config.indent && !inInterp && numIndents !== this.config.indent) {
+      if (!inInterp && numIndents !== this.config.indent) {
         info = " Expected: " + this.config.indent + " Got: " + numIndents;
         return error = {
           reason: MESSAGES.INDENTATION_ERROR + info,
@@ -240,7 +256,7 @@
   coffeelint.lint = function(source, userConfig) {
     var config, errors, lexErrors, lexicalLinter, lineErrors, lineLinter, tokensByLine;
     if (userConfig == null) userConfig = {};
-    config = defaults(userConfig);
+    config = defaults(userConfig, DEFAULT_CONFIG);
     if (config.tabs) config.indent = 1;
     lexicalLinter = new LexicalLinter(source, config);
     lexErrors = lexicalLinter.lint();
