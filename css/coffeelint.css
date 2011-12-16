@@ -14,6 +14,7 @@ body {
   width:100%;
   margin-bottom:40px;
   font-size:14px;
+  line-height:1.5em;
 }
 
 /**
@@ -97,10 +98,6 @@ body {
   font-size:25px;
   margin-bottom:15px;
   font-family:monospace;
-}
-
-.diatribe_body {
-  line-height:25px;
 }
 
 .diatribe a {
@@ -207,7 +204,6 @@ code, .error_report {
 }
 
 .options thead tr {
-  background-color:#fff;
   color:black;
   font-weight:bold;
 }
@@ -229,8 +225,10 @@ code, .error_report {
   text-align:center;
   vertical-align:middle;
   font-family:monospace;
+  font-weight:16px;
 }
 
 .options code {
-  background-color:#ffffee;
+  background-color:#ffffcc;
+  margin-bottom:0;
 }

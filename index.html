@@ -53,8 +53,8 @@ class Gangster
             <p class="diatribe_body">
               To install, make sure you have a working version of the latest
               stable version of <a href="http://nodejs.org/">Node</a> and
-              <a href="http://npmjs.org/">NPM</a> (the Node Package Manager). Then
-              you can run:
+              <a href="http://npmjs.org/">NPM</a> (the Node Package Manager) and then
+              run:
               <code>
               npm install -g coffeelint
               </code>
@@ -124,9 +124,9 @@ The default number of spaces is set to two, though this is configurable.
                   <tr>
                     <td class="rule">camel_case_classes</td>
                     <td class="description">
-This rule mandates that all class names are camel cased. Camel casing class
-names is a convention in Javascript and Coffeescript, because it communicates
-that the `new` keyword is required when initializing.
+This rule mandates that all class names are camel cased. Camel casing class names
+is a generally accepted way of distinguishing constructor functions - which require the 'new'
+prefix to behave properly - from plain old functions.
 <pre>
 <code># Good!
 class BoaConstrictor
@@ -135,14 +135,13 @@ class BoaConstrictor
 class boaConstrictor
 </code>
 </pre>
-
+This rule is enabled by default.
                     </td>
                   </tr>
                   <tr>
                     <td class="rule">no_trailing_semicolons</td>
                     <td class="description">
 This rule prohibits trailing semicolons, since they are needless cruft in CoffeeScript.
-This rule is enabled by default.
 <pre>
 <code># This semicolon is meaningful.
 x = '1234'; console.log(x)
@@ -151,7 +150,7 @@ x = '1234'; console.log(x)
 alert('end of line')
 </code>
 </pre>
-
+This rule is enabled by default.
                     </td>
                   </tr>
                   <tr>
@@ -159,8 +158,7 @@ alert('end of line')
                     <td class="description">
 This rule prohibits implicit braces when declaring object literals. Implicit braces
 can make code more difficult to understand, especially when used in combination with
-optional parenthesis. This rule is disabled by default, since it is not idiomatic
-CoffeeScript.
+optional parenthesis.
 <pre>
 <code># Some people may find this code ambiguous.
 # Is it a function call with three arguments or four?
@@ -170,7 +168,7 @@ myFunction a, b, 1:2, 3:4
 myFunction(a, b, {1:2, 3:4})
 </code>
 </pre>
-
+This rule is disabled by default, since it is not idiomatic CoffeeScript.
                     </td>
                   </tr>
                 </tbody>

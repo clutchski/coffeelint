@@ -7,7 +7,7 @@
   CoffeeLint is freely distributable under the MIT license.
   */
 
-  var CoffeeScript, DEFAULT_CONFIG, LexicalLinter, LineLinter, MESSAGES, coffeelint, defaults, extend, regexes;
+  var CoffeeScript, ERROR, IGNORE, LexicalLinter, LineLinter, RULES, coffeelint, createError, defaults, extend, mergeDefaultConfig, regexes;
   var __slice = Array.prototype.slice;
 
   coffeelint = {};
@@ -20,16 +20,43 @@
     CoffeeScript = this.CoffeeScript;
   }
 
-  coffeelint.VERSION = "0.0.4";
+  coffeelint.VERSION = "0.0.5";
 
-  DEFAULT_CONFIG = {
-    tabs: false,
-    trailing: false,
-    lineLength: 80,
-    indent: 2,
-    camelCaseClasses: true,
-    trailingSemicolons: false,
-    implicitBraces: false
+  ERROR = 'error';
+
+  IGNORE = 'ignore';
+
+  RULES = {
+    no_tabs: {
+      level: ERROR,
+      message: 'Line contains tab indentation'
+    },
+    no_trailing_whitespace: {
+      level: ERROR,
+      message: 'Line ends with trailing whitespace'
+    },
+    max_line_length: {
+      value: 80,
+      level: ERROR,
+      message: 'Line exceeds maximum allowed length'
+    },
+    camel_case_classes: {
+      level: ERROR,
+      message: 'Class names should be camel cased'
+    },
+    indentation: {
+      value: 2,
+      level: ERROR,
+      message: 'Line contains inconsistent indentation'
+    },
+    no_implicit_braces: {
+      level: IGNORE,
+      message: 'Implicit braces are forbidden'
+    },
+    no_trailing_semicolons: {
+      level: ERROR,
+      message: 'Line contains a trailing semicolon'
+    }
   };
 
   regexes = {
@@ -56,6 +83,12 @@
     return extend({}, defaults, source);
   };
 
+  createError = function(rule, attrs) {
+    if (attrs == null) attrs = {};
+    attrs.rule = rule;
+    return defaults(attrs, RULES[rule]);
+  };
+
   LineLinter = (function() {
 
     function LineLinter(source, config, tokensByLine) {
@@ -75,65 +108,66 @@
         this.lineNumber = lineNumber;
         this.line = line;
         error = this.lintLine();
-        if (error) {
-          error.line = this.lineNumber;
-          error.evidence = this.line;
-          if (error) errors.push(error);
-        }
+        if (error) errors.push(error);
       }
       return errors;
     };
 
     LineLinter.prototype.lintLine = function() {
-      var error;
-      error = this.checkTabs() || this.checkTrailingWhitespace() || this.checkLineLength() || this.checkTrailingSemicolon();
-      return error;
+      return this.checkTabs() || this.checkTrailingWhitespace() || this.checkLineLength() || this.checkTrailingSemicolon();
     };
 
     LineLinter.prototype.checkTabs = function() {
-      var indentation;
-      if (this.config.tabs) return null;
-      indentation = this.line.split(regexes.indentation)[0];
-      if (this.lineHasToken() && ~indentation.indexOf('\t')) {
-        return {
-          character: 0,
-          reason: MESSAGES.NO_TABS
-        };
+      var indent;
+      indent = this.line.split(regexes.indentation)[0];
+      if (this.lineHasToken() && ~indent.indexOf('\t')) {
+        return this.createLineError('no_tabs');
       } else {
         return null;
       }
     };
 
     LineLinter.prototype.checkTrailingWhitespace = function() {
-      if (!this.config.trailing && regexes.trailingWhitespace.test(this.line)) {
-        return {
-          character: this.line.length,
-          reason: MESSAGES.TRAILING_WHITESPACE
-        };
+      if (regexes.trailingWhitespace.test(this.line)) {
+        return this.createLineError('no_trailing_whitespace');
+      } else {
+        return null;
       }
     };
 
     LineLinter.prototype.checkLineLength = function() {
-      var lineLength;
-      lineLength = this.config.lineLength;
-      if (lineLength && lineLength < this.line.length) {
-        return {
-          character: 0,
-          reason: MESSAGES.LINE_LENGTH_EXCEEDED
-        };
+      var max, rule, _ref;
+      rule = 'max_line_length';
+      max = (_ref = this.config[rule]) != null ? _ref.value : void 0;
+      if (max && max < this.line.length) {
+        return this.createLineError(rule);
+      } else {
+        return null;
       }
     };
 
     LineLinter.prototype.checkTrailingSemicolon = function() {
       var first, hasNewLine, hasSemicolon, last, _i, _ref;
-      if (this.config.trailingSemiColons) return null;
       hasSemicolon = regexes.trailingSemicolon.test(this.line);
       _ref = this.getLineTokens(), first = 2 <= _ref.length ? __slice.call(_ref, 0, _i = _ref.length - 1) : (_i = 0, []), last = _ref[_i++];
       hasNewLine = last && (last.newLine != null);
       if (hasSemicolon && !hasNewLine && this.lineHasToken()) {
-        return {
-          reason: "Unnecessary semicolon"
+        return this.createLineError('no_trailing_semicolons');
+      } else {
+        return null;
+      }
+    };
+
+    LineLinter.prototype.createLineError = function(rule) {
+      var attrs, level, _ref;
+      level = (_ref = this.config[rule]) != null ? _ref.level : void 0;
+      if (level === ERROR) {
+        attrs = {
+          lineNumber: this.lineNumber + 1,
+          evidence: this.line,
+          leve: level
         };
+        return createError(rule, attrs);
       } else {
         return null;
       }
@@ -175,10 +209,13 @@
     };
 
     LexicalLinter.prototype.lintToken = function(token) {
-      var line, type, value, _base, _ref;
-      type = token[0], value = token[1], line = token[2];
-      if ((_ref = (_base = this.tokensByLine)[line]) == null) _base[line] = [];
-      this.tokensByLine[line].push(token);
+      var lineNumber, type, value, _base, _ref;
+      type = token[0], value = token[1], lineNumber = token[2];
+      if ((_ref = (_base = this.tokensByLine)[lineNumber]) == null) {
+        _base[lineNumber] = [];
+      }
+      this.tokensByLine[lineNumber].push(token);
+      this.lineNumber = lineNumber;
       switch (type) {
         case "INDENT":
           return this.lintIndentation(token);
@@ -192,38 +229,33 @@
     };
 
     LexicalLinter.prototype.lintBrace = function(token) {
-      var line, numIndents, type;
-      type = token[0], numIndents = token[1], line = token[2];
-      if (this.config.implicitBraces && token.generated) {
-        return {
-          reason: 'Implicit braces are forbidden',
-          line: line
-        };
+      if (token.generated) {
+        return this.createLexError('no_implicit_braces');
       } else {
         return null;
       }
     };
 
     LexicalLinter.prototype.lintIndentation = function(token) {
-      var error, inInterp, info, line, numIndents, previousToken, type;
-      type = token[0], numIndents = token[1], line = token[2];
-      if (!this.config.indent || (token.generated != null)) return null;
+      var context, expected, inInterp, lineNumber, numIndents, previousToken, type;
+      type = token[0], numIndents = token[1], lineNumber = token[2];
+      if (token.generated != null) return null;
       previousToken = this.peek(-2);
       inInterp = previousToken && previousToken[0] === '+';
-      if (!inInterp && numIndents !== this.config.indent) {
-        info = " Expected: " + this.config.indent + " Got: " + numIndents;
-        return error = {
-          reason: MESSAGES.INDENTATION_ERROR + info,
-          line: line
-        };
+      expected = this.config['indentation'].value;
+      if (!inInterp && numIndents !== expected) {
+        context = ("Expected " + expected + " ") + ("got " + numIndents);
+        return this.createLexError('indentation', {
+          context: context
+        });
       } else {
         return null;
       }
     };
 
     LexicalLinter.prototype.lintClass = function(token) {
-      var className, line, offset, type, value, _ref, _ref2;
-      _ref = this.peek(), type = _ref[0], value = _ref[1], line = _ref[2];
+      var attrs, className, lineNumber, offset, type, value, _ref, _ref2;
+      _ref = this.peek(), type = _ref[0], value = _ref[1], lineNumber = _ref[2];
       className = null;
       offset = 1;
       while (!className) {
@@ -233,12 +265,24 @@
           className = this.peek(offset)[1];
         }
       }
-      if (this.config.camelCaseClasses && !regexes.camelCase.test(className)) {
-        return {
-          reason: MESSAGES.INVALID_CLASS_NAME,
-          line: line,
-          evidence: className
+      if (!regexes.camelCase.test(className)) {
+        attrs = {
+          context: "class name: " + className
         };
+        return this.createLexError('camel_case_classes', attrs);
+      } else {
+        return null;
+      }
+    };
+
+    LexicalLinter.prototype.createLexError = function(rule, attrs) {
+      var level, _ref;
+      if (attrs == null) attrs = {};
+      level = (_ref = this.config[rule]) != null ? _ref.level : void 0;
+      if (level === ERROR) {
+        attrs.lineNumber = this.lineNumber + 1;
+        attrs.level = level;
+        return createError(rule, attrs);
       } else {
         return null;
       }
@@ -253,11 +297,20 @@
 
   })();
 
+  mergeDefaultConfig = function(userConfig) {
+    var config, rule, ruleConfig;
+    config = {};
+    for (rule in RULES) {
+      ruleConfig = RULES[rule];
+      config[rule] = defaults(userConfig[rule], ruleConfig);
+    }
+    return config;
+  };
+
   coffeelint.lint = function(source, userConfig) {
     var config, errors, lexErrors, lexicalLinter, lineErrors, lineLinter, tokensByLine;
     if (userConfig == null) userConfig = {};
-    config = defaults(userConfig, DEFAULT_CONFIG);
-    if (config.tabs) config.indent = 1;
+    config = mergeDefaultConfig(userConfig);
     lexicalLinter = new LexicalLinter(source, config);
     lexErrors = lexicalLinter.lint();
     tokensByLine = lexicalLinter.tokensByLine;
@@ -265,17 +318,9 @@
     lineErrors = lineLinter.lint();
     errors = lexErrors.concat(lineErrors);
     errors.sort(function(a, b) {
-      return a.line - b.line;
+      return a.lineNumber - b.lineNumber;
     });
     return errors;
-  };
-
-  MESSAGES = {
-    NO_TABS: 'Tabs are forbidden',
-    TRAILING_WHITESPACE: 'Contains trailing whitespace',
-    LINE_LENGTH_EXCEEDED: 'Maximum line length exceeded',
-    INDENTATION_ERROR: 'Indentation error.',
-    INVALID_CLASS_NAME: 'Invalid class name'
   };
 
 }).call(this);
