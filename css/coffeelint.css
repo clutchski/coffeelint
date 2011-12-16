@@ -13,7 +13,7 @@ body {
   font-family:monospace;
   width:100%;
   margin-bottom:40px;
-  font-size:14px;
+  font-size:13.5px;
   line-height:1.5em;
 }
 
@@ -37,6 +37,8 @@ body {
   font-size:30px;
   margin-right: 40px;
   color: #fff;
+  position:relative;
+  top:5px;
 }
 
 .header_links {
@@ -101,7 +103,7 @@ body {
 }
 
 .diatribe a {
-  color:red;
+  color:#C00000;
 
 }
 .forkme {
