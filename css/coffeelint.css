@@ -209,9 +209,8 @@ code, .error_report {
 }
 
 .options tbody tr:nth-child(odd) {
-  background-color: whitesmoke;
+  background-color: #efefef;
 }
-
 
 .options td, th {
   margin: 0;
@@ -225,7 +224,7 @@ code, .error_report {
   text-align:center;
   vertical-align:middle;
   font-family:monospace;
-  font-weight:16px;
+  font-weight:bold;
 }
 
 .options code {

@@ -83,47 +83,47 @@ class Gangster
           <div class="diatribe">
             <h2 class="diatribe_title" id="options">Options</h2>
             <p class="diatribe_body">
-              CoffeeLint's rules:
-
-              - ignore/error levels
-              - everything is optional
-
-              <table class="options">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td class="rule">no_tabs</td>
-                    <td class="description"></td>
-                  </tr>
-                  <tr>
-                    <td class="rule">no_trailing_whitespace</td>
-                    <td class="description">
-                    This options forbids trailing whitespace in your code. It is enabled by default.
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="rule">max_line_length</td>
-                    <td class="description">
-                    This rule imposes a maximum line length on your code.
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="rule">indentation</td>
-                    <td class="description">
+            This section details CoffeeLint's rules. All rules are configurable and optional so
+            you can pick and choose the rules that best fit your coding style.
+            CoffeeLint uses a set of defaults for writing sane, idiomatic CoffeeScript.
+            <table class="options">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="rule">indentation</td>
+                  <td class="description">
 This rules imposes a standard number of spaces to be used for indentation.
 Since whitespace is significant in CoffeeScript, it's critical that a project
 chooses a standard indentation format and be consistent.
-The default number of spaces is set to two, though this is configurable.
+<pre>
+<code># Enabling this rule will prevent this ugly
+# but otherwise valid CoffeeScript.
+twoSpaces = () ->
+  fourSpaces = () ->
+      eightSpaces = () ->
+              'this is valid CoffeeScript'
+
+</code>
+</pre>
+By default, this rule is enabled and set to two spaces.
                     </td>
-                  </tr>
-                  <tr>
-                    <td class="rule">camel_case_classes</td>
-                    <td class="description">
+                </tr>
+                <tr>
+                  <td class="rule">max_line_length</td>
+                  <td class="description">
+This rule imposes a maximum line length on your code. <a href="http://www.python.org/dev/peps/pep-0008/">Python's style guide</a> does a good job explaining why you might want to limit the length of your lines, though this is a matter of taste.
+
+By default, this rule is enabled with a maximum length of 80 characters.
+                  </td>
+                </tr>
+                <tr>
+                  <td class="rule">camel_case_classes</td>
+                  <td class="description">
 This rule mandates that all class names are camel cased. Camel casing class names
 is a generally accepted way of distinguishing constructor functions - which require the 'new'
 prefix to behave properly - from plain old functions.
@@ -136,11 +136,11 @@ class boaConstrictor
 </code>
 </pre>
 This rule is enabled by default.
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="rule">no_trailing_semicolons</td>
-                    <td class="description">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="rule">no_trailing_semicolons</td>
+                  <td class="description">
 This rule prohibits trailing semicolons, since they are needless cruft in CoffeeScript.
 <pre>
 <code># This semicolon is meaningful.
@@ -151,16 +151,16 @@ alert('end of line')
 </code>
 </pre>
 This rule is enabled by default.
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="rule">no_implicit_braces</td>
-                    <td class="description">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="rule">no_implicit_braces</td>
+                  <td class="description">
 This rule prohibits implicit braces when declaring object literals. Implicit braces
 can make code more difficult to understand, especially when used in combination with
 optional parenthesis.
 <pre>
-<code># Some people may find this code ambiguous.
+<code># Do you find this code ambiguous?
 # Is it a function call with three arguments or four?
 myFunction a, b, 1:2, 3:4
 
@@ -169,11 +169,22 @@ myFunction(a, b, {1:2, 3:4})
 </code>
 </pre>
 This rule is disabled by default, since it is not idiomatic CoffeeScript.
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="rule">no_tabs</td>
+                  <td class="description">
+This rule forbids tabs in indentation. Enough said. This rule is enabled by default.
+                </tr>
+                <tr>
+                  <td class="rule">no_trailing_whitespace</td>
+                  <td class="description">
+This options forbids trailing whitespace in your code, since it is needless cruft. It is enabled by default.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </p>
           </div>
         </div>
 
