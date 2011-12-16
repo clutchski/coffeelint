@@ -5,8 +5,9 @@
         var table = $('<div class="error_report">');
         $.each(errors, function (index, error) {
             var row = $('<div></div>');
-            var lc = $('<span class="lineNumber"></span>').html("Line #" + error.line + ':');
-            var rc = $('<span class="reason"></span>').html(error.reason);
+            var lc = $('<span class="lineNumber"></span>'
+                                ).html("Line #" + error.lineNumber + ':');
+            var rc = $('<span class="reason"></span>').html(error.message);
             row.append(lc, rc);
             table.append(row);
         });

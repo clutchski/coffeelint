@@ -147,6 +147,13 @@ code, .error_report {
   border:none;
 }
 
+span.code {
+  padding:2px;
+  background-color:#eee;
+  font-family:monospace;
+  border:0;
+}
+
 .run {
   font-size:20px;
   float:right;
