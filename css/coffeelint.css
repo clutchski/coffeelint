@@ -13,6 +13,7 @@ body {
   font-family:monospace;
   width:100%;
   margin-bottom:40px;
+  font-size:14px;
 }
 
 /**
@@ -25,28 +26,22 @@ body {
   width:100%;
   vertical-align:bottom;
   position:relative;
-  height:50px;
+  height:40px;
 }
 
 .title {
   font-weight:normal;
   display:inline-block;
   float:left;
-  font-size:40px;
+  font-size:30px;
   margin-right: 40px;
-}
-
-.title a {
   color: #fff;
-  text-decoration:none;
 }
 
 .header_links {
-  display:inline-block;
-  font-size:20px;
-  vertical-align:bottom;
+  font-size:16px;
   position:relative;
-  top:15px;
+  top:10px;
 }
 
 .header_links li {
@@ -58,10 +53,13 @@ body {
   color: #eee;
   text-decoration:none;
   margin-right:20px;
+  padding:5px;
 }
 
 .header_links a:hover {
   color: #fff;
+  background-color:#2b2b2b;
+  border-radius:5px;
 }
 
 
@@ -70,7 +68,7 @@ body {
  */
 
 .container {
-  width: 850px;
+  width: 900px;
   margin-left:auto;
   margin-right:auto;
 }
@@ -86,19 +84,17 @@ body {
 .diatribe_container {
   font-family: "Helvetica Neue", "Lucida Grande", "Lucida Sans Unicode",
     Helvetica, Arial, sans-serif !important;
-  margin-top:5px;
   padding: 20px;
-  font-size:16px;
 }
 
 .diatribe {
-  width:650px;
+  width:800px;
   margin-left:auto;
   margin-right:auto;
 }
 
 .diatribe_title {
-  font-size:30px;
+  font-size:25px;
   margin-bottom:15px;
   font-family:monospace;
 }
@@ -198,4 +194,43 @@ code, .error_report {
   min-width:100px;
   text-align:right;
   padding-right:10px;
+}
+
+/* Options table */
+.options {
+  margin-top:20px;
+  border-width: 1px 1px 1px 1px;
+  border-spacing: 0;
+  border-collapse: collapse;
+  border-color: #2b2b2b;
+  border-style: solid;
+}
+
+.options thead tr {
+  background-color:#fff;
+  color:black;
+  font-weight:bold;
+}
+
+.options tbody tr:nth-child(odd) {
+  background-color: whitesmoke;
+}
+
+
+.options td, th {
+  margin: 0;
+  padding: 15px;
+  border-width: 1px 1px 1px 1px;
+  border-color: #2b2b2b;
+  border-style: solid;
+}
+
+.options .rule {
+  text-align:center;
+  vertical-align:middle;
+  font-family:monospace;
+}
+
+.options code {
+  background-color:#ffffee;
 }

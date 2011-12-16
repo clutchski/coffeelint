@@ -10,15 +10,15 @@
     <div class="header">
       <div class="container">
         <h1 class="title">
-          <a href="#">CoffeeLint</a>
+          CoffeeLint
         </h1>
         <ul class="header_links">
           <li><a href="#install">Install</a></li>
           <li><a href="#usage">Usage</a></li>
+          <li><a href="#options">Options</a></li>
           <li><a href="#about">About</a></li>
           <li><a href="https://github.com/clutchski/coffeelint">Source</a></li>
         </ul>
-        <div class="clear">&nbsp;</div>
       </div>
     </div>
     <div class="container">
@@ -81,9 +81,109 @@ class Gangster
 
         <div class="diatribe_container">
           <div class="diatribe">
+            <h2 class="diatribe_title" id="options">Options</h2>
+            <p class="diatribe_body">
+              CoffeeLint's rules:
+
+              - ignore/error levels
+              - everything is optional
+
+              <table class="options">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="rule">no_tabs</td>
+                    <td class="description"></td>
+                  </tr>
+                  <tr>
+                    <td class="rule">no_trailing_whitespace</td>
+                    <td class="description">
+                    This options forbids trailing whitespace in your code. It is enabled by default.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="rule">max_line_length</td>
+                    <td class="description">
+                    This rule imposes a maximum line length on your code.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="rule">indentation</td>
+                    <td class="description">
+This rules imposes a standard number of spaces to be used for indentation.
+Since whitespace is significant in CoffeeScript, it's critical that a project
+chooses a standard indentation format and be consistent.
+The default number of spaces is set to two, though this is configurable.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="rule">camel_case_classes</td>
+                    <td class="description">
+This rule mandates that all class names are camel cased. Camel casing class
+names is a convention in Javascript and Coffeescript, because it communicates
+that the `new` keyword is required when initializing.
+<pre>
+<code># Good!
+class BoaConstrictor
+
+# Bad!
+class boaConstrictor
+</code>
+</pre>
+
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="rule">no_trailing_semicolons</td>
+                    <td class="description">
+This rule prohibits trailing semicolons, since they are needless cruft in CoffeeScript.
+This rule is enabled by default.
+<pre>
+<code># This semicolon is meaningful.
+x = '1234'; console.log(x)
+
+# This semicolon is redundant.
+alert('end of line')
+</code>
+</pre>
+
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="rule">no_implicit_braces</td>
+                    <td class="description">
+This rule prohibits implicit braces when declaring object literals. Implicit braces
+can make code more difficult to understand, especially when used in combination with
+optional parenthesis. This rule is disabled by default, since it is not idiomatic
+CoffeeScript.
+<pre>
+<code># Some people may find this code ambiguous.
+# Is it a function call with three arguments or four?
+myFunction a, b, 1:2, 3:4
+
+# While the same code written in an explicit manner has no ambiguity.
+myFunction(a, b, {1:2, 3:4})
+</code>
+</pre>
+
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </p>
+          </div>
+        </div>
+
+        <div class="diatribe_container">
+          <div class="diatribe">
             <h2 class="diatribe_title" id="about">About</h2>
             <p class="diatribe_body">
-              CoffeeLint is open sourced unde the MIT License. If you want to
+              CoffeeLint is open sourced under the MIT License. If you want to
               hack on the code, report a bug or suggest a new feature, head on
               over
               <a
