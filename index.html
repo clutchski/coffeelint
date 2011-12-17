@@ -110,7 +110,7 @@ example configuration file</a> and tweak as needed.
             To enable an option, set it's level to <span class="code">error</span> and to disable
             an option, set it's level to <span class="code">ignore</span>.
             <br><br>
-            Here's a rundown of CoffeeLint's options:
+            Here's a rundown of CoffeeLint's rules:
             <table class="options">
               <thead>
                 <tr>
@@ -142,7 +142,7 @@ Two space indentation is enabled by default.
                 <tr>
                   <td class="rule">max_line_length</td>
                   <td class="description">
-This option imposes a maximum line length on your code. <a href="http://www.python.org/dev/peps/pep-0008/">Python's style guide</a> does a good job explaining why you might want to limit the length of your lines, though this is a matter of taste.
+This rule imposes a maximum line length on your code. <a href="http://www.python.org/dev/peps/pep-0008/">Python's style guide</a> does a good job explaining why you might want to limit the length of your lines, though this is a matter of taste.
 
 Lines can be no longer than eighty characters by default.
                   </td>
@@ -150,7 +150,7 @@ Lines can be no longer than eighty characters by default.
                 <tr>
                   <td class="rule">camel_case_classes</td>
                   <td class="description">
-This option mandates that all class names are camel cased. Camel casing class names
+This rule mandates that all class names are camel cased. Camel casing class names
 is a generally accepted way of distinguishing constructor functions - which require the 'new'
 prefix to behave properly - from plain old functions.
 <pre>
@@ -167,7 +167,7 @@ This rule is enabled by default.
                 <tr>
                   <td class="rule">no_trailing_semicolons</td>
                   <td class="description">
-This option prohibits trailing semicolons, since they are needless cruft in CoffeeScript.
+This rule prohibits trailing semicolons, since they are needless cruft in CoffeeScript.
 <pre>
 <code># This semicolon is meaningful.
 x = '1234'; console.log(x)
@@ -182,7 +182,7 @@ Trailing semicolons are forbidden by default.
                 <tr>
                   <td class="rule">no_implicit_braces</td>
                   <td class="description">
-This option prohibits implicit braces when declaring object literals. Implicit braces
+This rule prohibits implicit braces when declaring object literals. Implicit braces
 can make code more difficult to understand, especially when used in combination with
 optional parenthesis.
 <pre>
@@ -201,12 +201,12 @@ CoffeeScript.
                 <tr>
                   <td class="rule">no_tabs</td>
                   <td class="description">
-This option forbids tabs in indentation. Enough said. This rule is enabled by default.
+This rule forbids tabs in indentation. Enough said. It is enabled by default.
                 </tr>
                 <tr>
                   <td class="rule">no_trailing_whitespace</td>
                   <td class="description">
-This option forbids trailing whitespace in your code, since it is needless cruft. It is enabled by default.
+This rule forbids trailing whitespace in your code, since it is needless cruft. It is enabled by default.
                   </td>
                 </tr>
               </tbody>
