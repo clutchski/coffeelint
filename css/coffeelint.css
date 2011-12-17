@@ -110,6 +110,7 @@ body {
   color:#C00000;
 
 }
+
 .forkme {
   position: absolute;
   z-index: 5;
@@ -177,6 +178,8 @@ span.code {
   background: -moz-radial-gradient(circle, #fff, #bbb);
   width:3em;
   text-align:center;
+  position:relative;
+  z-index:10;
 }
 
 /** Report style **/
