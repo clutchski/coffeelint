@@ -57,8 +57,9 @@ class Gangster
               JavaScript's bad parts, but it won't help enforce a consistent style
               across a code base. CoffeeLint can help with that.
               <br><br>
-              CoffeeLint is still in it's infancy, so any feedback - bugs, ideas for new rules, whatever - is very
-              welcome. Reach out on the <a href="http://github.com/clutchski/coffeelint">GitHub page</a>.
+              CoffeeLint is still in it's infancy, so feedback - bugs, ideas for new options, whatever - is very
+              welcome. Please reach out on our <a
+              href="http://github.com/clutchski/coffeelint/issues">issues page</a>.
             </p>
           </div>
         </div>
@@ -99,16 +100,17 @@ class Gangster
           <div class="diatribe">
             <h2 class="diatribe_title" id="options">Options</h2>
             <p class="diatribe_body">
-            This section details CoffeeLint's rules. All rules are configurable and optional so
-            you can pick and choose the rules that best fit your coding style,
-            but by default CoffeeLint is tuned for sane, idiomatic CoffeeScript.
+            By default, CoffeeLint will help ensure you are writing idiomatic
+            CoffeeScript, but every rule is optional and configurable so
+            it can be tuned to fit your preferred coding style. To override
+            any of CoffeeLint's default options, start with this
+<a
+href="https://raw.github.com/clutchski/coffeelint/master/examples/coffeelint.json">
+example configuration file</a> and tweak as needed.
+            To enable an option, set it's level to <span class="code">error</span> and to disable
+            an option, set it's level to <span class="code">ignore</span>.
             <br><br>
-            <p>
-              You can download an example configuration file
-<a href="https://raw.github.com/clutchski/coffeelint/master/examples/coffeelint.json">here</a>.
-            To enable a rule, set it's level to <span class="code">error</span> and to disable
-            a rule, set it's level to <span class="code">ignore</span>.
-            </p>
+            Here's a rundown of CoffeeLint's options:
             <table class="options">
               <thead>
                 <tr>
@@ -122,9 +124,10 @@ class Gangster
                   <td class="description">
 This rule imposes a standard number of spaces to be used for indentation.
 Since whitespace is significant in CoffeeScript, it's critical that a project
-chooses a standard indentation format and stays consistent.
+chooses a standard indentation format and stays consistent. Other roads lead
+to darkness.
 <pre>
-<code># Enabling this rule will prevent this ugly
+<code># Enabling this option will prevent this ugly
 # but otherwise valid CoffeeScript.
 twoSpaces = () ->
   fourSpaces = () ->
@@ -133,21 +136,21 @@ twoSpaces = () ->
 
 </code>
 </pre>
-By default, this rule is enabled and set to two spaces.
+Two space indentation is enabled by default.
                     </td>
                 </tr>
                 <tr>
                   <td class="rule">max_line_length</td>
                   <td class="description">
-This rule imposes a maximum line length on your code. <a href="http://www.python.org/dev/peps/pep-0008/">Python's style guide</a> does a good job explaining why you might want to limit the length of your lines, though this is a matter of taste.
+This option imposes a maximum line length on your code. <a href="http://www.python.org/dev/peps/pep-0008/">Python's style guide</a> does a good job explaining why you might want to limit the length of your lines, though this is a matter of taste.
 
-By default, this rule is enabled with a maximum length of 80 characters.
+Lines can be no longer than eighty characters by default.
                   </td>
                 </tr>
                 <tr>
                   <td class="rule">camel_case_classes</td>
                   <td class="description">
-This rule mandates that all class names are camel cased. Camel casing class names
+This option mandates that all class names are camel cased. Camel casing class names
 is a generally accepted way of distinguishing constructor functions - which require the 'new'
 prefix to behave properly - from plain old functions.
 <pre>
@@ -164,7 +167,7 @@ This rule is enabled by default.
                 <tr>
                   <td class="rule">no_trailing_semicolons</td>
                   <td class="description">
-This rule prohibits trailing semicolons, since they are needless cruft in CoffeeScript.
+This option prohibits trailing semicolons, since they are needless cruft in CoffeeScript.
 <pre>
 <code># This semicolon is meaningful.
 x = '1234'; console.log(x)
@@ -173,13 +176,13 @@ x = '1234'; console.log(x)
 alert('end of line');
 </code>
 </pre>
-This rule is enabled by default.
+Trailing semicolons are forbidden by default.
                   </td>
                 </tr>
                 <tr>
                   <td class="rule">no_implicit_braces</td>
                   <td class="description">
-This rule prohibits implicit braces when declaring object literals. Implicit braces
+This option prohibits implicit braces when declaring object literals. Implicit braces
 can make code more difficult to understand, especially when used in combination with
 optional parenthesis.
 <pre>
@@ -191,18 +194,19 @@ myFunction a, b, 1:2, 3:4
 myFunction(a, b, {1:2, 3:4})
 </code>
 </pre>
-This rule is disabled by default, since it is not idiomatic CoffeeScript.
+Implicit braces are permitted by default, since their use is idiomatic
+CoffeeScript.
                   </td>
                 </tr>
                 <tr>
                   <td class="rule">no_tabs</td>
                   <td class="description">
-This rule forbids tabs in indentation. Enough said. This rule is enabled by default.
+This option forbids tabs in indentation. Enough said. This rule is enabled by default.
                 </tr>
                 <tr>
                   <td class="rule">no_trailing_whitespace</td>
                   <td class="description">
-This rule forbids trailing whitespace in your code, since it is needless cruft. It is enabled by default.
+This option forbids trailing whitespace in your code, since it is needless cruft. It is enabled by default.
                   </td>
                 </tr>
               </tbody>
