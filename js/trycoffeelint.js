@@ -22,11 +22,13 @@
         var rowClass = 'success';
 
         var body = $('.report .diatribe_body').empty();
+        body.hide();
         if (!success) {
             title = 'Your code has lint.';
             rowClass = 'failure'
             var table = buildReportTable(errors);
             body.append(table);
+            body.show();
         }
         $('.report .diatribe_title').text(title);
         $('.report_row').removeClass('success failure').addClass(rowClass).slideDown();

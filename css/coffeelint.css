@@ -98,9 +98,13 @@ body {
 
 .diatribe_title {
   font-size:25px;
-  margin-bottom:15px;
   font-family:monospace;
 }
+
+.diatribe_body {
+  margin-top:15px;
+}
+
 
 .diatribe a {
   color:#C00000;
