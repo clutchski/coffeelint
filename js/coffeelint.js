@@ -56,6 +56,10 @@
     no_trailing_semicolons: {
       level: ERROR,
       message: 'Line contains a trailing semicolon'
+    },
+    no_plusplus: {
+      level: IGNORE,
+      message: 'The increment and decrement operators are forbidden'
     }
   };
 
@@ -223,6 +227,10 @@
           return this.lintClass(token);
         case "{":
           return this.lintBrace(token);
+        case "++":
+          return this.lintUnaryAddition(token);
+        case "--":
+          return this.lintUnaryAddition(token);
         default:
           return null;
       }
@@ -234,6 +242,14 @@
       } else {
         return null;
       }
+    };
+
+    LexicalLinter.prototype.lintUnaryAddition = function(token) {
+      var attrs;
+      attrs = {
+        context: "found '" + token[0] + "'"
+      };
+      return this.createLexError('no_plusplus', attrs);
     };
 
     LexicalLinter.prototype.lintIndentation = function(token) {
