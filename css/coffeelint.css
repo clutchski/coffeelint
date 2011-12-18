@@ -154,8 +154,8 @@ code, .error_report {
   border:none;
 }
 
-span.code {
-  padding:2px;
+tt {
+  padding:3px;
   background-color:#eee;
   font-family:monospace;
   border:0;
