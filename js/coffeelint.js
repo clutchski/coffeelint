@@ -60,6 +60,10 @@
     no_plusplus: {
       level: IGNORE,
       message: 'The increment and decrement operators are forbidden'
+    },
+    no_throwing_strings: {
+      level: ERROR,
+      message: 'Throwing strings is forbidden'
     }
   };
 
@@ -231,6 +235,8 @@
           return this.lintUnaryAddition(token);
         case "--":
           return this.lintUnaryAddition(token);
+        case "THROW":
+          return this.lintThrow(token);
         default:
           return null;
       }
@@ -242,6 +248,13 @@
       } else {
         return null;
       }
+    };
+
+    LexicalLinter.prototype.lintThrow = function(token) {
+      var n1, n2, nextIsString, _ref;
+      _ref = [this.peek(), this.peek(2)], n1 = _ref[0], n2 = _ref[1];
+      nextIsString = n1[0] === 'STRING' || (n1[0] === '(' && n2[0] === 'STRING');
+      if (nextIsString) return this.createLexError('no_throwing_strings');
     };
 
     LexicalLinter.prototype.lintUnaryAddition = function(token) {
