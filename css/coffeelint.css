@@ -84,16 +84,16 @@ body {
   border-radius:5px;
 }
 
-.diatribe_container {
+.diatribe_row {
   font-family: "Helvetica Neue", "Lucida Grande", "Lucida Sans Unicode",
     Helvetica, Arial, sans-serif !important;
-  padding: 20px;
 }
 
 .diatribe {
   width:750px;
   margin-left:auto;
   margin-right:auto;
+  padding: 20px;
 }
 
 .diatribe_title {
