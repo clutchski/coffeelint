@@ -53,105 +53,110 @@ class Gangster
 
       <!-- DOCUMENTATION -->
       <div class="row diatribe_row">
-          <div class="diatribe">
-            <h2 class="diatribe_title" id="overview">Overview</h2>
-            <p class="diatribe_body">
-              CoffeeLint is a style checker that helps keep <a href="http://coffeescript.org">CoffeeScript</a>
-              code clean and consistent. CoffeeScript does a great job at insulating programmers from many of
+        <div class="diatribe">
+          <h2 class="diatribe_title" id="overview">Overview</h2>
+          <div class="diatribe_body">
+            <p>
+              CoffeeLint is a style checker that helps keep
+              <a href="http://coffeescript.org">CoffeeScript</a>
+              code clean and consistent. CoffeeScript does a great job at
+              insulating programmers from many of
               JavaScript's bad parts, but it won't help enforce a consistent style
               across a code base. CoffeeLint can help with that.
-              <br><br>
-              CoffeeLint is in it's infancy, so feedback is much
-              appreciated. If you have an idea, a bug report or anything else
-              to say, reach out on the <a
-              href="http://github.com/clutchski/coffeelint/issues">issues page</a>.
+            </p>
+            <p>
+            CoffeeLint is in it's infancy, so feedback is much
+            appreciated. If you have an idea, a bug report or anything else
+            to say, reach out on the
+            <a href="http://github.com/clutchski/coffeelint/issues">issues page</a>.
             </p>
           </div>
+        </div>
 
-          <div class="diatribe">
-            <h2 class="diatribe_title" id="install">Installation</h2>
-            <p class="diatribe_body">
-              To install, make sure you have a working version of the latest
-              stable version of <a href="http://nodejs.org/">Node</a> and
-              <a href="http://npmjs.org/">NPM</a> (the Node Package Manager) and then
-              run:
-              <code>
-              npm install -g coffeelint
-              </code>
-              Leave off the <tt>g</tt> if you do not want to install globally.
-            </p>
+        <div class="diatribe">
+          <h2 class="diatribe_title" id="install">Installation</h2>
+          <div class="diatribe_body">
+            To install, make sure you have a working version of the latest
+            stable version of <a href="http://nodejs.org/">Node</a> and
+            <a href="http://npmjs.org/">NPM</a> (the Node Package Manager) and then
+            run:
+            <code>
+            npm install -g coffeelint
+            </code>
+            Leave off the <tt>g</tt> if you do not want to install globally.
           </div>
+        </div>
 
-          <div class="diatribe">
-            <h2 class="diatribe_title" id="usage">Usage</h2>
-            <p class="diatribe_body">
-              Once you have Coffeelint installed, to lint your scripts, run:
-              <code>
-              coffeelint application.coffee
-              </code>
-              To specify your own configuration file, do the following:
-              <code>
-              coffeelint -f config.json application.coffee
-              </code>
-            </p>
+        <div class="diatribe">
+          <h2 class="diatribe_title" id="usage">Usage</h2>
+          <div class="diatribe_body">
+            Once you have Coffeelint installed, to lint your scripts, run:
+            <code>
+            coffeelint application.coffee
+            </code>
+            To specify your own configuration file, do the following:
+            <code>
+            coffeelint -f config.json application.coffee
+            </code>
           </div>
+        </div>
 
-          <div class="diatribe">
-            <h2 class="diatribe_title" id="options">Options</h2>
-            <p class="diatribe_body">
-            By default, CoffeeLint will help ensure you are writing idiomatic
-            CoffeeScript, but every rule is optional and configurable so
-            it can be tuned to fit your preferred coding style. To override
-            any of CoffeeLint's default options, start with this
-<a
-href="https://raw.github.com/clutchski/coffeelint/master/examples/coffeelint.json">
-example configuration file</a> and tweak as needed.
-            To enable an option, set it's level to <tt>error</tt> and to disable
-            an option, set it's level to <tt>ignore</tt>.
-            <br><br>
-            Here's a rundown of CoffeeLint's rules:
-            <table class="options">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Description</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="rule">indentation</td>
-                  <td class="description">
-This rule imposes a standard number of spaces to be used for indentation.
-Since whitespace is significant in CoffeeScript, it's critical that a project
-chooses a standard indentation format and stays consistent. Other roads lead
-to darkness.
+        <div class="diatribe">
+          <h2 class="diatribe_title" id="options">Options</h2>
+          <div class="diatribe_body">
+            <p>
+              By default, CoffeeLint will help ensure you are writing idiomatic
+              CoffeeScript, but every rule is optional and configurable so
+              it can be tuned to fit your preferred coding style. To override
+              any of CoffeeLint's default options, start with this
+              <a href="https://raw.github.com/clutchski/coffeelint/master/examples/coffeelint.json">example configuration file</a>
+              and tweak as needed. To enable an option, set it's level to <tt>error</tt>
+              and to disable an option, set it's level to <tt>ignore</tt>.
+            </p>
+            <p>
+              Here's a rundown of CoffeeLint's rules:
+              <table class="options">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="rule">indentation</td>
+                    <td class="description">
+    This rule imposes a standard number of spaces to be used for indentation.
+    Since whitespace is significant in CoffeeScript, it's critical that a project
+    chooses a standard indentation format and stays consistent. Other roads lead
+    to darkness.
 <pre>
 <code># Enabling this option will prevent this ugly
 # but otherwise valid CoffeeScript.
 twoSpaces = () ->
-  fourSpaces = () ->
-      eightSpaces = () ->
-              'this is valid CoffeeScript'
+fourSpaces = () ->
+    eightSpaces = () ->
+            'this is valid CoffeeScript'
 
 </code>
 </pre>
-Two space indentation is enabled by default.
-                    </td>
-                </tr>
-                <tr>
-                  <td class="rule">max_line_length</td>
-                  <td class="description">
-This rule imposes a maximum line length on your code. <a href="http://www.python.org/dev/peps/pep-0008/">Python's style guide</a> does a good job explaining why you might want to limit the length of your lines, though this is a matter of taste.
+    Two space indentation is enabled by default.
+                      </td>
+                  </tr>
+                  <tr>
+                    <td class="rule">max_line_length</td>
+                    <td class="description">
+    This rule imposes a maximum line length on your code. <a href="http://www.python.org/dev/peps/pep-0008/">Python's style guide</a> does a good job explaining why you might want to limit the length of your lines, though this is a matter of taste.
 
-Lines can be no longer than eighty characters by default.
-                  </td>
-                </tr>
-                <tr>
-                  <td class="rule">camel_case_classes</td>
-                  <td class="description">
-This rule mandates that all class names are camel cased. Camel casing class names
-is a generally accepted way of distinguishing constructor functions - which require the 'new'
-prefix to behave properly - from plain old functions.
+    Lines can be no longer than eighty characters by default.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="rule">camel_case_classes</td>
+                    <td class="description">
+    This rule mandates that all class names are camel cased. Camel casing class names
+    is a generally accepted way of distinguishing constructor functions - which require the 'new'
+    prefix to behave properly - from plain old functions.
 <pre>
 <code># Good!
 class BoaConstrictor
@@ -160,13 +165,13 @@ class BoaConstrictor
 class boaConstrictor
 </code>
 </pre>
-This rule is enabled by default.
-                  </td>
-                </tr>
-                <tr>
-                  <td class="rule">no_trailing_semicolons</td>
-                  <td class="description">
-This rule prohibits trailing semicolons, since they are needless cruft in CoffeeScript.
+    This rule is enabled by default.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="rule">no_trailing_semicolons</td>
+                    <td class="description">
+    This rule prohibits trailing semicolons, since they are needless cruft in CoffeeScript.
 <pre>
 <code># This semicolon is meaningful.
 x = '1234'; console.log(x)
@@ -175,15 +180,15 @@ x = '1234'; console.log(x)
 alert('end of line');
 </code>
 </pre>
-Trailing semicolons are forbidden by default.
-                  </td>
-                </tr>
-                <tr>
-                  <td class="rule">no_implicit_braces</td>
-                  <td class="description">
-This rule prohibits implicit braces when declaring object literals. Implicit braces
-can make code more difficult to understand, especially when used in combination with
-optional parenthesis.
+    Trailing semicolons are forbidden by default.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="rule">no_implicit_braces</td>
+                    <td class="description">
+    This rule prohibits implicit braces when declaring object literals. Implicit braces
+    can make code more difficult to understand, especially when used in combination with
+    optional parenthesis.
 <pre>
 <code># Do you find this code ambiguous? Is it a
 # function call with three arguments or four?
@@ -194,40 +199,40 @@ myFunction a, b, 1:2, 3:4
 myFunction(a, b, {1:2, 3:4})
 </code>
 </pre>
-Implicit braces are permitted by default, since their use is idiomatic
-CoffeeScript.
-                  </td>
-                </tr>
-                <tr>
-                  <td class="rule">no_tabs</td>
-                  <td class="description">
-This rule forbids tabs in indentation. Enough said. It is enabled by default.
-                </tr>
-                <tr>
-                  <td class="rule">no_trailing_whitespace</td>
-                  <td class="description">
-This rule forbids trailing whitespace in your code, since it is needless cruft. It is enabled by default.
-                  </td>
-                </tr>
-                <tr>
-                  <td class="rule">no_plusplus</td>
-                  <td class="description">
-This rule forbids the increment and decrement arithmetic operators. Some people
-believe the <tt>++</tt> and <tt>--</tt>
-to be cryptic and the cause of bugs due to misunderstandings of their
-precedence rules. This rule is disabled by default.
-                  </td>
-                </tr>
-                <tr>
-                  <td class="rule">no_throwing_strings</td>
-                  <td class="description">
-This rule forbids throwing string literals or interpolations. While JavaScript (and CoffeeScript
-by extension) allow any expression to be thrown, it is best to only throw <a
-href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Error">Error</a>
-objects, because they contain valuable debugging information like the stack trace.
-Because of JavaScript's dynamic nature, CoffeeLint cannot ensure you are always
-throwing instances of <tt>Error</tt>. It will only catch the simple but real
-case of throwing literal strings.
+    Implicit braces are permitted by default, since their use is idiomatic
+    CoffeeScript.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="rule">no_tabs</td>
+                    <td class="description">
+    This rule forbids tabs in indentation. Enough said. It is enabled by default.
+                  </tr>
+                  <tr>
+                    <td class="rule">no_trailing_whitespace</td>
+                    <td class="description">
+    This rule forbids trailing whitespace in your code, since it is needless cruft. It is enabled by default.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="rule">no_plusplus</td>
+                    <td class="description">
+    This rule forbids the increment and decrement arithmetic operators. Some people
+    believe the <tt>++</tt> and <tt>--</tt>
+    to be cryptic and the cause of bugs due to misunderstandings of their
+    precedence rules. This rule is disabled by default.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="rule">no_throwing_strings</td>
+                    <td class="description">
+    This rule forbids throwing string literals or interpolations. While JavaScript (and CoffeeScript
+    by extension) allow any expression to be thrown, it is best to only throw <a
+    href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Error">Error</a>
+    objects, because they contain valuable debugging information like the stack trace.
+    Because of JavaScript's dynamic nature, CoffeeLint cannot ensure you are always
+    throwing instances of <tt>Error</tt>. It will only catch the simple but real
+    case of throwing literal strings.
 <pre>
 <code># CoffeeLint will catch this:
 throw "i made a boo boo"
@@ -236,25 +241,34 @@ throw "i made a boo boo"
 throw getSomeString()
 </code>
 </pre>
-This rule is enabled by default.
-                  </td>
-              </tbody>
-            </table>
+    This rule is enabled by default.
+                    </td>
+                </tbody>
+              </table>
+            </p>
           </div>
+        </div>
 
-          <div class="diatribe">
-            <h2 class="diatribe_title" id="about">About</h2>
-            <p class="diatribe_body">
-              CoffeeLint is open sourced under the MIT License. If you want to
-              hack on the code, report a bug or suggest a new feature, head on
-              over <a href="http://github.com/clutchski/coffeelint">here</a>.
-              <br><br>
-              Thanks to the CoffeeScript devs for a great language
-              and <a href="http://www.jslint.com/">JSLint</a>, <a
-              href="http://www.jshint.com/">JSHint</a> and <a
-              href="http://www.logilab.org/857">Pylint</a> for inspiration.
-              </p>
+        <div class="diatribe">
+          <h2 class="diatribe_title" id="about">About</h2>
+          <div class="diatribe_body">
+            <p>
+            CoffeeLint is open sourced under the MIT License. If you want to
+            hack on the code, report a bug or suggest a new feature, head on
+            over <a href="http://github.com/clutchski/coffeelint">here</a>.
+            </p>
+            <p>
+              Thanks to CoffeeScript's
+              <a href="https://github.com/jashkenas/coffee-script/contributors">developers</a>
+              for a great language (and a re-usable Lexer). Thanks to the creators of
+              <a href="http://www.jslint.com/">JSLint</a>,
+              <a href="http://www.jshint.com/">JSHint</a>,
+              <a href="http://www.logilab.org/857">Pylint</a> and (of course)
+              <a href="http://en.wikipedia.org/wiki/Lint_(software)">lint</a>
+              for inspiration.
+            </p>
           </div>
+        </div>
 
       </div>
     </div>

@@ -87,13 +87,16 @@ body {
 .diatribe_row {
   font-family: "Helvetica Neue", "Lucida Grande", "Lucida Sans Unicode",
     Helvetica, Arial, sans-serif !important;
+  padding-bottom:30px;
 }
 
 .diatribe {
   width:750px;
   margin-left:auto;
   margin-right:auto;
-  padding: 20px;
+  margin-top:25px;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 .diatribe_title {
@@ -105,6 +108,9 @@ body {
   margin-top:15px;
 }
 
+.diatribe p {
+  margin-top:15px;
+}
 
 .diatribe a {
   color:#C00000;
