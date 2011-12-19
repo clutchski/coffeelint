@@ -135,7 +135,7 @@ code, .error_report {
 
 /* Editor styling */
 
-.code.row {
+.row.editor_row {
   padding-left:20px;
   background-color:#111;
   border: 0;
