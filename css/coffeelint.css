@@ -135,10 +135,10 @@ code, .error_report {
 
 /* Editor styling */
 
-.code {
+.code.row {
   padding-left:20px;
   background-color:#111;
-  border: 2px solid #333;
+  border: 0;
 }
 
 .editor {
