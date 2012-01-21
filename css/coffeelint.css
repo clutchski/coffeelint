@@ -42,7 +42,7 @@ body {
 }
 
 .header_links {
-  font-size:16px;
+  font-size:14px;
   position:relative;
   top:10px;
 }
@@ -253,4 +253,11 @@ tt {
   background-color:#ffffdd;
   margin-bottom:0;
   font-size:13px;
+}
+
+.changelog_header {
+  margin-bottom:0.8em;
+}
+.changelog_history {
+  margin-left:2em;
 }
