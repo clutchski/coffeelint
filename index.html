@@ -20,6 +20,7 @@
           <li><a href="#install">Install</a></li>
           <li><a href="#usage">Usage</a></li>
           <li><a href="#options">Options</a></li>
+          <li><a href="#api">API</a></li>
           <li><a href="#about">About</a></li>
           <li><a href="#changelog">Change Log</a></li>
           <li><a href="https://github.com/clutchski/coffeelint">Source</a></li>
@@ -100,6 +101,13 @@ class Gangster
             To specify your own configuration file, do the following:
             <code>
             coffeelint -f config.json application.coffee
+            </code>
+            To run CoffeeLint in the browser or any other Javascript environment, include <a
+            href="https://raw.github.com/clutchski/coffeelint/master/lib/coffeelint.js">
+            coffeelint.js</a> in your page, and cal
+            <code>
+            var errors = coffeelint.lint
+
             </code>
           </div>
         </div>
@@ -251,6 +259,39 @@ throw getSomeString()
             </p>
           </div>
         </div>
+
+        <div class="diatribe">
+          <h2 class="diatribe_title" id="api">API</h2>
+          <div class="diatribe_body">
+            <p>
+              If you'd like to run CoffeeScript in the browser or any other
+              Javascript runtime, include
+              <a href="http://coffeescript.org/extras/coffee-script.js">coffee-script.js</a>
+              and
+              <a href="http://www.coffeelint.org/js/coffeelint.js">
+                coffeelint.js
+              </a>
+              and you're off to the races. Then you can call CoffeeLint directly
+              with the following API.
+              <p>
+                <h3 class="apiCall">coffeelint.lint(source, configuration)</h3>
+                Lints the given CoffeeScript source with the given configuration
+                and returns an array of lint errors encountered. If the array
+                is empty, all is well. An error is a
+                Javascript object with the following properties:
+<pre><code>{
+    rule :      'Name of the violated rule',
+    lineNumber: 'Number of the line that caused the violation',
+    level:      'The severity level of the violated rule',
+    message:    'Information about the violated rule',
+    context:    'Optional details about why the rule was violated'
+}</code></pre>
+              </p>
+              Any compile time errors will be thrown.
+            </p>
+          </div>
+        </div>
+
         <div class="diatribe">
           <h2 class="diatribe_title" id="about">About</h2>
           <div class="diatribe_body">
