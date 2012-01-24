@@ -1,14 +1,14 @@
+
+/*
+CoffeeLint
+
+Copyright (c) 2011 Matthew Perpick.
+CoffeeLint is freely distributable under the MIT license.
+*/
+
 (function() {
-
-  /*
-  CoffeeLint
-  
-  Copyright (c) 2011 Matthew Perpick.
-  CoffeeLint is freely distributable under the MIT license.
-  */
-
-  var CoffeeScript, ERROR, IGNORE, LexicalLinter, LineLinter, RULES, coffeelint, createError, defaults, extend, mergeDefaultConfig, regexes;
-  var __slice = Array.prototype.slice;
+  var CoffeeScript, ERROR, IGNORE, LexicalLinter, LineLinter, RULES, coffeelint, createError, defaults, extend, mergeDefaultConfig, regexes,
+    __slice = Array.prototype.slice;
 
   coffeelint = {};
 
@@ -20,7 +20,7 @@
     CoffeeScript = this.CoffeeScript;
   }
 
-  coffeelint.VERSION = "0.0.5";
+  coffeelint.VERSION = "0.1.0";
 
   ERROR = 'error';
 
@@ -172,7 +172,6 @@
       if (level === ERROR) {
         attrs = {
           lineNumber: this.lineNumber + 1,
-          evidence: this.line,
           leve: level
         };
         return createError(rule, attrs);
@@ -201,6 +200,7 @@
       this.config = config;
       this.i = 0;
       this.tokensByLine = {};
+      this.arrayTokens = [];
     }
 
     LexicalLinter.prototype.lint = function() {
@@ -217,11 +217,9 @@
     };
 
     LexicalLinter.prototype.lintToken = function(token) {
-      var lineNumber, type, value, _base, _ref;
+      var lineNumber, type, value, _base;
       type = token[0], value = token[1], lineNumber = token[2];
-      if ((_ref = (_base = this.tokensByLine)[lineNumber]) == null) {
-        _base[lineNumber] = [];
-      }
+      if ((_base = this.tokensByLine)[lineNumber] == null) _base[lineNumber] = [];
       this.tokensByLine[lineNumber].push(token);
       this.lineNumber = lineNumber;
       switch (type) {
@@ -232,14 +230,27 @@
         case "{":
           return this.lintBrace(token);
         case "++":
+        case "--":
           return this.lintUnaryAddition(token);
         case "--":
           return this.lintUnaryAddition(token);
         case "THROW":
           return this.lintThrow(token);
+        case "[":
+        case "]":
+          return this.lintArray(token);
         default:
           return null;
       }
+    };
+
+    LexicalLinter.prototype.lintArray = function(token) {
+      if (token[0] === '[') {
+        this.arrayTokens.push(token);
+      } else if (token[0] === ']') {
+        this.arrayTokens.pop();
+      }
+      return null;
     };
 
     LexicalLinter.prototype.lintBrace = function(token) {
@@ -266,13 +277,18 @@
     };
 
     LexicalLinter.prototype.lintIndentation = function(token) {
-      var context, expected, inInterp, lineNumber, numIndents, previousToken, type;
+      var context, expected, ignoreIndent, isArrayIndent, isInterpIndent, isMultiline, lineNumber, numIndents, previous, previousSymbol, type, _ref;
       type = token[0], numIndents = token[1], lineNumber = token[2];
       if (token.generated != null) return null;
-      previousToken = this.peek(-2);
-      inInterp = previousToken && previousToken[0] === '+';
+      previous = this.peek(-2);
+      isInterpIndent = previous && previous[0] === '+';
+      previous = this.peek(-1);
+      isArrayIndent = this.inArray() && (previous != null ? previous.newLine : void 0);
+      previousSymbol = (_ref = this.peek(-1)) != null ? _ref[0] : void 0;
+      isMultiline = previousSymbol === '=' || previousSymbol === ',';
+      ignoreIndent = isInterpIndent || isArrayIndent || isMultiline;
       expected = this.config['indentation'].value;
-      if (!inInterp && numIndents !== expected) {
+      if (!ignoreIndent && numIndents !== expected) {
         context = ("Expected " + expected + " ") + ("got " + numIndents);
         return this.createLexError('indentation', {
           context: context
@@ -320,6 +336,10 @@
     LexicalLinter.prototype.peek = function(n) {
       if (n == null) n = 1;
       return this.tokens[this.i + n] || null;
+    };
+
+    LexicalLinter.prototype.inArray = function() {
+      return this.arrayTokens.length > 0;
     };
 
     return LexicalLinter;
