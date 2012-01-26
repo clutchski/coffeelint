@@ -257,9 +257,18 @@ tt {
 
 .changelog_header {
   margin-bottom:0.8em;
+  display:inline;
 }
+
+.changelog_date {
+  display:inline;
+  color:#444;
+  font-size:80%;
+}
+
 .changelog_history {
   margin-left:2em;
+  margin-bottom:1em;
 }
 
 .apiCall {
