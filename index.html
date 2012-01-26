@@ -102,6 +102,7 @@ class Gangster
             <code>
             coffeelint -f config.json application.coffee
             </code>
+            If any errors were found, a non-zero code will be returned.
           </div>
         </div>
 
@@ -116,6 +117,8 @@ class Gangster
               <a href="https://raw.github.com/clutchski/coffeelint/master/examples/coffeelint.json">example configuration file</a>
               and tweak as needed. To enable an option, set it's level to <tt>error</tt>
               and to disable an option, set it's level to <tt>ignore</tt>.
+              If you set the level to <tt>warn</tt>, violations will be
+              reported, but won't cause a non-zero exit code.
             </p>
             <p>
               Here's a rundown of CoffeeLint's rules:
