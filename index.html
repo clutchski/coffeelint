@@ -94,32 +94,30 @@ class Gangster
           If any errors were found, a non-zero code will be returned.
         </p>
 
-          <h2 class="section_title" id="options">Options</h2>
-          <div class="section_body">
-            <p>
-              By default, CoffeeLint will help ensure you are writing idiomatic
-              CoffeeScript, but every rule is optional and configurable so
-              it can be tuned to fit your preferred coding style. To override
-              any of CoffeeLint's default options, start with this
-              <a href="https://raw.github.com/clutchski/coffeelint/master/examples/coffeelint.json">example configuration file</a>
-              and tweak as needed. To enable an option, set it's level to <tt>error</tt>
-              and to disable an option, set it's level to <tt>ignore</tt>.
-              If you set the level to <tt>warn</tt>, violations will be
-              reported, but won't cause a non-zero exit code.
-            </p>
-            <p>
-              Here's a rundown of CoffeeLint's rules:
-              <table class="options">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td class="rule">indentation</td>
-                    <td class="description">
+        <h2 class="section_title" id="options">Options</h2>
+        <p>
+          By default, CoffeeLint will help ensure you are writing idiomatic
+          CoffeeScript, but every rule is optional and configurable so
+          it can be tuned to fit your preferred coding style. To override
+          any of CoffeeLint's default options, start with this
+          <a href="https://raw.github.com/clutchski/coffeelint/master/examples/coffeelint.json">example configuration file</a>
+          and tweak as needed. To enable an option, set it's level to <tt>error</tt>
+          and to disable an option, set it's level to <tt>ignore</tt>.
+          If you set the level to <tt>warn</tt>, violations will be
+          reported, but won't cause a non-zero exit code.
+        </p>
+        <p>Here's a rundown of CoffeeLint's rules:</p>
+        <table class="options">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="rule">indentation</td>
+              <td class="description">
     This rule imposes a standard number of spaces to be used for indentation.
     Since whitespace is significant in CoffeeScript, it's critical that a project
     chooses a standard indentation format and stays consistent. Other roads lead
@@ -135,19 +133,19 @@ twoSpaces = () ->
 </code>
 </pre>
     Two space indentation is enabled by default.
-                      </td>
-                  </tr>
-                  <tr>
-                    <td class="rule">max_line_length</td>
-                    <td class="description">
+                   </td>
+               </tr>
+               <tr>
+                 <td class="rule">max_line_length</td>
+                 <td class="description">
     This rule imposes a maximum line length on your code. <a href="http://www.python.org/dev/peps/pep-0008/">Python's style guide</a> does a good job explaining why you might want to limit the length of your lines, though this is a matter of taste.
 
     Lines can be no longer than eighty characters by default.
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="rule">camel_case_classes</td>
-                    <td class="description">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="rule">camel_case_classes</td>
+                  <td class="description">
     This rule mandates that all class names are camel cased. Camel casing class names
     is a generally accepted way of distinguishing constructor functions - which require the 'new'
     prefix to behave properly - from plain old functions.
@@ -160,11 +158,11 @@ class boaConstrictor
 </code>
 </pre>
     This rule is enabled by default.
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="rule">no_trailing_semicolons</td>
-                    <td class="description">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="rule">no_trailing_semicolons</td>
+                  <td class="description">
     This rule prohibits trailing semicolons, since they are needless cruft in CoffeeScript.
 <pre>
 <code># This semicolon is meaningful.
@@ -175,11 +173,11 @@ alert('end of line');
 </code>
 </pre>
     Trailing semicolons are forbidden by default.
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="rule">no_implicit_braces</td>
-                    <td class="description">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="rule">no_implicit_braces</td>
+                  <td class="description">
     This rule prohibits implicit braces when declaring object literals. Implicit braces
     can make code more difficult to understand, especially when used in combination with
     optional parenthesis.
@@ -195,31 +193,31 @@ myFunction(a, b, {1:2, 3:4})
 </pre>
     Implicit braces are permitted by default, since their use is idiomatic
     CoffeeScript.
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="rule">no_tabs</td>
-                    <td class="description">
-    This rule forbids tabs in indentation. Enough said. It is enabled by default.
-                  </tr>
-                  <tr>
-                    <td class="rule">no_trailing_whitespace</td>
-                    <td class="description">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="rule">no_tabs</td>
+                  <td class="description">
+  This rule forbids tabs in indentation. Enough said. It is enabled by default.
+                </tr>
+                <tr>
+                  <td class="rule">no_trailing_whitespace</td>
+                  <td class="description">
     This rule forbids trailing whitespace in your code, since it is needless cruft. It is enabled by default.
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="rule">no_plusplus</td>
-                    <td class="description">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="rule">no_plusplus</td>
+                  <td class="description">
     This rule forbids the increment and decrement arithmetic operators. Some people
     believe the <tt>++</tt> and <tt>--</tt>
     to be cryptic and the cause of bugs due to misunderstandings of their
     precedence rules. This rule is disabled by default.
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="rule">no_throwing_strings</td>
-                    <td class="description">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="rule">no_throwing_strings</td>
+                  <td class="description">
     This rule forbids throwing string literals or interpolations. While JavaScript (and CoffeeScript
     by extension) allow any expression to be thrown, it is best to only throw <a
     href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Error">Error</a>
@@ -236,30 +234,30 @@ throw getSomeString()
 </code>
 </pre>
     This rule is enabled by default.
-                    </td>
-                </tbody>
-              </table>
-            </p>
-          </div>
+                  </td>
+              </tbody>
+            </table>
+          </p>
 
           <h2 class="section_title" id="api">API</h2>
-          <div class="section_body">
-            <p>
-              If you'd like to run CoffeeScript in the browser or any other
-              Javascript runtime, include
-              <a href="http://coffeescript.org/extras/coffee-script.js">coffee-script.js</a>
-              and
-              <a href="http://www.coffeelint.org/js/coffeelint.js">
-                coffeelint.js
-              </a>
-              and you're off to the races. Then you can call CoffeeLint directly
-              with the following API.
-              <p>
-                <h3 class="apiCall">coffeelint.lint(source, configuration)</h3>
-                Lints the CoffeeScript source with the given configuration
-                and returns an array of errors. If the array
-                is empty, all is well. An error is a
-                Javascript object with the following properties:
+          <p>
+            If you'd like to run CoffeeScript in the browser or any other
+            Javascript runtime, include
+            <a href="http://coffeescript.org/extras/coffee-script.js">coffee-script.js</a>
+            and
+            <a href="http://www.coffeelint.org/js/coffeelint.js">
+              coffeelint.js
+            </a>
+            and you're off to the races. Then you can call CoffeeLint directly
+            with the following API.
+          </p>
+          <h3 class="apiCall">coffeelint.lint(source, configuration)</h3>
+          <p>
+              Lints the CoffeeScript source with the given configuration
+              and returns an array of errors. If the array
+              is empty, all is well. An error is a
+              Javascript object with the following properties:
+          </p>
 <pre><code>{
     rule :      'Name of the violated rule',
     lineNumber: 'Number of the line that caused the violation',
@@ -267,53 +265,43 @@ throw getSomeString()
     message:    'Information about the violated rule',
     context:    'Optional details about why the rule was violated'
 }</code></pre>
-              </p>
-              Any compile time errors will be thrown.
-            </p>
-          </div>
+          <p>Any compile time errors will be thrown.</p>
 
           <h2 class="section_title" id="about">About</h2>
-          <div class="section_body">
-            <p>
-            CoffeeLint is open sourced under the MIT License. If you want to
-            hack on the code, report a bug or suggest a new feature, head on
-            over <a href="http://github.com/clutchski/coffeelint">here</a>.
-            </p>
-            <p>
-              Thanks to CoffeeScript's
-              <a href="https://github.com/jashkenas/coffee-script/contributors">developers</a>
-              for a great language (and a re-usable Lexer). Thanks to the creators of
-              <a href="http://www.jslint.com/">JSLint</a>,
-              <a href="http://www.jshint.com/">JSHint</a>,
-              <a href="http://www.logilab.org/857">Pylint</a>,
-              <a href="http://en.wikipedia.org/wiki/Lint_(software)">lint</a>
-              and my mother for inspiration.
-            </p>
-          </div>
+          <p>
+          CoffeeLint is open sourced under the MIT License. If you want to
+          hack on the code, report a bug or suggest a new feature, head on
+          over <a href="http://github.com/clutchski/coffeelint">here</a>.
+          </p>
+          <p>
+            Thanks to CoffeeScript's
+            <a href="https://github.com/jashkenas/coffee-script/contributors">developers</a>
+            for a great language (and a re-usable Lexer). Thanks to the creators of
+            <a href="http://www.jslint.com/">JSLint</a>,
+            <a href="http://www.jshint.com/">JSHint</a>,
+            <a href="http://www.logilab.org/857">Pylint</a>,
+            <a href="http://en.wikipedia.org/wiki/Lint_(software)">lint</a>
+            and my mother for inspiration.
+          </p>
 
           <h2 class="section_title" id="changelog">Change Log</h2>
-          <div class="section_body">
-
-            <div>
-              <h3 class="changelog_header">0.2.0</h3>
-              <small class="changelog_date">- 2012.01.26</small>
-            </div>
-            <ul class="changelog_history">
-              <li>Added warnings, which will be reported, but won't fail
-              the command line tool.
-              </li>
-            </ul>
-
-            <div>
-              <h3 class="changelog_header">0.1.0</h3>
-              <small class="changelog_date">- 2012.01.22</small>
-            </div>
-            <ul class="changelog_history">
-              <li>Initial CoffeeLint release.</li>
-            </ul>
-
+          <div>
+            <h3 class="changelog_header">0.2.0</h3>
+            <small class="changelog_date">- 2012.01.26</small>
           </div>
+          <ul class="changelog_history">
+            <li>Added warnings, which will be reported, but won't fail
+            the command line tool.
+            </li>
+          </ul>
 
+          <div>
+            <h3 class="changelog_header">0.1.0</h3>
+            <small class="changelog_date">- 2012.01.22</small>
+          </div>
+          <ul class="changelog_history">
+            <li>Initial CoffeeLint release.</li>
+          </ul>
       </div>
     </div>
 
