@@ -249,14 +249,14 @@ throw getSomeString()
               coffeelint.js
             </a>
             and you're off to the races. Then you can call CoffeeLint directly
-            with the following API.
+            with the following API:
           </p>
-          <h3 class="apiCall">coffeelint.lint(source, configuration)</h3>
+          <h3 class="api_call">coffeelint.lint(source, configuration)</h3>
           <p>
-              Lints the CoffeeScript source with the given configuration
-              and returns an array of errors. If the array
-              is empty, all is well. An error is a
-              Javascript object with the following properties:
+            Lints the CoffeeScript source with the given configuration
+            and returns an array of lint errors and warnings. If the array is
+            empty, all is well.  Compile time errors will be thrown.
+            An error is a Javascript object with the following properties:
           </p>
 <pre><code>{
     rule :      'Name of the violated rule',
@@ -265,7 +265,6 @@ throw getSomeString()
     message:    'Information about the violated rule',
     context:    'Optional details about why the rule was violated'
 }</code></pre>
-          <p>Any compile time errors will be thrown.</p>
 
           <h2 class="section_title" id="about">About</h2>
           <p>

@@ -266,6 +266,9 @@ tt {
   margin-bottom:1em;
 }
 
-.apiCall {
+.api_call {
+  margin-top:15px;
+  font-family:monospace;
   margin-bottom:8px;
+  font-weight:bold;
 }
