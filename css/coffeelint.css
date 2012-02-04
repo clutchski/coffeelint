@@ -85,8 +85,8 @@ body {
 }
 
 .report_row, .doc_row {
-  padding-left:125px;
-  padding-right:125px;
+  padding-left:75px;
+  padding-right:75px;
 }
 
 .doc_row {
@@ -100,13 +100,10 @@ p {
 }
 
 .section_title {
-  padding-top:30px;
+  margin-top:25px;
+  margin-bottom:15px;
   font-size:25px;
   font-family:monospace;
-}
-
-.section_body {
-  margin-top:15px;
 }
 
 a {
