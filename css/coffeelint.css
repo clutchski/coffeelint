@@ -84,7 +84,7 @@ body {
   border-radius:5px;
 }
 
-.diatribe_row {
+.section_row {
   font-family: "Helvetica Neue", "Lucida Grande", "Lucida Sans Unicode",
     Helvetica, Arial, sans-serif !important;
   padding-left:125px;
@@ -96,13 +96,13 @@ p {
   margin-bottom:10px;
 }
 
-.diatribe_title {
+.section_title {
   padding-top:30px;
   font-size:25px;
   font-family:monospace;
 }
 
-.diatribe_body {
+.section_body {
   margin-top:15px;
 }
 
