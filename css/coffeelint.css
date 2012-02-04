@@ -87,19 +87,17 @@ body {
 .diatribe_row {
   font-family: "Helvetica Neue", "Lucida Grande", "Lucida Sans Unicode",
     Helvetica, Arial, sans-serif !important;
-  padding-bottom:30px;
+  padding-left:125px;
+  padding-right:125px;
+  padding-bottom:20px;
 }
 
-.diatribe {
-  width:750px;
-  margin-left:auto;
-  margin-right:auto;
-  margin-top:25px;
-  padding-left: 20px;
-  padding-right: 20px;
+p {
+  margin-bottom:10px;
 }
 
 .diatribe_title {
+  padding-top:30px;
   font-size:25px;
   font-family:monospace;
 }
@@ -108,11 +106,7 @@ body {
   margin-top:15px;
 }
 
-.diatribe p {
-  margin-top:15px;
-}
-
-.diatribe a {
+a {
   color:#C00000;
 
 }
