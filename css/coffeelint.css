@@ -84,11 +84,14 @@ body {
   border-radius:5px;
 }
 
-.section_row {
-  font-family: "Helvetica Neue", "Lucida Grande", "Lucida Sans Unicode",
-    Helvetica, Arial, sans-serif !important;
+.report_row, .doc_row {
   padding-left:125px;
   padding-right:125px;
+}
+
+.doc_row {
+  font-family: "Helvetica Neue", "Lucida Grande", "Lucida Sans Unicode",
+    Helvetica, Arial, sans-serif !important;
   padding-bottom:20px;
 }
 
@@ -186,6 +189,7 @@ tt {
 
 .report_row {
   display:none;
+  padding-bottom:10px;
 }
 
 .report_row.success {

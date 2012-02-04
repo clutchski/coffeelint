@@ -16,8 +16,8 @@
 
 
     var update = function (title, status_, content) {
-        $('.report .diatribe_body').empty().append(content || "").show();
-        $('.report .diatribe_title').text(title);
+        $('.report .section_body').empty().append(content || "").show();
+        $('.report .section_title').text(title);
         $('.report_row').removeClass('success failure').addClass(status_).slideDown();
 
     };
