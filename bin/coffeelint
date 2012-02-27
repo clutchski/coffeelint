@@ -51,9 +51,9 @@ var read = function (path) {
 
 
 // Lint the given files with the given configuration and print a report
-// on the outcome. Return an exit code indicating the success of the
-// operation.
-var lint = function (paths, configPath, colorize) {
+// on the outcome. Return two booleans indicating whether we found errors and
+// warnings, respectively.
+var lint = function (paths, configPath, colorize, fileExtensions) {
 
     // Load the users configuration, if they've passed one.
     var config = (configPath) ? JSON.parse(read(configPath)) : {};
@@ -62,34 +62,53 @@ var lint = function (paths, configPath, colorize) {
     var foundWarning = false;
 
     // Lint and report on each script.
-    paths.forEach(function (path) {
-        var source = read(path);
-        coffeelint.lint(source, config).forEach(function (error) {
-            reportError(path, error);
-            foundError = foundError || error.level === 'error';
-            foundWarning = foundWarning || error.level === 'warn';
-        });
+    paths.forEach(function (filePath) {
+        var source;
+        var stats = fs.statSync(filePath);
+        var matchesExtension = false;
+        if (stats.isFile()) {
+            fileExtensions.forEach(function(extension) {
+                if (filePath.indexOf(extension, filePath.length - extension.length) !== -1) {
+                    matchesExtension = true;
+                }
+            });
+            if (matchesExtension) {
+                source = read(filePath);
+                coffeelint.lint(source, config).forEach(function (error) {
+                    reportError(filePath, error);
+                    foundError = foundError || error.level === 'error';
+                    foundWarning = foundWarning || error.level === 'warn';
+                });
+            }
+        } else if (stats.isDirectory()) {
+            fs.readdirSync(filePath).forEach(function (dirPath) {
+                var returns = lint([path.join(filePath, dirPath)], configPath, colorize, fileExtensions);
+                foundError = foundError || returns[0];
+                foundWarning = foundWarning || returns[1];
+            })
+        } else {
+            reportError(filePath, "Path does not appear to be a file or directory");
+        }
     });
 
-    // If we're good, print a success report.
-    if (!foundError && !foundWarning) {
-        reportSuccess('Lint free!', colorize);
-    }
-
-    // Return a non-zero return code if we've found an error.
-    return (foundError) ? 1 : 0;
+    // Return whether we've found errors or warnings
+    return [foundError, foundWarning];
 };
 
 
 // Declare command line options.
 var optimist = require('optimist')
     .usage('Usage: coffeelint [options] source [...]')
+    .wrap(80)
     .alias('f', 'file')
     .alias('h', 'help')
     .alias('v', 'version')
     .describe('f', 'Specify a custom configuration file.')
     .describe('h', 'Print help information.')
     .describe('v', 'Print current version number.')
+    .describe('filename', 'When parsing directories, only check filenames ' +
+        'with these comma separated extensions (default: .coffee)')
+    .default('filename', '.coffee')
     .describe('nocolor', "Don't colorize output.")
     .boolean('nocolor');
 
@@ -106,7 +125,17 @@ if (optimist.argv.v) {
     var paths = optimist.argv._;
     var configPath = optimist.argv.f;
     var colorize = !optimist.argv.nocolor;
-    var returnCode = lint(paths, configPath, colorize);
+    var fileExtensions = optimist.argv.filename.split(',');
+    var returns = lint(paths, configPath, colorize, fileExtensions);
+    var foundError = returns[0];
+    var foundWarning = returns[1];
+    var returnCode = (foundError) ? 1 : 0;
+
+    // If we're good, print a success report.
+    if (!foundError && !foundWarning) {
+        reportSuccess('Lint free!', colorize);
+    }
+
     process.exit(returnCode);
 }
 
