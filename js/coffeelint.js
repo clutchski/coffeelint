@@ -7,8 +7,9 @@ CoffeeLint is freely distributable under the MIT license.
 */
 
 (function() {
-  var CoffeeScript, ERROR, IGNORE, LexicalLinter, LineLinter, RULES, WARN, coffeelint, createError, defaults, extend, mergeDefaultConfig, regexes,
-    __slice = Array.prototype.slice;
+  var ASTLinter, CoffeeScript, ERROR, IGNORE, LexicalLinter, LineLinter, RULES, WARN, coffeelint, createError, defaults, extend, mergeDefaultConfig, regexes,
+    __slice = Array.prototype.slice,
+    __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   coffeelint = {};
 
@@ -20,7 +21,7 @@ CoffeeLint is freely distributable under the MIT license.
     CoffeeScript = this.CoffeeScript;
   }
 
-  coffeelint.VERSION = "0.2.0";
+  coffeelint.VERSION = "0.3.0";
 
   ERROR = 'error';
 
@@ -66,11 +67,20 @@ CoffeeLint is freely distributable under the MIT license.
     no_throwing_strings: {
       level: ERROR,
       message: 'Throwing strings is forbidden'
+    },
+    cyclomatic_complexity: {
+      value: 10,
+      level: IGNORE,
+      message: 'The cyclomatic complexity is too damn high'
+    },
+    no_backticks: {
+      level: ERROR,
+      message: 'Backticks are forbidden'
     }
   };
 
   regexes = {
-    trailingWhitespace: /\s+$/,
+    trailingWhitespace: /[^\s]+[\t ]+\r?$/,
     indentation: /\S/,
     camelCase: /^[A-Z][a-zA-Z\d]*$/,
     trailingSemicolon: /;$/
@@ -94,9 +104,18 @@ CoffeeLint is freely distributable under the MIT license.
   };
 
   createError = function(rule, attrs) {
+    var level;
     if (attrs == null) attrs = {};
-    attrs.rule = rule;
-    return defaults(attrs, RULES[rule]);
+    level = attrs.level;
+    if (level !== IGNORE && level !== WARN && level !== ERROR) {
+      throw new Error("unknown level " + level);
+    }
+    if (level === ERROR || level === WARN) {
+      attrs.rule = rule;
+      return defaults(attrs, RULES[rule]);
+    } else {
+      return null;
+    }
   };
 
   LineLinter = (function() {
@@ -128,9 +147,9 @@ CoffeeLint is freely distributable under the MIT license.
     };
 
     LineLinter.prototype.checkTabs = function() {
-      var indent;
-      indent = this.line.split(regexes.indentation)[0];
-      if (this.lineHasToken() && ~indent.indexOf('\t')) {
+      var indentation;
+      indentation = this.line.split(regexes.indentation)[0];
+      if (this.lineHasToken() && __indexOf.call(indentation, '\t') >= 0) {
         return this.createLineError('no_tabs');
       } else {
         return null;
@@ -169,17 +188,12 @@ CoffeeLint is freely distributable under the MIT license.
     };
 
     LineLinter.prototype.createLineError = function(rule) {
-      var attrs, level, _ref;
-      level = (_ref = this.config[rule]) != null ? _ref.level : void 0;
-      if (level !== IGNORE) {
-        attrs = {
-          lineNumber: this.lineNumber + 1,
-          level: level
-        };
-        return createError(rule, attrs);
-      } else {
-        return null;
-      }
+      var attrs, _ref;
+      attrs = {
+        lineNumber: this.lineNumber + 1,
+        level: (_ref = this.config[rule]) != null ? _ref.level : void 0
+      };
+      return createError(rule, attrs);
     };
 
     LineLinter.prototype.lineHasToken = function() {
@@ -203,6 +217,7 @@ CoffeeLint is freely distributable under the MIT license.
       this.i = 0;
       this.tokensByLine = {};
       this.arrayTokens = [];
+      this.lines = source.split('\n');
     }
 
     LexicalLinter.prototype.lint = function() {
@@ -233,14 +248,14 @@ CoffeeLint is freely distributable under the MIT license.
           return this.lintBrace(token);
         case "++":
         case "--":
-          return this.lintUnaryAddition(token);
-        case "--":
-          return this.lintUnaryAddition(token);
+          return this.lintIncrement(token);
         case "THROW":
           return this.lintThrow(token);
         case "[":
         case "]":
           return this.lintArray(token);
+        case "JS":
+          return this.lintJavascript(token);
         default:
           return null;
       }
@@ -263,6 +278,10 @@ CoffeeLint is freely distributable under the MIT license.
       }
     };
 
+    LexicalLinter.prototype.lintJavascript = function(token) {
+      return this.createLexError('no_backticks');
+    };
+
     LexicalLinter.prototype.lintThrow = function(token) {
       var n1, n2, nextIsString, _ref;
       _ref = [this.peek(), this.peek(2)], n1 = _ref[0], n2 = _ref[1];
@@ -270,7 +289,7 @@ CoffeeLint is freely distributable under the MIT license.
       if (nextIsString) return this.createLexError('no_throwing_strings');
     };
 
-    LexicalLinter.prototype.lintUnaryAddition = function(token) {
+    LexicalLinter.prototype.lintIncrement = function(token) {
       var attrs;
       attrs = {
         context: "found '" + token[0] + "'"
@@ -279,7 +298,7 @@ CoffeeLint is freely distributable under the MIT license.
     };
 
     LexicalLinter.prototype.lintIndentation = function(token) {
-      var context, expected, ignoreIndent, isArrayIndent, isInterpIndent, isMultiline, lineNumber, numIndents, previous, previousSymbol, type, _ref;
+      var context, expected, ignoreIndent, isArrayIndent, isInterpIndent, isMultiline, lineNumber, numIndents, previous, previousIndentation, previousLine, previousSymbol, type, _ref;
       type = token[0], numIndents = token[1], lineNumber = token[2];
       if (token.generated != null) return null;
       previous = this.peek(-2);
@@ -289,6 +308,11 @@ CoffeeLint is freely distributable under the MIT license.
       previousSymbol = (_ref = this.peek(-1)) != null ? _ref[0] : void 0;
       isMultiline = previousSymbol === '=' || previousSymbol === ',';
       ignoreIndent = isInterpIndent || isArrayIndent || isMultiline;
+      if (this.isChainedCall()) {
+        previousLine = this.lines[this.lineNumber - 1];
+        previousIndentation = previousLine.match(/^(\s*)/)[1].length;
+        numIndents -= previousIndentation;
+      }
       expected = this.config['indentation'].value;
       if (!ignoreIndent && numIndents !== expected) {
         context = ("Expected " + expected + " ") + ("got " + numIndents);
@@ -301,13 +325,17 @@ CoffeeLint is freely distributable under the MIT license.
     };
 
     LexicalLinter.prototype.lintClass = function(token) {
-      var attrs, className, lineNumber, offset, type, value, _ref, _ref2;
-      _ref = this.peek(), type = _ref[0], value = _ref[1], lineNumber = _ref[2];
+      var attrs, className, offset, _ref, _ref2, _ref3;
+      if ((token.newLine != null) || ((_ref = this.peek()[0]) === 'INDENT' || _ref === 'EXTENDS')) {
+        return null;
+      }
       className = null;
       offset = 1;
       while (!className) {
         if (((_ref2 = this.peek(offset + 1)) != null ? _ref2[0] : void 0) === '.') {
           offset += 2;
+        } else if (((_ref3 = this.peek(offset)) != null ? _ref3[0] : void 0) === '@') {
+          offset += 1;
         } else {
           className = this.peek(offset)[1];
         }
@@ -323,16 +351,10 @@ CoffeeLint is freely distributable under the MIT license.
     };
 
     LexicalLinter.prototype.createLexError = function(rule, attrs) {
-      var level, _ref;
       if (attrs == null) attrs = {};
-      level = (_ref = this.config[rule]) != null ? _ref.level : void 0;
-      if (level !== IGNORE) {
-        attrs.lineNumber = this.lineNumber + 1;
-        attrs.level = level;
-        return createError(rule, attrs);
-      } else {
-        return null;
-      }
+      attrs.lineNumber = this.lineNumber + 1;
+      attrs.level = this.config[rule].level;
+      return createError(rule, attrs);
     };
 
     LexicalLinter.prototype.peek = function(n) {
@@ -344,7 +366,74 @@ CoffeeLint is freely distributable under the MIT license.
       return this.arrayTokens.length > 0;
     };
 
+    LexicalLinter.prototype.isChainedCall = function() {
+      var i, lastNewLineIndex, lines, t, token, tokens;
+      lines = (function() {
+        var _len, _ref, _results;
+        _ref = this.tokens.slice(0, this.i + 1 || 9e9);
+        _results = [];
+        for (i = 0, _len = _ref.length; i < _len; i++) {
+          token = _ref[i];
+          if (token.newLine != null) _results.push(i);
+        }
+        return _results;
+      }).call(this);
+      lastNewLineIndex = lines ? lines[lines.length - 2] : null;
+      if (!(lastNewLineIndex != null)) return false;
+      tokens = [this.tokens[lastNewLineIndex], this.tokens[lastNewLineIndex + 1]];
+      return !!((function() {
+        var _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = tokens.length; _i < _len; _i++) {
+          t = tokens[_i];
+          if (t && t[0] === '.') _results.push(t);
+        }
+        return _results;
+      })()).length;
+    };
+
     return LexicalLinter;
+
+  })();
+
+  ASTLinter = (function() {
+
+    function ASTLinter(source, config) {
+      this.source = source;
+      this.config = config;
+      this.node = CoffeeScript.nodes(source);
+      this.errors = [];
+    }
+
+    ASTLinter.prototype.lint = function() {
+      this.lintNode(this.node);
+      return this.errors;
+    };
+
+    ASTLinter.prototype.lintNode = function(node) {
+      var attrs, complexity, error, name, rule, _ref,
+        _this = this;
+      name = node.constructor.name;
+      complexity = name === 'If' || name === 'While' || name === 'For' || name === 'Try' ? 1 : name === 'Op' && ((_ref = node.operator) === '&&' || _ref === '||') ? 1 : name === 'Switch' ? node.cases.length : 0;
+      node.eachChild(function(childNode) {
+        if (!childNode) return false;
+        complexity += _this.lintNode(childNode);
+        return true;
+      });
+      rule = this.config.cyclomatic_complexity;
+      if (name === 'Code' && complexity >= rule.value) {
+        attrs = {
+          context: complexity + 1,
+          level: rule.level,
+          line: 0
+        };
+        error = createError('cyclomatic_complexity', attrs);
+        if (error) this.errors.push(error);
+      }
+      return complexity;
+    };
+
+    return ASTLinter;
 
   })();
 
@@ -359,7 +448,7 @@ CoffeeLint is freely distributable under the MIT license.
   };
 
   coffeelint.lint = function(source, userConfig) {
-    var config, errors, lexErrors, lexicalLinter, lineErrors, lineLinter, tokensByLine;
+    var astErrors, config, errors, lexErrors, lexicalLinter, lineErrors, lineLinter, tokensByLine;
     if (userConfig == null) userConfig = {};
     config = mergeDefaultConfig(userConfig);
     lexicalLinter = new LexicalLinter(source, config);
@@ -367,7 +456,8 @@ CoffeeLint is freely distributable under the MIT license.
     tokensByLine = lexicalLinter.tokensByLine;
     lineLinter = new LineLinter(source, config, tokensByLine);
     lineErrors = lineLinter.lint();
-    errors = lexErrors.concat(lineErrors);
+    astErrors = new ASTLinter(source, config).lint();
+    errors = lexErrors.concat(lineErrors, astErrors);
     errors.sort(function(a, b) {
       return a.lineNumber - b.lineNumber;
     });
