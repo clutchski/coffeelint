@@ -8,7 +8,7 @@ var thisdir = path.dirname(fs.realpathSync(__filename));
 var coffeelint = require(path.join(thisdir, '..', 'lib', 'coffeelint'));
 
 
-// Stylize the given message
+// Stylize the given message.
 var stylize = function (message, styles) {
 
     // Borrowed this style map from vowsjs.org
@@ -33,7 +33,7 @@ var reportError = function (path, error, colorize) {
         error.message
     ];
     if (error.context) {
-        fields.push(error.context)
+        fields.push(error.context);
     }
     console.warn(fields.join(" : "));
 };
@@ -49,37 +49,37 @@ var read = function (path) {
     return fs.readFileSync(realPath).toString();
 };
 
-
-// Lint the given files with the given configuration and print a report
-// on the outcome. Return an exit code indicating the success of the
-// operation.
-var lint = function (paths, configPath, colorize) {
-
-    // Load the users configuration, if they've passed one.
-    var config = (configPath) ? JSON.parse(read(configPath)) : {};
-
-    var foundError = false;
-    var foundWarning = false;
-
-    // Lint and report on each script.
-    paths.forEach(function (path) {
-        var source = read(path);
-        coffeelint.lint(source, config).forEach(function (error) {
-            reportError(path, error);
-            foundError = foundError || error.level === 'error';
-            foundWarning = foundWarning || error.level === 'warn';
-        });
+//Lint source, reporting any errors and adjusting messages as necessary
+var lintSource = function(source, path, config, colorize){
+    var messages = {foundError: false, foundWarning: false};
+    coffeelint.lint(source, config).forEach(function(error){
+        reportError(path, error);
+        messages.foundError = messages.foundError || error.level === 'error';
+        messages.foundWarning = messages.foundWarning || error.level === 'warn';
     });
-
-    // If we're good, print a success report.
-    if (!foundError && !foundWarning) {
-        reportSuccess('Lint free!', colorize);
-    }
-
-    // Return a non-zero return code if we've found an error.
-    return (foundError) ? 1 : 0;
+    return messages;
 };
 
+//Lint the source of each given path.
+var lintPaths = function(paths, config, colorize){
+    var messages = {foundError: false, foundWarning: false};
+    paths.forEach(function(path){
+        var source = read(path);
+        result_messages = lintSource(source, path, config, colorize);
+        messages.foundError = messages.foundError || result_messages.foundError;
+        messages.foundWarning = messages.foundWarning || result_messages.foundWarning;
+    });
+    return messages;
+};
+
+// Returns an exit code indicating the success of the operation.
+var exitLint = function(messages){
+    // If we're good, print a success report.
+    if (!messages.foundError && !messages.foundWarning) {
+        reportSuccess('Lint free!', colorize);
+    }
+    process.exit(messages.foundError ? 1 : 0);
+};
 
 // Declare command line options.
 var optimist = require('optimist')
@@ -90,6 +90,9 @@ var optimist = require('optimist')
     .describe('f', 'Specify a custom configuration file.')
     .describe('h', 'Print help information.')
     .describe('v', 'Print current version number.')
+    .describe('s', 'Use stdin instead of a file')
+    .boolean('s')
+    .alias('s','stdin')
     .describe('nocolor', "Don't colorize output.")
     .boolean('nocolor');
 
@@ -99,15 +102,36 @@ if (optimist.argv.v) {
 } else if (optimist.argv.h) {
     optimist.showHelp();
     process.exit(0);
-} else if (optimist.argv._.length < 1) {
+} else if (optimist.argv._.length < 1 && !optimist.argv.stdin) {
     optimist.showHelp();
     process.exit(1);
 } else {
-    var paths = optimist.argv._;
-    var configPath = optimist.argv.f;
+    // Lint the given files with the given configuration and print a report.
+    data = '';
+    // Load the users configuration, if they've passed one.
+    var config = (optimist.argv.f) ? JSON.parse(read(optimist.argv.f)) : {};
     var colorize = !optimist.argv.nocolor;
-    var returnCode = lint(paths, configPath, colorize);
-    process.exit(returnCode);
+    var configPath = optimist.argv.f;
+    
+    if (optimist.argv.stdin){
+       process.openStdin()
+            .on('data', function(buffer){
+                if(buffer){
+                    data += buffer.toString();
+                }
+            })
+            .on('end', function(){
+                // Lint and report on the source.
+                var messages = lintSource(data, '', config, colorize);
+                exitLint(messages);
+            });
+
+    }else{
+        // Lint and report on each script.
+        var messages = lintPaths(optimist.argv._, config, colorize);
+        exitLint(messages);
+    }
+
 }
 
 // vim: filetype=javascript
