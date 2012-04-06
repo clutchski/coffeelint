@@ -42,7 +42,7 @@ body {
 }
 
 .header_links {
-  font-size:14px;
+  font-size:13px;
   position:relative;
   top:10px;
 }
@@ -55,7 +55,7 @@ body {
 .header_links a {
   color: #eee;
   text-decoration:none;
-  margin-right:20px;
+  margin-right:10px;
   padding:5px;
 }
 
@@ -100,7 +100,7 @@ p {
 }
 
 .section_title {
-  margin-top:25px;
+  margin-top:35px;
   margin-bottom:15px;
   font-size:25px;
   font-family:monospace;
