@@ -175,4 +175,47 @@ vows.describe('commandline').addBatch({
                 assert.isNotNull(error)
                 assert.include(stdout.toLowerCase(), 'trailing whitespace')
 
+    'with default reporter':
+
+        topic : () ->
+            args = [
+                "test/fixtures/clean.coffee"
+            ]
+
+            commandline args, this.callback
+            return undefined
+
+        'shows clean files' : (error, stdout, stderr) ->
+            assert.isNull(error)
+            assert.isTrue(stdout.toLowerCase().match(/clean.coffee/)?)
+
+    'with csv reporter':
+
+        topic : () ->
+            args = [
+                "--reporter csv"
+                "test/fixtures/fourspaces.coffee"
+            ]
+
+            commandline args, this.callback
+            return undefined
+
+        'works' : (error, stdout, stderr) ->
+            assert.isTrue(stdout.toLowerCase().match(/,/)?)
+
+    'with badnews reporter':
+
+        topic : () ->
+            args = [
+                "--reporter badnews"
+                "test/fixtures/clean.coffee"
+            ]
+
+            commandline args, this.callback
+            return undefined
+
+        'does not show clean files' : (error, stdout, stderr) ->
+            assert.isNull(error)
+            assert.isFalse(stdout.toLowerCase().match(/clean.coffee/)?)
+
 }).export(module)

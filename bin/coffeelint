@@ -10,7 +10,7 @@ CoffeeLint is freely distributable under the MIT license.
 
 
 (function() {
-  var CSVReporter, ErrorReport, Reporter, coffeelint, config, configPath, data, errorReport, findCoffeeScripts, fs, glob, lintFiles, lintSource, optimist, options, path, paths, read, reportAndExit, scripts, stdin, thisdir,
+  var BadNewsReporter, CSVReporter, ErrorReport, Reporter, coffeelint, config, configPath, data, errorReport, findCoffeeScripts, fs, glob, lintFiles, lintSource, optimist, options, path, paths, read, reportAndExit, reporters, scripts, stdin, thisdir,
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -202,6 +202,40 @@ CoffeeLint is freely distributable under the MIT license.
 
   })();
 
+  BadNewsReporter = (function(_super) {
+
+    __extends(BadNewsReporter, _super);
+
+    BadNewsReporter.name = 'BadNewsReporter';
+
+    function BadNewsReporter() {
+      return BadNewsReporter.__super__.constructor.apply(this, arguments);
+    }
+
+    BadNewsReporter.prototype.publish = function() {
+      var errors, notOk, path, summary, _ref,
+        _this = this;
+      this.print("");
+      notOk = function(path) {
+        return _this.errorReport.pathHasError(path) || _this.errorReport.pathHasWarning(path);
+      };
+      _ref = this.errorReport.paths;
+      for (path in _ref) {
+        errors = _ref[path];
+        if (notOk(path)) {
+          this.reportPath(path, errors);
+        }
+      }
+      summary = this.errorReport.getSummary();
+      this.reportSummary(summary);
+      this.print("");
+      return this;
+    };
+
+    return BadNewsReporter;
+
+  })(Reporter);
+
   CSVReporter = (function(_super) {
 
     __extends(CSVReporter, _super);
@@ -256,13 +290,20 @@ CoffeeLint is freely distributable under the MIT license.
 
   reportAndExit = function(errorReport, options) {
     var ReporterClass, reporter;
-    ReporterClass = options.argv.csv ? CSVReporter : Reporter;
+    reporter = options.argv.reporter || 'default';
+    ReporterClass = reporters[reporter];
     reporter = new ReporterClass(errorReport);
     reporter.publish();
     return process.exit(errorReport.getExitCode());
   };
 
-  options = optimist.usage("Usage: coffeelint [options] source [...]").alias("f", "file").alias("h", "help").alias("v", "version").alias("s", "stdin").describe("f", "Specify a custom configuration file.").describe("h", "Print help information.").describe("v", "Print current version number.").describe("r", "Recursively lint .coffee files in subdirectories.").describe("csv", "Use the csv reporter.").describe("s", "Lint the source from stdin").boolean("csv").boolean("r").boolean("s");
+  reporters = {
+    "default": Reporter,
+    csv: CSVReporter,
+    badnews: BadNewsReporter
+  };
+
+  options = optimist.usage("Usage: coffeelint [options] source [...]").alias("f", "file").alias("h", "help").alias("v", "version").alias("s", "stdin").describe("f", "Specify a custom configuration file.").describe("h", "Print help information.").describe("v", "Print current version number.").describe("r", "Recursively lint .coffee files in subdirectories.").describe("reporter", "Use the named reporter.").describe("s", "Lint the source from stdin").boolean("r").boolean("s");
 
   if (options.argv.v) {
     console.log(coffeelint.VERSION);

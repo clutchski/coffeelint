@@ -129,6 +129,19 @@ class Reporter
     plural : (str, count) ->
         if count == 1 then str else "#{str}s"
 
+class BadNewsReporter extends Reporter
+
+    publish : () ->
+        @print ""
+        notOk = (path) =>
+            @errorReport.pathHasError(path) or @errorReport.pathHasWarning(path)
+        for path, errors of @errorReport.paths when notOk path
+            @reportPath(path, errors)
+        summary = @errorReport.getSummary()
+        @reportSummary(summary)
+        @print ""
+        return this
+
 class CSVReporter extends Reporter
 
     publish : () ->
@@ -153,10 +166,16 @@ lintSource = (source, config) ->
 
 # Publish the error report and exit with the appropriate status.
 reportAndExit = (errorReport, options) ->
-    ReporterClass = if options.argv.csv then CSVReporter else Reporter
+    reporter = options.argv.reporter or 'default'
+    ReporterClass = reporters[reporter]
     reporter = new ReporterClass(errorReport)
     reporter.publish()
     process.exit(errorReport.getExitCode())
+
+reporters =
+    default: Reporter
+    csv:     CSVReporter
+    badnews: BadNewsReporter
 
 # Declare command line options.
 options = optimist
@@ -169,9 +188,8 @@ options = optimist
             .describe("h", "Print help information.")
             .describe("v", "Print current version number.")
             .describe("r", "Recursively lint .coffee files in subdirectories.")
-            .describe("csv", "Use the csv reporter.")
+            .describe("reporter", "Use the named reporter.")
             .describe("s", "Lint the source from stdin")
-            .boolean("csv")
             .boolean("r")
             .boolean("s")
 
