@@ -303,7 +303,7 @@ CoffeeLint is freely distributable under the MIT license.
     badnews: BadNewsReporter
   };
 
-  options = optimist.usage("Usage: coffeelint [options] source [...]").alias("f", "file").alias("h", "help").alias("v", "version").alias("s", "stdin").describe("f", "Specify a custom configuration file.").describe("h", "Print help information.").describe("v", "Print current version number.").describe("r", "Recursively lint .coffee files in subdirectories.").describe("reporter", "Use the named reporter.").describe("s", "Lint the source from stdin").boolean("r").boolean("s");
+  options = optimist.usage("Usage: coffeelint [options] source [...]").alias("f", "file").alias("h", "help").alias("v", "version").alias("s", "stdin").describe("f", "Specify a custom configuration file.").describe("h", "Print help information.").describe("v", "Print current version number.").describe("r", "Recursively lint .coffee files in subdirectories.").describe("reporter", "Use the named reporter ('default|badnews|csv').").describe("s", "Lint the source from stdin").boolean("r").boolean("s");
 
   if (options.argv.v) {
     console.log(coffeelint.VERSION);
@@ -312,6 +312,9 @@ CoffeeLint is freely distributable under the MIT license.
     options.showHelp();
     process.exit(0);
   } else if (options.argv._.length < 1 && !options.argv.s) {
+    options.showHelp();
+    process.exit(1);
+  } else if (options.argv.reporter && !reporters[options.argv.reporter]) {
     options.showHelp();
     process.exit(1);
   } else {

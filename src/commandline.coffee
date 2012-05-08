@@ -188,7 +188,7 @@ options = optimist
             .describe("h", "Print help information.")
             .describe("v", "Print current version number.")
             .describe("r", "Recursively lint .coffee files in subdirectories.")
-            .describe("reporter", "Use the named reporter.")
+            .describe("reporter", "Use the named reporter ('default|badnews|csv').")
             .describe("s", "Lint the source from stdin")
             .boolean("r")
             .boolean("s")
@@ -200,6 +200,9 @@ else if options.argv.h
     options.showHelp()
     process.exit(0)
 else if options.argv._.length < 1 and not options.argv.s
+    options.showHelp()
+    process.exit(1)
+else if options.argv.reporter and not reporters[options.argv.reporter]
     options.showHelp()
     process.exit(1)
 else
