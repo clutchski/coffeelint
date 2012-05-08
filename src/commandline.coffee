@@ -188,7 +188,7 @@ options = optimist
             .describe("h", "Print help information.")
             .describe("v", "Print current version number.")
             .describe("r", "Recursively lint .coffee files in subdirectories.")
-            .describe("reporter", "Use the named reporter ('default|badnews|csv').")
+            .describe("reporter", "Use the named reporter ('badnews|csv').")
             .describe("s", "Lint the source from stdin")
             .boolean("r")
             .boolean("s")
