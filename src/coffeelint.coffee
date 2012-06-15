@@ -95,6 +95,10 @@ RULES =
         level : IGNORE
         message : 'Operators must be spaced properly'
 
+    no_implicit_return :
+        level : IGNORE
+        message : 'Implicit returns are forbidden'
+
 
 # Some repeatedly used regular expressions.
 regexes =
@@ -528,8 +532,26 @@ class ASTLinter
             error = createError 'cyclomatic_complexity', attrs
             @errors.push error if error
 
+        if name == 'Assign' and node.value.constructor.name == 'Code'
+            @lintImplicitReturn(node)
+
         # Return the complexity for the benefit of parent nodes.
         return complexity
+
+    # Check for an implicit return, but only if it's not a constructor.
+    lintImplicitReturn : (node) ->
+        rule = @config.no_implicit_return
+        funcname = node.variable?.base?.value
+        if node.context == 'object' and funcname == 'constructor'
+            return
+        func = node.value.body.expressions
+        if func.length and not func[func.length - 1].expression?
+            attrs = {
+                context: funcname
+                level: rule.level
+            }
+            error = createError 'no_implicit_return', attrs
+            @errors.push error if error
 
 
 # Merge default and user configuration.
