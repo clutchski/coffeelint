@@ -533,13 +533,13 @@ class ASTLinter
             @errors.push error if error
 
         if name == 'Assign' and node.value.constructor.name == 'Code'
-            @lintImplicitReturn(node)
+            @lintFunctionNode(node)
 
         # Return the complexity for the benefit of parent nodes.
         return complexity
 
     # Check for an implicit return, but only if it's not a constructor.
-    lintImplicitReturn : (node) ->
+    lintFunctionNode : (node) ->
         rule = @config.no_implicit_return
         funcname = node.variable?.base?.value
         if node.context == 'object' and funcname == 'constructor'
