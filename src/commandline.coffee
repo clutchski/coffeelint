@@ -24,9 +24,7 @@ findCoffeeScripts = (paths) ->
     files = []
     for p in paths
         if fs.statSync(p).isDirectory()
-            globPath = path.join(p, "**", "*.coffee")
-            globPath = globPath.replace(/\\/g, "/")
-            files = files.concat(glob.sync(globPath))
+            files = files.concat(glob.sync(path.join(p, "**", "*.coffee")))
         else
             files.push(p)
     return files
