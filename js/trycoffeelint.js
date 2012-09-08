@@ -60,7 +60,7 @@
     };
 
     $(document).ready(function () {
-        $('.editor').focus();
+        $('.editor').focus().keyup(runLinter);
         $('.run').click(runLinter);
     });
 
