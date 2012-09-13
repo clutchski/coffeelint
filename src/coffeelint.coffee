@@ -48,9 +48,9 @@ RULES =
         level : ERROR
         message : 'Line exceeds maximum allowed length'
 
-    camel_case_classes :
+    pascal_case_classes :
         level : ERROR
-        message : 'Class names should be camel cased'
+        message : 'Class names should be pascal cased'
 
     indentation :
         value : 2
@@ -104,7 +104,7 @@ RULES =
 regexes =
     trailingWhitespace : /[^\s]+[\t ]+\r?$/
     indentation: /\S/
-    camelCase: /^[A-Z][a-zA-Z\d]*$/
+    pascalCase: /^[A-Z][a-zA-Z\d]*$/
     trailingSemicolon: /;$/
     configStatement: /coffeelint:\s*(disable|enable)(?:=([\w\s,]*))?/
 
@@ -475,9 +475,9 @@ class LexicalLinter
                 className = @peek(offset)[1]
 
         # Now check for the error.
-        if not regexes.camelCase.test(className)
+        if not regexes.pascalCase.test(className)
             attrs = {context: "class name: #{className}"}
-            @createLexError('camel_case_classes', attrs)
+            @createLexError('pascal_case_classes', attrs)
         else
             null
 
@@ -587,11 +587,31 @@ class ASTLinter
 
 
 
-# Merge default and user configuration.
+# Merge default and user configuration and perform deprication checks.
 mergeDefaultConfig = (userConfig) ->
     config = {}
+    
+    # Deprication checks
+    migration_assistant =
+        camel_case_classes: (cfg) ->
+            userConfig['pascal_case_classes'] = cfg
+            return ['camel_case_classes','pascal_case_classes']
+    
+    migrate = (cfg, ast) ->
+        for rule, rest of ast
+            continue unless rule of cfg
+            if typeof rest is 'function'
+                [a, b] = rest(cfg[rule])
+                console.log("#{a} is depricated, see #{b}.")
+            else
+                migrate(cfg[rule], ast[rule])
+    
+    migrate(userConfig, migration_assistant)
+    
+    # Merge with default
     for rule, ruleConfig of RULES
         config[rule] = defaults(userConfig[rule], ruleConfig)
+    
     return config
 
 

@@ -6,7 +6,7 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 
 vows.describe('identifiers').addBatch({
 
-    'Camel cased class names' :
+    'Pascal cased class names' :
 
         topic : """
             class Animal
@@ -30,7 +30,7 @@ vows.describe('identifiers').addBatch({
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
 
-    'Non camel case class names' :
+    'Non pascal case class names' :
 
         topic : """
             class animal
@@ -47,13 +47,13 @@ vows.describe('identifiers').addBatch({
             assert.lengthOf(errors, 4)
             error = errors[0]
             assert.equal(error.lineNumber, 1)
-            assert.equal(error.message,  'Class names should be camel cased')
+            assert.equal(error.message,  'Class names should be pascal cased')
             assert.equal(error.context,  'class name: animal')
-            assert.equal(error.rule,  'camel_case_classes')
+            assert.equal(error.rule,  'pascal_case_classes')
 
         'can be permitted' : (source) ->
             config =
-                camel_case_classes : {level : 'ignore'}
+                pascal_case_classes : {level : 'ignore'}
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 
