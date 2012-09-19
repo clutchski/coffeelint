@@ -137,29 +137,32 @@ class Reporter
 class CSVReporter extends Reporter
 
     publish : () ->
+        lines = []
         for path, errors of @errorReport.paths
             for e in errors
                 f = [path, e.lineNumber, e.level, e.message]
-                @print f.join(",")
+                lines.push f.join(",")
+        @print lines.join("\n")
 
 class JSLintReporter extends Reporter
 
     publish : () ->
-        @print "<?xml version=\"1.0\" encoding=\"utf-8\"?><jslint>"
+        string_output = "<?xml version=\"1.0\" encoding=\"utf-8\"?><jslint>"
 
         for path, errors of @errorReport.paths
             if errors.length
-                @print "<file name=\"#{path}\">"
+                string_output += "<file name=\"#{path}\">"
 
                 for e in errors
-                    @print """
+                    string_output += """
                     <issue line="#{e.lineNumber}"
                             reason="[#{@escape(e.level)}] #{@escape(e.message)}"
                             evidence="#{@escape(e.context)}"/>
                     """
-                @print "</file>"
+                string_output += "</file>"
 
-        @print "</jslint>"
+        string_output += "</jslint>"
+        @print string_output
 
     escape : (msg) ->
         # Force msg to be a String
