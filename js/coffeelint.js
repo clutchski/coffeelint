@@ -23,7 +23,7 @@ CoffeeLint is freely distributable under the MIT license.
     CoffeeScript = this.CoffeeScript;
   }
 
-  coffeelint.VERSION = "0.5.1";
+  coffeelint.VERSION = "0.5.2";
 
   ERROR = 'error';
 
@@ -102,7 +102,7 @@ CoffeeLint is freely distributable under the MIT license.
     trailingWhitespace: /[^\s]+[\t ]+\r?$/,
     indentation: /\S/,
     camelCase: /^[A-Z][a-zA-Z\d]*$/,
-    trailingSemicolon: /;$/,
+    trailingSemicolon: /;\r?$/,
     configStatement: /coffeelint:\s*(disable|enable)(?:=([\w\s,]*))?/
   };
 
