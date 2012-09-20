@@ -43,6 +43,10 @@ RULES =
         level : ERROR
         message : 'Line ends with trailing whitespace'
 
+    space_before_colon :
+        level : ERROR
+        message : 'Colon should not be preceeded by space'
+
     max_line_length :
         value: 80
         level : ERROR
@@ -103,6 +107,7 @@ RULES =
 # Some repeatedly used regular expressions.
 regexes =
     trailingWhitespace : /[^\s]+[\t ]+\r?$/
+    spaceBeforeColon : /\s:/
     indentation: /\S/
     camelCase: /^[A-Z][a-zA-Z\d]*$/
     trailingSemicolon: /;\r?$/
@@ -165,6 +170,7 @@ class LineLinter
     lintLine : () ->
         return @checkTabs() or
                @checkTrailingWhitespace() or
+               @checkSpaceBeforeColon() or
                @checkLineLength() or
                @checkTrailingSemicolon() or
                @checkLineEndings() or
@@ -184,6 +190,12 @@ class LineLinter
     checkTrailingWhitespace : () ->
         if regexes.trailingWhitespace.test(@line)
             @createLineError('no_trailing_whitespace')
+        else
+            null
+
+    checkSpaceBeforeColon : () ->
+        if regexes.spaceBeforeColon.test(@line)
+            @createLineError('space_before_colon')
         else
             null
 
