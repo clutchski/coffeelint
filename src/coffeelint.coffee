@@ -55,6 +55,7 @@ RULES =
     indentation :
         value : 2
         level : ERROR
+        strict : true
         message : 'Line contains inconsistent indentation'
 
     no_implicit_braces :
@@ -414,6 +415,18 @@ class LexicalLinter
 
         return null if token.generated?
 
+        # Only check that the spacing is a multiple of the indentation
+        # value, when in "non strict" mode. This is useful for bypassing
+        # coffeelint indentation terseness.
+        expected = @config['indentation'].value
+        if not @config['indentation'].strict
+            if numIndents % expected is 0
+                null
+            else
+                context = "Expected multiple of #{expected} " +
+                          "got #{numIndents}"
+                @createLexError('indentation', {context})
+
         # HACK: CoffeeScript's lexer insert indentation in string
         # interpolations that start with spaces e.g. "#{ 123 }"
         # so ignore such cases. Are there other times an indentation
@@ -446,7 +459,6 @@ class LexicalLinter
             numIndents -= previousIndentation
 
         # Now check the indentation.
-        expected = @config['indentation'].value
         if not ignoreIndent and numIndents != expected
             context = "Expected #{expected} " +
                       "got #{numIndents}"
