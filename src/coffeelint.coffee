@@ -420,7 +420,7 @@ class LexicalLinter
         # coffeelint indentation terseness.
         expected = @config['indentation'].value
         if not @config['indentation'].strict
-            if numIndents % expected is 0
+            return if numIndents % expected is 0
                 null
             else
                 context = "Expected multiple of #{expected} " +
