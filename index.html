@@ -284,7 +284,13 @@ throw getSomeString()
   line endings. This rule is disabled by default.
                   </td>
                 </tr>
-
+                <tr>
+                  <td class="rule">no_stand_alone_at</td>
+                  <td class="description">
+  This rule checks that no stand alone @ are in use, they are discouraged.
+  Further information in CoffeScript issue <a href="https://github.com/jashkenas/coffee-script/issues/1601">#1601</a>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </p>
@@ -325,6 +331,8 @@ throw getSomeString()
         <a href="https://github.com/kchmck/vim-coffee-script">vim-coffee-script</a>
                 by Mick Koch. </li>
               <li>
+                <a href="https://github.com/purcell/flymake-coffee">flymake-coffee</a>, en emacs flymake plugin by Steve Purcell.
+              <li>
         <a href="https://github.com/ajkavanagh/coffeelintnode">CoffeeLintNode</a>,
         an emacs plugin, by Alex Kavanagh.</li>
               <li><a href="https://github.com/ilkosta/coffeelint-brunch">CoffeeLint-brunch</a>
@@ -359,6 +367,17 @@ throw getSomeString()
           </p>
 
           <h2 class="section_title" id="changelog">Change Log</h2>
+
+          <div>
+            <h3 class="changelog_header">dev</h3>
+            <small class="changelog_date">- <a
+            href="#">unreleased<a></a></small>
+          <ul class="changelog_history">
+            <li>Added <tt>no_stand_alone_at</tt> rule.</li>
+            <li>Fixed correctly reporting line numbers of compilation errors after line 10.</li>
+            <li>Fixed incomplete results output.</li>
+          </ul>
+          </div>
 
           <div>
             <h3 class="changelog_header">0.5.2</h3>
