@@ -95,6 +95,11 @@ RULES =
         level : IGNORE
         message : 'Operators must be spaced properly'
 
+    newlines_before_top_level_classes :
+        value: 2
+        level: WARN
+        message : 'Wrong count of newlines before a top level class'
+
     newlines_after_classes :
         value : 3
         level : IGNORE
@@ -192,7 +197,8 @@ class LineLinter
                @checkTrailingSemicolon() or
                @checkLineEndings() or
                @checkComments() or
-               @checkNewlinesAfterClasses()
+               @checkNewlinesAfterClasses() or
+               @checkNewlinesBeforeTopLevelClasses()
 
     checkTabs : () ->
         # Only check lines that have compiled tokens. This helps
@@ -258,6 +264,15 @@ class LineLinter
                 for r in result[2].split(',')
                     rules.push r.replace(/^\s+|\s+$/g, "")
             block_config[cmd][@lineNumber] = rules
+        return null
+
+    checkNewlinesBeforeTopLevelClasses : () ->
+        rule = 'newlines_before_top_level_classes'
+        newlines = @config[rule].value
+        if @lineHasToken 'CLASS'
+            if @lineHasToken @lineNumber, @lineNumber - 1
+                return @createLineError(rule)
+
         return null
 
     checkNewlinesAfterClasses : () ->
