@@ -96,8 +96,8 @@ RULES =
         message : 'Operators must be spaced properly'
 
     newlines_before_top_level_classes :
-        value: 2
-        level: WARN
+        value: 3
+        level: IGNORE
         message : 'Wrong count of newlines before a top level class'
 
     newlines_after_classes :
