@@ -104,6 +104,10 @@ RULES =
         level : IGNORE
         message : '@ must not be used stand alone'
 
+    no_eof_newline :
+        level : IGNORE
+        message : 'No newline at end of file'
+
     coffeescript_error :
         level : ERROR
         message : '' # The default coffeescript error is fine.
@@ -618,7 +622,21 @@ class ASTLinter
             @errors.push @_parseCoffeeScriptError(coffeeError)
             return @errors
         @lintNode(@node)
+        @checkEofNewlines()
         @errors
+
+    # github always detect "No newline at end of file". Coffelint should detect
+    # that on demand
+    checkEofNewlines : () ->
+        rule = 'no_eof_newline'
+        unless @source.substr(-1) is '\n'
+            attrs =
+                message: @config[rule]?.message
+                level: @config[rule]?.level
+            error = createError rule, attrs
+            @errors.push error if error
+        else
+            null
 
     # Lint the AST node and return it's cyclomatic complexity.
     lintNode : (node) ->
