@@ -37,6 +37,15 @@ vows.describe('indent').addBatch({
             error = errors[0]
             assert.equal(error.lineNumber, 2)
 
+        'can be not strict' : (source) ->
+            config =
+                indentation:
+                    level: 'error'
+                    value: 2
+                    strict: false
+            errors = coffeelint.lint(source, config)
+            assert.equal(errors.length, 0)
+
         'is optional' : (source) ->
             config =
                 indentation:

@@ -18,7 +18,8 @@
 
   "indentation" : {
     "value" : 2,
-    "level" : "error"
+    "level" : "error",
+    "strict" : true
   },
 
   "no_implicit_braces" : {
