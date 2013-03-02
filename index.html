@@ -225,7 +225,21 @@ myFunction(a, b, c)
     CoffeeScript.
                   </td>
                 </tr>
+                <tr>
+                  <td class="rule">no_empty_param_list</td>
+                  <td class="description">
+    This rule prohibits empty parameter lists in function definitions.
+<pre>
+<code># The empty parameter list in here is unnecessary:
+myFunction = () -&gt;
 
+# We might favor this instead:
+myFunction = -&gt;
+</code>
+</pre>
+    Empty parameter lists are permitted by default.
+                  </td>
+                </tr>
                 <tr>
                   <td class="rule">no_tabs</td>
                   <td class="description">
@@ -367,6 +381,15 @@ throw getSomeString()
           </p>
 
           <h2 class="section_title" id="changelog">Change Log</h2>
+
+          <div>
+            <h3 class="changelog_header">0.5.5</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v0.5.4...v0.5.5">2013.03.02<a></a></small>
+          <ul class="changelog_history">
+            <li>Added <tt>no_empty_param_list</tt> rule.</li>
+          </ul>
+          </div>
 
           <div>
             <h3 class="changelog_header">0.5.4</h3>
