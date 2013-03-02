@@ -272,9 +272,9 @@ class LineLinter
 
         if not @context.class.inClass and
                 @context.class.lastUnemptyLineInClass? and
-                ((@lineNumber - 1) - @context.class.lastUnemptyLineInClass) isnt
+                (@lineNumber - @context.class.lastUnemptyLineInClass) isnt
                 ending
-            got = (@lineNumber - 1) - @context.class.lastUnemptyLineInClass
+            got = @lineNumber - @context.class.lastUnemptyLineInClass
             return @createLineError( rule, {
                 context: "Expected #{ending} got #{got}"
             } )
@@ -359,7 +359,8 @@ class LexicalLinter
     # Return an error if the given token fails a lint check, false
     # otherwise.
     lintToken : (token) ->
-        [type, value, lineNumber] = token
+        [type, value, loc] = token
+        lineNumber = if type in ["INDENT","OUTDENT"] then loc.last_line else loc.first_line
 
         @tokensByLine[lineNumber] ?= []
         @tokensByLine[lineNumber].push(token)

@@ -73,7 +73,7 @@ vows.describe('newlines_after_classes').addBatch({
             msg = 'Wrong count of newlines between a class and other code'
             assert.equal(error.message, msg)
             assert.equal(error.rule, 'newlines_after_classes')
-            assert.equal(error.lineNumber, 11)
+            assert.equal(error.lineNumber, 10)
             assert.equal(error.context, "Expected 4 got 3")
         
         "has too many newlines after class" : (source) ->
@@ -90,7 +90,7 @@ vows.describe('newlines_after_classes').addBatch({
             msg = 'Wrong count of newlines between a class and other code'
             assert.equal(error.message, msg)
             assert.equal(error.rule, 'newlines_after_classes')
-            assert.equal(error.lineNumber, 11)
+            assert.equal(error.lineNumber, 10)
             assert.equal(error.context, "Expected 2 got 3")
         
         "works OK" : (source) ->
