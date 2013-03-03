@@ -107,18 +107,23 @@ class Gangster
         <p>
           If any errors were found, a non-zero code will be returned.
         </p>
-
+        <p>
+          To generate a configuration file, do
+        </p>
+        <code>coffeelint --makeconfig &gt; config.json</code>
+        <p>
+          You can then configure the rules to your liking.
+        </p>
         <h2 class="section_title" id="options">Options</h2>
         <p>
           By default, CoffeeLint will help ensure you are writing idiomatic
-          CoffeeScript, but every rule is optional and configurable so
-          it can be tuned to fit your preferred coding style. To override
-          any of CoffeeLint's default options, start with this
-          <a href="https://raw.github.com/clutchski/coffeelint/master/examples/coffeelint.json">example configuration file</a>
-          and tweak as needed. To enable an option, set its level to <tt>error</tt>
-          and to disable an option, set its level to <tt>ignore</tt>.
-          If you set the level to <tt>warn</tt>, violations will be
-          reported, but won't cause a non-zero exit code.
+          CoffeeScript, but every rule is optional and configurable so it can
+          be tuned to fit your preferred coding style. To override any of
+          CoffeeLint's default options, <a href="#usage">generate a
+          configuration file</a> and tweak it as needed. To enable an option,
+          set its level to <tt>error</tt>, and to disable an option, set its
+          level to <tt>ignore</tt>. If you set the level to <tt>warn</tt>,
+          violations will be reported, but won't cause a non-zero exit code.
         </p>
         <p>Here's a rundown of CoffeeLint's rules:</p>
         <table class="options">
@@ -388,6 +393,7 @@ throw getSomeString()
             href="https://github.com/clutchski/coffeelint/compare/v0.5.4...v0.5.5">2013.03.02<a></a></small>
           <ul class="changelog_history">
             <li>Added <tt>no_empty_param_list</tt> rule.</li>
+            <li>Added the <tt>--makeconfig</tt> option.</li>
           </ul>
           </div>
 
