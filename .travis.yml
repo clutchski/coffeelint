@@ -8,8 +8,9 @@ env:
   - COFFEE_SCRIPT_VERSION=1.5.0
   - COFFEE_SCRIPT_VERSION=1.6.2
 
-allow_failures:
-  - env: COFFEE_SCRIPT_VERSION=1.6.2
+matrix:
+  allow_failures:
+    - env: COFFEE_SCRIPT_VERSION=1.6.2
 
 before_script:
   - npm install coffee-script@$COFFEE_SCRIPT_VERSION
