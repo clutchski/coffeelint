@@ -133,6 +133,14 @@ coffeelint.RULES = RULES =
         level : ERROR
         message : '' # The default coffeescript error is fine.
 
+    idomatic_and_or:
+        level : IGNORE
+        message : 'Ensure that idomatic operators are used for && and ||.'
+
+    idomatic_is_isnt:
+        level : IGNORE
+        message : 'Ensure that idomatic operators are used for == and !=.'
+
 
 # Some repeatedly used regular expressions.
 regexes =
@@ -511,6 +519,8 @@ class LexicalLinter
     lintMath: (token) ->
         if not token.spaced and not token.newLine
             @createLexError('space_operators', {context: token[1]})
+        else if token[1] in ['==', '!=', '&&', '||']
+            @lintIdomaticOperators(token)
         else
             null
 
@@ -709,6 +719,13 @@ class LexicalLinter
             @createLexError('arrow_spacing')
         else
             null
+
+    lintIdomaticOperators : (token) ->
+        switch token[1]
+            when '==', "!="
+                @createLexError("idomatic_is_isnt")
+            when '&&', '||'
+                @createLexError("idomatic_and_or")
 
     createLexError : (rule, attrs = {}) ->
         attrs.lineNumber = @lineNumber + 1
