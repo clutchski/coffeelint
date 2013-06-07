@@ -115,6 +115,9 @@ class Gangster
           You can then configure the rules to your liking.
         </p>
         <h2 class="section_title" id="options">Options</h2>
+        <p><em> IMPORANT NOTE: THIS OPTIONS CONFIGURATION DOCUMENTATION IS INCOMPLETE
+        </em>
+        </p>
         <p>
           By default, CoffeeLint will help ensure you are writing idiomatic
           CoffeeScript, but every rule is optional and configurable so it can
@@ -388,12 +391,22 @@ throw getSomeString()
           <h2 class="section_title" id="changelog">Change Log</h2>
 
           <div>
-            <h3 class="changelog_header">0.5.5</h3>
+            <h3 class="changelog_header">0.5.5-0.5.6</h3>
             <small class="changelog_date">- <a
-            href="https://github.com/clutchski/coffeelint/compare/v0.5.4...v0.5.5">2013.03.02<a></a></small>
+            href="https://github.com/clutchski/coffeelint/compare/v0.5.4...v0.5.6">2013.06.07<a></a></small>
           <ul class="changelog_history">
             <li>Added <tt>no_empty_param_list</tt> rule.</li>
             <li>Added the <tt>--makeconfig</tt> option.</li>
+            <li>CoffeeScript 1.5 and 1.6 compatibility</li>
+            <li>Fixed indentation of chained functions. (https://github.com/clutchski/coffeelint/issues/107, fixed 1/2 of #4)</li>
+            <li>Fixed bug in <tt>no_stand_alone_at</tt> (https://github.com/jashkenas/coffee-script/issues/1601)</li>
+            <li>Added <tt>arrow_spacing</tt> rule (require spaces around arrows)</li>
+            <li>Added <tt>empty_constructor_needs_parens</tt></li>
+            <li>Added <tt>non_empty_constructor_needs_parens</tt></li>
+            <li>Added <tt>duplicate_key</tt> (http://jslinterrors.com/duplicate-key-a/)</li>
+            <li>Added <tt>no_trailing_whitespace.allowed_in_comments</tt> rule option (Allow trailing space in comments. Created to allow markdown)</li>
+            <li>Added <tt>newlines_after_classes</tt> rule</li>
+            <li>Line length exception. Lines containing only a link are ignored.</li>
           </ul>
           </div>
 
