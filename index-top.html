@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+    <title>CoffeeLint - Lint your CoffeeScript</title>
+    <link rel="stylesheet" type="text/css" href="css/coffeelint.css" />
+    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-27677530-2']);
+      _gaq.push(['_setDomainName', 'coffeelint.org']);
+      _gaq.push(['_setAllowLinker', true]);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+  <body>
+
+    <!-- HEADER -->
+    <div class="header">
+      <div class="container">
+        <h1 class="title">
+          CoffeeLint
+        </h1>
+        <ul class="header_links">
+          <li><a href="#overview">Overview</a></li>
+          <li><a href="#install">Install</a></li>
+          <li><a href="#usage">Usage</a></li>
+          <li><a href="#options">Options</a></li>
+          <li><a href="#api">API</a></li>
+          <li><a href="#plugins">Plugins</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#changelog">Change Log</a></li>
+          <li><a href="https://github.com/clutchski/coffeelint">Source</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <!-- EDITOR -->
+      <div class="row editor_row">
+        <div class="run">Run</div>
+<textarea class="editor" spellcheck="false"># Lint your CoffeeScript!
+
+class Gangster
+
+  wasItAGoodDay : () ->
+    yes
+</textarea>
+      </div>
+
+      <!-- LINT REPORT -->
+      <div class="row report_row">
+        <div class="report_container section_container">
+          <div class="report">
+            <h1 class="section_title"></h1>
+            <div class="section_body"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DOCUMENTATION -->
+      <div class="row doc_row">
+        <h2 class="section_title" id="overview">Overview</h2>
+        <p>
+          CoffeeLint is a style checker that helps keep
+          <a href="http://coffeescript.org">CoffeeScript</a>
+          code clean and consistent. CoffeeScript does a great job at
+          insulating programmers from many of
+          JavaScript's bad parts, but it won't help enforce a consistent style
+          across a code base. CoffeeLint can help with that.
+        </p>
+        <p>
+          CoffeeLint is in its infancy, so feedback is much
+          appreciated. If you have an idea, a bug report or anything else
+          to say, reach out on the
+          <a href="http://github.com/clutchski/coffeelint/issues">issues page</a>.
+        </p>
+
+        <h2 class="section_title" id="install">Installation</h2>
+        <p>
+          To install, make sure you have a working version of the latest
+          stable version of <a href="http://nodejs.org/">Node</a> and
+          <a href="http://npmjs.org/">NPM</a> (the Node Package Manager) and then
+          run:
+        </p>
+        <code>
+        npm install -g coffeelint
+        </code>
+        <p>Leave off the <tt>g</tt> if you do not want to install globally.</p>
+
+        <h2 class="section_title" id="usage">Usage</h2>
+        <p>
+          Once you have Coffeelint installed, to lint your scripts, run:
+        </p>
+        <code>coffeelint application.coffee</code>
+        <p>
+          To specify your own configuration file, do the following:
+        </p>
+        <code>coffeelint -f config.json application.coffee</code>
+        <p>
+          If any errors were found, a non-zero code will be returned.
+        </p>
+        <p>
+          To generate a configuration file, do
+        </p>
+        <code>coffeelint --makeconfig &gt; config.json</code>
+        <p>
+          You can then configure the rules to your liking.
+        </p>
+        <h2 class="section_title" id="options">Options</h2>
+        </p>
+        <p>
+          By default, CoffeeLint will help ensure you are writing idiomatic
+          CoffeeScript, but every rule is optional and configurable so it can
+          be tuned to fit your preferred coding style. To override any of
+          CoffeeLint's default options, <a href="#usage">generate a
+          configuration file</a> and tweak it as needed. To enable an option,
+          set its level to <tt>error</tt>, and to disable an option, set its
+          level to <tt>ignore</tt>. If you set the level to <tt>warn</tt>,
+          violations will be reported, but won't cause a non-zero exit code.
+        </p>
+        <p>Here's a rundown of CoffeeLint's rules:</p>
+        <table class="options">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>

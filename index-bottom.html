@@ -1,0 +1,214 @@
+              </tbody>
+            </table>
+          </p>
+
+          <h2 class="section_title" id="api">API</h2>
+          <p>
+            If you'd like to run CoffeeScript in the browser or any other
+            Javascript runtime, include
+            <a href="http://coffeescript.org/extras/coffee-script.js">coffee-script.js</a>
+            and
+            <a href="http://www.coffeelint.org/js/coffeelint.js">
+              coffeelint.js
+            </a>
+            and you're off to the races. Then you can call CoffeeLint directly
+            with the following API:
+          </p>
+          <h3 class="api_call">coffeelint.lint(source, configuration)</h3>
+          <p>
+            Lints the CoffeeScript source with the given configuration
+            and returns an array of lint errors and warnings. If the array is
+            empty, all is well.  Compile time errors will be thrown.
+            An error is a Javascript object with the following properties:
+          </p>
+<pre><code>{
+    rule :      'Name of the violated rule',
+    lineNumber: 'Number of the line that caused the violation',
+    level:      'The severity level of the violated rule',
+    message:    'Information about the violated rule',
+    context:    'Optional details about why the rule was violated'
+}</code></pre>
+
+          <h2 class="section_title" id="plugins">Plugins</h2>
+          <p>
+            Some nice folks have coded up some cool CoffeeLint plugins for editors and
+            build systems. Check them out:
+            <ul class="changelog_history">
+              <li>The aptly named
+        <a href="https://github.com/kchmck/vim-coffee-script">vim-coffee-script</a>
+                by Mick Koch. </li>
+              <li>
+                <a href="https://github.com/purcell/flymake-coffee">flymake-coffee</a>, en emacs flymake plugin by Steve Purcell.
+              <li>
+        <a href="https://github.com/ajkavanagh/coffeelintnode">CoffeeLintNode</a>,
+        an emacs plugin, by Alex Kavanagh.</li>
+              <li><a href="https://github.com/ilkosta/coffeelint-brunch">CoffeeLint-brunch</a>
+              is a plugin for <a
+              href="http://brunch.io">Brunch.io</a>, by Costantino Giuliodori.
+              </li>
+              <li><a href="https://github.com/vojtajina/grunt-coffeelint">Grunt-CoffeeLint</a>
+              is a plugin for <a
+              href="http://gruntjs.com">Grunt.js</a>, by Vojta Jina.
+              </li>
+              <li><a href="https://github.com/scrooloose/syntastic">Syntastic</a>
+              a Vim syntax checker, now support CoffeeLint.
+              </li>
+            </ul>
+          </p>
+
+          <h2 class="section_title" id="about">About</h2>
+          <p>
+          CoffeeLint is open sourced under the MIT License. If you want to
+          hack on the code, report a bug or suggest a new feature, head on
+          over <a href="http://github.com/clutchski/coffeelint">here</a>.
+          </p>
+          <p>
+            Thanks to CoffeeScript's
+            <a href="https://github.com/jashkenas/coffee-script/contributors">developers</a>
+            for a great language (and a re-usable Lexer). Thanks to the creators of
+            <a href="http://www.jslint.com/">JSLint</a>,
+            <a href="http://www.jshint.com/">JSHint</a>,
+            <a href="http://www.logilab.org/857">Pylint</a>,
+            <a href="http://en.wikipedia.org/wiki/Lint_(software)">lint</a>
+            and my mother for inspiration.
+          </p>
+
+          <h2 class="section_title" id="changelog">Change Log</h2>
+
+          <div>
+            <h3 class="changelog_header">0.5.5-0.5.6</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v0.5.4...v0.5.6">2013.06.07<a></a></small>
+          <ul class="changelog_history">
+            <li>Added <tt>no_empty_param_list</tt> rule.</li>
+            <li>Added the <tt>--makeconfig</tt> option.</li>
+            <li>CoffeeScript 1.5 and 1.6 compatibility</li>
+            <li>Fixed indentation of chained functions. (https://github.com/clutchski/coffeelint/issues/107, fixed 1/2 of #4)</li>
+            <li>Fixed bug in <tt>no_stand_alone_at</tt> (https://github.com/jashkenas/coffee-script/issues/1601)</li>
+            <li>Added <tt>arrow_spacing</tt> rule (require spaces around arrows)</li>
+            <li>Added <tt>empty_constructor_needs_parens</tt></li>
+            <li>Added <tt>non_empty_constructor_needs_parens</tt></li>
+            <li>Added <tt>duplicate_key</tt> (http://jslinterrors.com/duplicate-key-a/)</li>
+            <li>Added <tt>no_trailing_whitespace.allowed_in_comments</tt> rule option (Allow trailing space in comments. Created to allow markdown)</li>
+            <li>Added <tt>newlines_after_classes</tt> rule</li>
+            <li>Line length exception. Lines containing only a link are ignored.</li>
+          </ul>
+          </div>
+
+          <div>
+            <h3 class="changelog_header">0.5.4</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v0.5.3...v0.5.4">2012.11.06<a></a></small>
+          <ul class="changelog_history">
+            <li>Support for default configuration file using environment variable <tt>COFFEELINT_CONFIG</tt>.</li>
+          </ul>
+          </div>
+
+          <div>
+            <h3 class="changelog_header">0.5.3</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v0.5.2...v0.5.3">2012.11.06<a></a></small>
+          <ul class="changelog_history">
+            <li>Added <tt>no_stand_alone_at</tt> rule.</li>
+            <li>Fixed correctly reporting line numbers of compilation errors after line 10.</li>
+            <li>Fixed incomplete results output.</li>
+          </ul>
+          </div>
+
+          <div>
+            <h3 class="changelog_header">0.5.2</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v0.5.1...v0.5.2">2012.09.18</a></small>
+          </div>
+          <ul class="changelog_history">
+            <li>Added <tt>--nocolor</tt> option.</li>
+            <li>My main man ruddzw fixed issue #58, in which the <tt>-q</tt> option was
+            suppressing information even when it was off.</li>
+            <li>Fixed broken <tt>jslint</tt> option.</li>
+            <li>The <tt>no_trailing_semicolons</tt> rule now works on Windows
+            files.</li>
+          </ul>
+
+          <div>
+            <h3 class="changelog_header">0.5.1</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v0.5.0...v0.5.1">2012.09.15</a></small>
+          </div>
+          <ul class="changelog_history">
+            <li>Show CoffeeScript syntax errors in the same manner as lint
+            errors.</li>
+            <li>Brad Dunbar added the <tt>-q</tt> command line option, which
+            only prints errors.</li>
+          </ul>
+
+          <div>
+            <h3 class="changelog_header">0.5.0</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v0.4.0...v0.5.0">2012.09.08</a></small>
+          </div>
+          <ul class="changelog_history">
+            <li>Lint code from stdin with the <tt>--stdin</tt> option, thanks
+            to sjz.</li>
+            <li>Added the <tt>no_implicit_parens</tt> rule.</li>
+            <li>Leandro Ostera added the <tt>--jslint</tt> reporter, to allow
+            CoffeeLint to integrate with the Jenkin's violations plugin.</li>
+            <li>Implicit braces are always allowed in in class
+            defiinitions, thanks to Omar Khan.</li>
+            <li>CoffeeLint now requires CoffeeScript 1.3.3</li>
+          </ul>
+
+          <div>
+            <h3 class="changelog_header">0.4.0</h3>
+            <small class="changelog_date">- 2012.04.06</small>
+          </div>
+          <ul class="changelog_history">
+            <li>Added fancy coloured output and proper CSV output.</li>
+            <li>Directories can be recursively linted.</li>
+            <li>Added the <tt>line endings</tt> rule.</li>
+            <li>Rewrote the command line tool in CoffeeScript.</li>
+          </ul>
+
+          <div>
+            <h3 class="changelog_header">0.3.0</h3>
+            <small class="changelog_date">- 2012.03.13</small>
+          </div>
+          <ul class="changelog_history">
+            <li>Added the <tt>no_backticks</tt> rule.</li>
+            <li>Colorized the command line output.</li>
+            <li>Added validation for the rule names.</li>
+            <li>Allowed windows line endings, thanks to <a
+              href="https://github.com/szinsli">szinsli</a>.</li>
+          </ul>
+
+          <div>
+            <h3 class="changelog_header">0.2.0</h3>
+            <small class="changelog_date">- 2012.01.26</small>
+          </div>
+          <ul class="changelog_history">
+            <li>Added warnings, which will be reported, but won't fail
+            the command line tool.
+            </li>
+          </ul>
+
+          <div>
+            <h3 class="changelog_header">0.1.0</h3>
+            <small class="changelog_date">- 2012.01.22</small>
+          </div>
+          <ul class="changelog_history">
+            <li>Initial CoffeeLint release.</li>
+          </ul>
+      </div>
+    </div>
+
+    <a href="http://github.com/clutchski/coffeelint">
+      <img class="forkme"
+             src="http://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"
+             alt="Fork me on GitHub"/>
+    </a>
+
+    <script type="text/javascript" src="js/vendor/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="js/vendor/coffee-script.js"></script>
+    <script type="text/javascript" src="js/coffeelint.js"></script>
+    <script type="text/javascript" src="js/trycoffeelint.js"></script>
+  </body>
+</html>
