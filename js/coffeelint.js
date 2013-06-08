@@ -32,42 +32,51 @@ CoffeeLint is freely distributable under the MIT license.
   coffeelint.RULES = RULES = {
     no_tabs: {
       level: ERROR,
-      message: 'Line contains tab indentation'
+      message: 'Line contains tab indentation',
+      description: "This rule forbids tabs in indentation. Enough said. It is enabled by default."
     },
     no_trailing_whitespace: {
       level: ERROR,
       message: 'Line ends with trailing whitespace',
-      allowed_in_comments: false
+      allowed_in_comments: false,
+      description: "This rule forbids trailing whitespace in your code, since it is needless cruft. It is enabled by default."
     },
     max_line_length: {
       value: 80,
       level: ERROR,
-      message: 'Line exceeds maximum allowed length'
+      message: 'Line exceeds maximum allowed length',
+      description: "This rule imposes a maximum line length on your code. <a href=\"http://www.python.org/dev/peps/pep-0008/\">Python's style guide</a> does a good job explaining why you might want to limit the length of your lines, though this is a matter of taste.\n\nLines can be no longer than eighty characters by default."
     },
     camel_case_classes: {
       level: ERROR,
-      message: 'Class names should be camel cased'
+      message: 'Class names should be camel cased',
+      description: "This rule mandates that all class names are camel cased. Camel casing class names is a generally accepted way of distinguishing constructor functions - which require the 'new' prefix to behave properly - from plain old functions.\n<pre>\n<code># Good!\nclass BoaConstrictor\n\n# Bad!\nclass boaConstrictor\n</code>\n</pre>\nThis rule is enabled by default."
     },
     indentation: {
       value: 2,
       level: ERROR,
-      message: 'Line contains inconsistent indentation'
+      message: 'Line contains inconsistent indentation',
+      description: "This rule imposes a standard number of spaces to be used for indentation.\nSince whitespace is significant in CoffeeScript, it's critical that a project chooses a standard indentation format and stays consistent. Other roads lead to darkness.\n<pre>\n<code># Enabling this option will prevent this ugly\n# but otherwise valid CoffeeScript.\ntwoSpaces = () ->\n  fourSpaces = () ->\n      eightSpaces = () ->\n            'this is valid CoffeeScript'\n\n</code>\n</pre>\nTwo space indentation is enabled by default."
     },
     no_implicit_braces: {
       level: IGNORE,
-      message: 'Implicit braces are forbidden'
+      message: 'Implicit braces are forbidden',
+      description: "This rule prohibits implicit braces when declaring object literals. Implicit braces can make code more difficult to understand, especially when used in combination with optional parenthesis.\n<pre>\n<code># Do you find this code ambiguous? Is it a\n# function call with three arguments or four?\nmyFunction a, b, 1:2, 3:4\n\n# While the same code written in a more\n# explicit manner has no ambiguity.\nmyFunction(a, b, {1:2, 3:4})\n</code>\n</pre>\nImplicit braces are permitted by default, since their use is idiomatic CoffeeScript."
     },
     no_trailing_semicolons: {
       level: ERROR,
-      message: 'Line contains a trailing semicolon'
+      message: 'Line contains a trailing semicolon',
+      description: "This rule prohibits trailing semicolons, since they are needless cruft in CoffeeScript.\n<pre>\n<code># This semicolon is meaningful.\nx = '1234'; console.log(x)\n\n# This semicolon is redundant.\nalert('end of line');\n</code>\n</pre>\nTrailing semicolons are forbidden by default."
     },
     no_plusplus: {
       level: IGNORE,
-      message: 'The increment and decrement operators are forbidden'
+      message: 'The increment and decrement operators are forbidden',
+      description: "This rule forbids the increment and decrement arithmetic operators. Some people believe the <tt>++</tt> and <tt>--</tt> to be cryptic and the cause of bugs due to misunderstandings of their precedence rules.\nThis rule is disabled by default."
     },
     no_throwing_strings: {
       level: ERROR,
-      message: 'Throwing strings is forbidden'
+      message: 'Throwing strings is forbidden',
+      description: "This rule forbids throwing string literals or interpolations. While JavaScript (and CoffeeScript by extension) allow any expression to be thrown, it is best to only throw <a href=\"https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Error\">Error</a> objects, because they contain valuable debugging information like the stack trace. Because of JavaScript's dynamic nature, CoffeeLint cannot ensure you are always throwing instances of <tt>Error</tt>. It will only catch the simple but real case of throwing literal strings.\n<pre>\n<code># CoffeeLint will catch this:\nthrow \"i made a boo boo\"\n\n# ... but not this:\nthrow getSomeString()\n</code>\n</pre>\nThis rule is enabled by default."
     },
     cyclomatic_complexity: {
       value: 10,
@@ -76,16 +85,19 @@ CoffeeLint is freely distributable under the MIT license.
     },
     no_backticks: {
       level: ERROR,
-      message: 'Backticks are forbidden'
+      message: 'Backticks are forbidden',
+      description: "Backticks allow snippets of JavaScript to be embedded in CoffeeScript. While some folks consider backticks useful in a few niche circumstances, they should be avoided because so none of JavaScript's \"bad parts\", like <tt>with</tt> and <tt>eval</tt>, sneak into CoffeeScript.\nThis rule is enabled by default."
     },
     line_endings: {
       level: IGNORE,
       value: 'unix',
-      message: 'Line contains incorrect line endings'
+      message: 'Line contains incorrect line endings',
+      description: "This rule ensures your project uses only <tt>windows</tt> or <tt>unix</tt> line endings. This rule is disabled by default."
     },
     no_implicit_parens: {
       level: IGNORE,
-      message: 'Implicit parens are forbidden'
+      message: 'Implicit parens are forbidden',
+      description: "This rule prohibits implicit parens on function calls.\n<pre>\n<code># Some folks don't like this style of coding.\nmyFunction a, b, c\n\n# And would rather it always be written like this:\nmyFunction(a, b, c)\n</code>\n</pre>\nImplicit parens are permitted by default, since their use is idiomatic CoffeeScript."
     },
     empty_constructor_needs_parens: {
       level: IGNORE,
@@ -97,7 +109,8 @@ CoffeeLint is freely distributable under the MIT license.
     },
     no_empty_param_list: {
       level: IGNORE,
-      message: 'Empty parameter list is forbidden'
+      message: 'Empty parameter list is forbidden',
+      description: "This rule prohibits empty parameter lists in function definitions.\n<pre>\n<code># The empty parameter list in here is unnecessary:\nmyFunction = () -&gt;\n\n# We might favor this instead:\nmyFunction = -&gt;\n</code>\n</pre>\nEmpty parameter lists are permitted by default."
     },
     space_operators: {
       level: IGNORE,
@@ -114,7 +127,8 @@ CoffeeLint is freely distributable under the MIT license.
     },
     no_stand_alone_at: {
       level: IGNORE,
-      message: '@ must not be used stand alone'
+      message: '@ must not be used stand alone',
+      description: "This rule checks that no stand alone @ are in use, they are discouraged.\nFurther information in CoffeScript issue <a href=\"https://github.com/jashkenas/coffee-script/issues/1601\">#1601</a>"
     },
     arrow_spacing: {
       level: IGNORE,
