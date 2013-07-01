@@ -923,10 +923,14 @@ class LexicalLinter
         return false if not lastNewLineIndex?
 
         # Otherwise, figure out if that token or the next is an attribute
-        # look-up.
+        # look-up or a call end.
         tokens = [@tokens[lastNewLineIndex], @tokens[lastNewLineIndex + 1]]
 
-        return !!(t for t in tokens when t and t[0] == '.').length
+        for t in tokens
+            if t and (t[0] == '.' or t[0] == 'CALL_END')
+                return true
+
+        return false
 
 
 # A class that performs static analysis of the abstract
