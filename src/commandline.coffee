@@ -255,7 +255,7 @@ options = optimist
             .boolean("literate")
             .boolean("r")
             .boolean("s")
-            .boolean("q", "Print errors only.")
+            .boolean("q")
 
 if options.argv.v
     console.log coffeelint.VERSION
