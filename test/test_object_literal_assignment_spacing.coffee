@@ -3,7 +3,7 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
-vows.describe('objectliteralassignmentspacing').addBatch({
+vows.describe('objectassignmentspacing').addBatch({
 
     'Spacing around assignment' :
 
@@ -13,7 +13,7 @@ vows.describe('objectliteralassignmentspacing').addBatch({
             '''
 
         'will not return an error' : (source) ->
-            config = 'object_literal_assignment_spacing' : {'level' : 'error'}
+            config = 'object_assignment_spacing' : {'level' : 'error'}
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 
@@ -25,12 +25,12 @@ vows.describe('objectliteralassignmentspacing').addBatch({
             '''
 
         'will return an error' : (source) ->
-            config = 'object_literal_assignment_spacing' : {'level' : 'error'}
+            config = 'object_assignment_spacing' : {'level' : 'error'}
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 1)
 
         'will ignore an error' : (source) ->
-            config = 'object_literal_assignment_spacing' : {'level' : 'ignore'}
+            config = 'object_assignment_spacing' : {'level' : 'ignore'}
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 

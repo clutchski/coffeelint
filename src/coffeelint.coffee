@@ -296,12 +296,12 @@ coffeelint.RULES = RULES =
         level : ERROR
         message : '' # The default coffeescript error is fine.
 
-    object_literal_assignment_spacing :
+    object_assignment_spacing :
         level : IGNORE
-        message : 'Object literal assignment without spaces'
+        message : 'Object assignment without spaces'
         description : """
             <p>This rule checks to see that there is spacing before and
-            after the colon in an object literal assignment.</p>
+            after the colon in an object assignment.</p>
             <pre><code>
             # Good
             object = {spacing : true}
@@ -325,7 +325,7 @@ regexes =
     camelCase: /^[A-Z][a-zA-Z\d]*$/
     trailingSemicolon: /;\r?$/
     configStatement: /coffeelint:\s*(disable|enable)(?:=([\w\s,]*))?/
-    objectLiteralWithoutSpaces : /^.*((\S):|:(\S)).*$/g
+    objectAssignmentWithoutSpaces : /^.*((\S):|:(\S)).*$/g
 
 
 # Patch the source properties onto the destination.
@@ -403,7 +403,7 @@ class LineLinter
                @checkLineEndings() or
                @checkComments() or
                @checkNewlinesAfterClasses() or
-               @checkObjectLiteralAssignmentSpacing()
+               @checkObjectAssignmentSpacing()
 
     checkTabs : () ->
         # Only check lines that have compiled tokens. This helps
@@ -510,9 +510,9 @@ class LineLinter
 
         null
 
-    checkObjectLiteralAssignmentSpacing : () ->
-        rule = 'object_literal_assignment_spacing'
-        if @line.match(regexes.objectLiteralWithoutSpaces)
+    checkObjectAssignmentSpacing : () ->
+        rule = 'object_assignment_spacing'
+        if @line.match(regexes.objectAssignmentWithoutSpaces)
             @createLineError(rule)
         else
             null
