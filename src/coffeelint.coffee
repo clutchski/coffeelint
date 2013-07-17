@@ -406,8 +406,7 @@ class LineLinter
                @checkTrailingSemicolon() or
                @checkLineEndings() or
                @checkComments() or
-               @checkNewlinesAfterClasses() or
-               @checkColonAssignmentSpacing()
+               @checkNewlinesAfterClasses()
 
     checkTabs : () ->
         # Only check lines that have compiled tokens. This helps
@@ -513,13 +512,6 @@ class LineLinter
             } )
 
         null
-
-    checkColonAssignmentSpacing : () ->
-        rule = 'colon_assignment_spacing'
-        if @line.match(regexes.colonAssignmentWithoutSpaces)
-            @createLineError(rule)
-        else
-            null
 
     createLineError : (rule, attrs = {}) ->
         attrs.lineNumber = @lineNumber + 1 # Lines are indexed by zero.
@@ -630,6 +622,7 @@ class LexicalLinter
             when "+", "-"                 then @lintPlus(token)
             when "=", "MATH", "COMPARE", "LOGIC", "COMPOUND_ASSIGN"
                 @lintMath(token)
+            when ":"                      then @lintColonAssignment(token)
             else null
 
     lintUnary: (token) ->
@@ -681,6 +674,13 @@ class LexicalLinter
             @parenTokens.pop()
         # We're not linting, just tracking interpolations.
         null
+
+    lintColonAssignment : (token) ->
+        leftSpaced = token[2].first_column - @peek(-1)[2].last_column is 2
+        if token.spaced and leftSpaced
+            null
+        else
+            @createLexError('colon_assignment_spacing')
 
     isInInterpolation : () ->
         for t in @parenTokens

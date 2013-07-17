@@ -34,4 +34,18 @@ vows.describe('colonassignmentspacing').addBatch({
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 
+    'Should not complain about strings' :
+
+        topic : ->
+            '''
+            foo = (stuff) ->
+              throw new Error("Error: stuff required") unless stuff?
+              # do real work
+            '''
+
+        'will return an error' : (source) ->
+            config = 'colon_assignment_spacing' : {'level' : 'error'}
+            errors = coffeelint.lint(source, config)
+            assert.isEmpty(errors)
+
 }).export(module)
