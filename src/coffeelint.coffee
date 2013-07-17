@@ -266,7 +266,7 @@ coffeelint.RULES = RULES =
         message : '@ must not be used stand alone'
         description: """
             This rule checks that no stand alone @ are in use, they are
-            discouraged. Further information in CoffeScript issue <a
+            discouraged. Further information in CoffeeScript issue <a
             href="https://github.com/jashkenas/coffee-script/issues/1601">
             #1601</a>
             """
@@ -296,6 +296,21 @@ coffeelint.RULES = RULES =
         level : ERROR
         message : '' # The default coffeescript error is fine.
 
+    object_literal_assignment_spacing :
+        level : IGNORE
+        message : 'Object literal assignment without spaces'
+        description : """
+            <p>This rule checks to see that there is spacing before and
+            after the colon in an object literal assignment.</p>
+            <pre><code>
+            # Good
+            object = {spacing : true}
+
+            # Bad
+            object = {spacing: true}
+            </code></pre>
+            """
+
 
 # Some repeatedly used regular expressions.
 regexes =
@@ -310,6 +325,7 @@ regexes =
     camelCase: /^[A-Z][a-zA-Z\d]*$/
     trailingSemicolon: /;\r?$/
     configStatement: /coffeelint:\s*(disable|enable)(?:=([\w\s,]*))?/
+    objectLiteralWithoutSpaces : /^.*((\S):|:(\S)).*$/g
 
 
 # Patch the source properties onto the destination.
@@ -386,7 +402,8 @@ class LineLinter
                @checkTrailingSemicolon() or
                @checkLineEndings() or
                @checkComments() or
-               @checkNewlinesAfterClasses()
+               @checkNewlinesAfterClasses() or
+               @checkObjectLiteralAssignmentSpacing()
 
     checkTabs : () ->
         # Only check lines that have compiled tokens. This helps
@@ -492,6 +509,13 @@ class LineLinter
             } )
 
         null
+
+    checkObjectLiteralAssignmentSpacing : () ->
+        rule = 'object_literal_assignment_spacing'
+        if @line.match(regexes.objectLiteralWithoutSpaces)
+            @createLineError(rule)
+        else
+            null
 
     createLineError : (rule, attrs = {}) ->
         attrs.lineNumber = @lineNumber + 1 # Lines are indexed by zero.
