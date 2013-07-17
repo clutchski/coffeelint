@@ -296,18 +296,22 @@ coffeelint.RULES = RULES =
         level : ERROR
         message : '' # The default coffeescript error is fine.
 
-    object_assignment_spacing :
+    colon_assignment_spacing :
         level : IGNORE
-        message : 'Object assignment without spaces'
+        message : 'Colon assignment without spaces'
         description : """
             <p>This rule checks to see that there is spacing before and
-            after the colon in an object assignment.</p>
+            after the colon in a colon assignment (i.e., classes, objects).</p>
             <pre><code>
             # Good
             object = {spacing : true}
+            class Dog
+              canBark : true
 
             # Bad
             object = {spacing: true}
+            class Cat
+              canBark: false
             </code></pre>
             """
 
@@ -325,7 +329,7 @@ regexes =
     camelCase: /^[A-Z][a-zA-Z\d]*$/
     trailingSemicolon: /;\r?$/
     configStatement: /coffeelint:\s*(disable|enable)(?:=([\w\s,]*))?/
-    objectAssignmentWithoutSpaces : /^.*((\S):|:(\S)).*$/g
+    colonAssignmentWithoutSpaces : /^.*((\S):|:(\S)).*$/g
 
 
 # Patch the source properties onto the destination.
@@ -403,7 +407,7 @@ class LineLinter
                @checkLineEndings() or
                @checkComments() or
                @checkNewlinesAfterClasses() or
-               @checkObjectAssignmentSpacing()
+               @checkColonAssignmentSpacing()
 
     checkTabs : () ->
         # Only check lines that have compiled tokens. This helps
@@ -510,9 +514,9 @@ class LineLinter
 
         null
 
-    checkObjectAssignmentSpacing : () ->
-        rule = 'object_assignment_spacing'
-        if @line.match(regexes.objectAssignmentWithoutSpaces)
+    checkColonAssignmentSpacing : () ->
+        rule = 'colon_assignment_spacing'
+        if @line.match(regexes.colonAssignmentWithoutSpaces)
             @createLineError(rule)
         else
             null
