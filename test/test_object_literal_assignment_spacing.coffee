@@ -7,25 +7,31 @@ vows.describe('objectliteralassignmentspacing').addBatch({
 
     'Spacing around assignment' :
 
-        topic : -> '{spacing : true}'
+        topic : ->
+            '''
+            object = {spacing : true}
+            '''
 
         'will not return an error' : (source) ->
-            config = {'object_literal_assignment_spacing' : 'error'}
-            errors = coffeelint.link(source, config)
+            config = 'object_literal_assignment_spacing' : {'level' : 'error'}
+            errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 
     'No spacing around assignment' :
 
-        topic : -> '{spacing: false}'
+        topic : ->
+            '''
+            object = {spacing: false}
+            '''
 
         'will return an error' : (source) ->
-            config = {'object_literal_assignment_spacing' : 'error'}
-            errors = coffeelint.link(source, config)
+            config = 'object_literal_assignment_spacing' : {'level' : 'error'}
+            errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 1)
 
         'will ignore an error' : (source) ->
-            config = {'object_literal_assignment_spacing' : 'ignore'}
-            errors = coffeelint.link(source, config)
+            config = 'object_literal_assignment_spacing' : {'level' : 'ignore'}
+            errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 
 }).export(module)
