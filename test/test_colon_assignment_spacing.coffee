@@ -10,6 +10,10 @@ vows.describe('colonassignmentspacing').addBatch({
         topic : ->
             '''
             object = {spacing : true}
+            class Dog
+              barks : true
+            stringyObject =
+              'stringkey' : 'ok'
             '''
 
         'will not return an error' : (source) ->
@@ -22,12 +26,16 @@ vows.describe('colonassignmentspacing').addBatch({
         topic : ->
             '''
             object = {spacing: false}
+            class Cat
+              barks: false
+            stringyObject =
+              'stringkey': 'notcool'
             '''
 
         'will return an error' : (source) ->
             config = 'colon_assignment_spacing' : {'level' : 'error'}
             errors = coffeelint.lint(source, config)
-            assert.equal(errors.length, 1)
+            assert.equal(errors.length, 3)
 
         'will ignore an error' : (source) ->
             config = 'colon_assignment_spacing' : {'level' : 'ignore'}
