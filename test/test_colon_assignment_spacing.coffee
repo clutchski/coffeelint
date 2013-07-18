@@ -14,6 +14,9 @@ vows.describe('colonassignmentspacing').addBatch({
               barks : true
             stringyObject =
               'stringkey' : 'ok'
+            newlineObject =
+              obj :
+                key : 'value'
             '''
 
         'will not return an error' : (source) ->
