@@ -329,8 +329,6 @@ regexes =
     camelCase: /^[A-Z][a-zA-Z\d]*$/
     trailingSemicolon: /;\r?$/
     configStatement: /coffeelint:\s*(disable|enable)(?:=([\w\s,]*))?/
-    colonAssignmentWithoutSpaces : /^.*((\S):|:(\S)).*$/g
-
 
 # Patch the source properties onto the destination.
 extend = (destination, sources...) ->
