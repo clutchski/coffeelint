@@ -675,7 +675,7 @@ class LexicalLinter
 
     lintColonAssignment : (token) ->
         leftSpaced = token[2].first_column - @peek(-1)?[2].last_column is 2
-        if token.spaced and leftSpaced
+        if (token.spaced or token.newLine) and leftSpaced
             null
         else
             @createLexError('colon_assignment_spacing')
