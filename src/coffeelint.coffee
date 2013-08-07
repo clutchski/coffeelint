@@ -918,10 +918,9 @@ class LexicalLinter
 
     # Are there any more meaningful tokens following the current one?
     atEof: ->
-        for i in [@i + 1...@tokens.length]
-            return false unless @tokens[i][0] in [
-                'INDENT', 'OUTDENT', '}', 'TERMINATOR', 'CALL_END'
-            ]
+        for token in @tokens.slice(@i + 1)
+            unless token.generated or token[0] in ['OUTDENT', 'TERMINATOR']
+                return false
         true
 
     # Return true if the current token is part of a property access
