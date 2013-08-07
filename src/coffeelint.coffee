@@ -892,7 +892,13 @@ class LexicalLinter
         # we will accept either having a space or not having a space there.
 
         pp = @peek(-1)
-        unless (token.spaced? or token.newLine?) and
+        eof = =>
+            for i in [@i + 1...@tokens.length]
+                return false unless @tokens[i][0] in [
+                    'INDENT', 'OUTDENT', '}', 'TERMINATOR', 'CALL_END'
+                ]
+            true
+        unless (token.spaced? or token.newLine? or eof()) and
                # Throw error unless the previous token...
                ((pp.spaced? or pp[0] is 'TERMINATOR') or #1
                 pp.generated? or #2
