@@ -76,7 +76,7 @@ class Reporter
 
     constructor : (errorReport, colorize = true) ->
         @errorReport = errorReport
-        @colorize = colorize
+        @colorize = colorize and process.stdout.isTTY
         @ok = '✓'
         @warn = '⚡'
         @err = '✗'
