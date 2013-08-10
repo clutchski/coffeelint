@@ -125,7 +125,7 @@ coffeelint.RULES = RULES =
             idiomatic CoffeeScript.
             """
 
-    no_trailing_semicolons:
+    no_trailing_semicolons :
         level : ERROR
         message : 'Line contains a trailing semicolon'
         description: """
@@ -142,7 +142,7 @@ coffeelint.RULES = RULES =
             Trailing semicolons are forbidden by default.
             """
 
-    no_plusplus:
+    no_plusplus :
         level : IGNORE
         message : 'The increment and decrement operators are forbidden'
         description: """
@@ -153,7 +153,7 @@ coffeelint.RULES = RULES =
             This rule is disabled by default.
             """
 
-    no_throwing_strings:
+    no_throwing_strings :
         level : ERROR
         message : 'Throwing strings is forbidden'
         description: """
@@ -177,12 +177,12 @@ coffeelint.RULES = RULES =
             This rule is enabled by default.
             """
 
-    cyclomatic_complexity:
+    cyclomatic_complexity :
         value : 10
         level : IGNORE
         message : 'The cyclomatic complexity is too damn high'
 
-    no_backticks:
+    no_backticks :
         level : ERROR
         message : 'Backticks are forbidden'
         description: """
@@ -194,7 +194,7 @@ coffeelint.RULES = RULES =
             This rule is enabled by default.
             """
 
-    line_endings:
+    line_endings :
         level : IGNORE
         value : 'unix' # or 'windows'
         message : 'Line contains incorrect line endings'
@@ -301,15 +301,15 @@ coffeelint.RULES = RULES =
 regexes =
     trailingWhitespace : /[^\s]+[\t ]+\r?$/
     lineHasComment : /^\s*[^\#]*\#/
-    indentation: /\S/
-    longUrlComment: ///
+    indentation : /\S/
+    longUrlComment : ///
       ^\s*\# # indentation, up to comment
       \s*
       http[^\s]+$ # Link that takes up the rest of the line without spaces.
     ///
-    camelCase: /^[A-Z][a-zA-Z\d]*$/
-    trailingSemicolon: /;\r?$/
-    configStatement: /coffeelint:\s*(disable|enable)(?:=([\w\s,]*))?/
+    camelCase : /^[A-Z][a-zA-Z\d]*$/
+    trailingSemicolon : /;\r?$/
+    configStatement : /coffeelint:\s*(disable|enable)(?:=([\w\s,]*))?/
 
 
 # Patch the source properties onto the destination.
@@ -338,8 +338,8 @@ createError = (rule, attrs = {}) ->
 
 # Store suppressions in the form of { line #: type }
 block_config =
-    enable: {}
-    disable: {}
+    enable : {}
+    disable : {}
 
 #
 # A class that performs regex checks on each line of the source.
@@ -362,9 +362,9 @@ class LineLinter
         #   classIndents: the number of indents within a class
         @context = {
             class: {
-                inClass: false
-                lastUnemptyLineInClass: null
-                classIndents: null
+                inClass : false
+                lastUnemptyLineInClass : null
+                classIndents : null
             }
         }
 
@@ -519,7 +519,7 @@ class LineLinter
         @tokensByLine[@lineNumber] || []
 
     # maintain the contextual information for class-related stuff
-    maintainClassContext: () ->
+    maintainClassContext : () ->
         if @context.class.inClass
             if @lineHasToken 'INDENT'
                 @context.class.classIndents++
@@ -604,7 +604,7 @@ class LexicalLinter
                 @lintMath(token)
             else null
 
-    lintUnary: (token) ->
+    lintUnary : (token) ->
         if token[1] is 'new'
             # Find the last chained identifier, e.g. Bar in new foo.bar.Bar().
             identifierIndex = 1
@@ -681,7 +681,7 @@ class LexicalLinter
         else
             null
 
-    lintMath: (token) ->
+    lintMath : (token) ->
         if not token.spaced and not token.newLine
             @createLexError('space_operators', {context: token[1]})
         else
@@ -709,7 +709,7 @@ class LexicalLinter
         else
             null
 
-    lintIdentifier: (token) ->
+    lintIdentifier : (token) ->
         key = token[1]
 
         # Class names might not be in a scope
@@ -754,7 +754,7 @@ class LexicalLinter
         else
             return null
 
-    lintJavascript :(token) ->
+    lintJavascript : (token) ->
         @createLexError('no_backticks')
 
     lintThrow : (token) ->
@@ -768,7 +768,7 @@ class LexicalLinter
         attrs = {context : "found '#{token[0]}'"}
         @createLexError('no_plusplus', attrs)
 
-    lintStandaloneAt: (token) ->
+    lintStandaloneAt : (token) ->
         nextToken = @peek()
         spaced = token.spaced
         isIdentifier = nextToken[0] == 'IDENTIFIER'
