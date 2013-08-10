@@ -975,7 +975,7 @@ class ASTLinter
             0
         return complexity
 
-    # Lint the AST node and return it's cyclomatic complexity.
+    # Lint the AST node and return its cyclomatic complexity.
     lintNode : (node, line) ->
 
         # Get the complexity of the current node.
