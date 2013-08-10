@@ -14,7 +14,7 @@ findFileResults = {}
 findFile = (name, dir) ->
     dir = dir or process.cwd()
     filename = path.normalize(path.join(dir, name))
-    findFileResults[filename]  if findFileResults[filename]
+    return findFileResults[filename]  if findFileResults[filename]
     parent = path.resolve(dir, "../")
     if fs.existsSync(filename)
         findFileResults[filename] = filename
