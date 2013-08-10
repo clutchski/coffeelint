@@ -12,6 +12,7 @@ glob = require("glob")
 optimist = require("optimist")
 thisdir = path.dirname(fs.realpathSync(__filename))
 coffeelint = require(path.join(thisdir, "coffeelint"))
+configfinder = require(path.join(thisdir, "configfinder"))
 CoffeeScript = require 'coffee-script'
 
 
@@ -242,12 +243,14 @@ lintFiles = (paths, config) ->
         source = read(path)
         literate = CoffeeScript.helpers.isLiterate path
 
-        errorReport.paths[path] = coffeelint.lint(source, config, literate)
+        fileConfig = if config then config else configfinder.getConfig(path)
+        errorReport.paths[path] = coffeelint.lint(source, fileConfig, literate)
     return errorReport
 
 # Return an error report from linting the given coffeescript source.
 lintSource = (source, config, literate = false) ->
     errorReport = new ErrorReport()
+    config or= configfinder.getConfig()
     errorReport.paths["stdin"] = coffeelint.lint(source, config, literate)
     return errorReport
 
@@ -339,7 +342,7 @@ else if options.argv._.length < 1 and not options.argv.s
 
 else
     # Load configuration.
-    config = {}
+    config = null
     unless options.argv.noconfig
         # path.existsSync was moved to fs.existsSync node 0.6 -> 0.8
         existsFn = fs.existsSync ? path.existsSync
