@@ -134,7 +134,9 @@ class Gangster
               <th>Description</th>
             </tr>
           </thead>
-          <tbody><tr>
+          <tbody>
+              <!-- Generated with src/htmldoc.coffee -->
+<tr>
 <td class="rule">arrow_spacing</td>
 <td class="description">
     <p>This rule checks to see that there is spacing before and after
@@ -407,7 +409,8 @@ needless cruft. It is enabled by default.
     <p><em>default level: ignore</em></p>
 </td>
 </tr>
-              </tbody>
+<!-- End generated code -->
+          </tbody>
             </table>
           </p>
 
@@ -483,6 +486,24 @@ needless cruft. It is enabled by default.
           </p>
 
           <h2 class="section_title" id="changelog">Change Log</h2>
+
+          <div>
+            <h3 class="changelog_header">0.5.6-0.5.7</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v0.5.6...v0.5.7">2013.08.10<a></a></small>
+          <ul class="changelog_history">
+            <li>Added support for literate CoffeeScript</li>
+            <li>Dropped support for CoffeeScript 1.4 and 1.5</li>
+            <li>Fixed <tt>non_empty_constructor_needs_parens</tt> for namespaced constructors</li>
+            <li>Simplified the build process to allow installing direct from the git repo</li>
+            <li>More fixes to indentation checking (continued https://github.com/clutchski/coffeelint/issues/107)</li>
+            <li>Fixed spacing error when returning negative numbers (https://github.com/clutchski/coffeelint/issues/129)</li>
+            <li>Fixed arrow spacing in callback parameters (https://github.com/clutchski/coffeelint/issues/131)</li>
+            <li>Added beginning and end line numbers for cyclomatic complexity (https://github.com/clutchski/coffeelint/pull/134)</li>
+            <li>Added header to CSVReporter</li>
+            <li>Fixes for <tt>space_operators</tt>(https://github.com/clutchski/coffeelint/issues/137)</li>
+          </ul>
+          </div>
 
           <div>
             <h3 class="changelog_header">0.5.5-0.5.6</h3>
