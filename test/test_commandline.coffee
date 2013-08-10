@@ -83,6 +83,30 @@ vows.describe('commandline').addBatch({
             assert.isNotNull(error)
             assert.include(stdout.toLowerCase(), 'line')
 
+    'with custom config from local .coffeelintrc' :
+
+        topic : () ->
+            args = [
+                'test/fixtures/coffeelintrctest/sevenspaces.coffee'
+            ]
+            commandline args, this.callback
+            return undefined
+
+        'works' : (error, stdout, stderr) ->
+            assert.isNull(error)
+
+    'with custom config from local package.json' :
+
+        topic : () ->
+            args = [
+                'test/fixtures/coffeelintrctest/package/sixspaces.coffee'
+            ]
+            commandline args, this.callback
+            return undefined
+
+        'works' : (error, stdout, stderr) ->
+            assert.isNull(error)
+
     'with custom configuration' :
 
         topic : () ->
