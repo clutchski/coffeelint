@@ -254,9 +254,9 @@ lintSource = (source, config, literate = false) ->
     errorReport.paths["stdin"] = coffeelint.lint(source, config, literate)
     return errorReport
 
-# Get fallback jshint configuration when none is provided. With the -F flag the
-# config is attempted to be automatically located in either a package.json or a
-# coffeelint.json file.
+# Get fallback configuration. With the -F flag found configs in standard places
+# will be used for each file being linted. Standard places are package.json or
+# coffeelint.json in a project's root folder or the user's home folder.
 getFallbackConfig = (filename = null) ->
     if options.argv.F
         configfinder.getConfig(filename)
