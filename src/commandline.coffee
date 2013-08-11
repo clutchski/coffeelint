@@ -243,16 +243,25 @@ lintFiles = (paths, config) ->
         source = read(path)
         literate = CoffeeScript.helpers.isLiterate path
 
-        fileConfig = if config then config else configfinder.getConfig(path)
+        fileConfig = if config then config else getFallbackConfig(path)
         errorReport.paths[path] = coffeelint.lint(source, fileConfig, literate)
     return errorReport
 
 # Return an error report from linting the given coffeescript source.
 lintSource = (source, config, literate = false) ->
     errorReport = new ErrorReport()
-    config or= configfinder.getConfig()
+    config or= getFallbackConfig()
     errorReport.paths["stdin"] = coffeelint.lint(source, config, literate)
     return errorReport
+
+# Get fallback jshint configuration when none is provided. With the -F flag the
+# config is attempted to be automatically located in either a package.json or a
+# coffeelint.json file.
+getFallbackConfig = (filename = null) ->
+    if options.argv.F
+        configfinder.getConfig(filename)
+    else
+        null
 
 # moduleName is a NodeJS module, or a path to a module NodeJS can load.
 loadRules = (moduleName, ruleName = undefined) ->
@@ -296,11 +305,14 @@ reportAndExit = (errorReport, options) ->
 options = optimist
             .usage("Usage: coffeelint [options] source [...]")
             .alias("f", "file")
+            .alias("F", "findconfig")
             .alias("h", "help")
             .alias("v", "version")
             .alias("s", "stdin")
             .alias("q", "quiet")
             .describe("f", "Specify a custom configuration file.")
+            .describe("F",
+                "Find config in package.json or coffeelint.json for each file.")
             .describe("rules", "Specify a custom rule or directory of rules.")
             .describe("makeconfig", "Prints a default config file")
             .describe("noconfig",
@@ -323,6 +335,7 @@ options = optimist
             .boolean("noconfig")
             .boolean("makeconfig")
             .boolean("literate")
+            .boolean("F")
             .boolean("r")
             .boolean("s")
             .boolean("q", "Print errors only.")

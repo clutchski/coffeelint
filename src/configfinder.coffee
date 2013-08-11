@@ -29,21 +29,27 @@ findFile = (name, dir) ->
 # Possibly find CoffeeLint configuration within a package.json file.
 loadNpmConfig = (dir) ->
     fp = findFile("package.json", dir)
-    require(fp).coffeelintConfig  if fp
+    loadJSON(fp).coffeelintConfig  if fp
+
+# Parse a JSON file gracefully.
+loadJSON = (filename) ->
+    try
+        JSON.parse(fs.readFileSync(filename).toString())
+    catch e
+        console.error "Could not load JSON file '%s': %s", filename, e
+        null
 
 # Tries to find a configuration file in either project directory (if file is
 # given), as either the package.json's 'coffeelintConfig' property, or a project
-# specific '.coffeelintrc' or a global '.coffeelintrc' in the home directory.
+# specific 'coffeelint.json' or a global 'coffeelint.json' in the home
+# directory.
 exports.getConfig = (filename = null) ->
     if filename
         dir = path.dirname(path.resolve(filename))
         npmConfig = loadNpmConfig(dir)
         return npmConfig  if npmConfig
-        projConfig = findFile(".coffeelintrc", dir)
-        return readJSON(projConfig)  if projConfig
+        projConfig = findFile("coffeelint.json", dir)
+        return loadJSON(projConfig)  if projConfig
     envs = process.env.HOME or process.env.HOMEPATH or process.env.USERPROFILE
-    home = path.normalize(path.join(envs, ".coffeelintrc"))
-    return readJSON(home)  if existsFn(home)
-
-readJSON = (filename) ->
-    JSON.parse(fs.readFileSync(filename).toString())
+    home = path.normalize(path.join(envs, "coffeelint.json"))
+    return loadJSON(home)  if existsFn(home)
