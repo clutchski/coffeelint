@@ -224,6 +224,19 @@ lintSource = (source, config, literate = false) ->
     errorReport.paths["stdin"] = coffeelint.lint(source, config, literate)
     return errorReport
 
+loadRules = (p) ->
+    files = []
+    if fs.statSync(p).isDirectory()
+        # The glob library only uses forward slashes.
+        files = files.concat(glob.sync("#{p}/**/*.coffee"))
+        files = files.concat(glob.sync("#{p}/**/*.js"))
+    else
+        files.push(p)
+
+    for f in files
+        rule = require path.resolve(process.cwd(), f)
+        coffeelint.registerPlugin rule
+
 # Publish the error report and exit with the appropriate status.
 reportAndExit = (errorReport, options) ->
     reporter = if options.argv.jslint
@@ -247,6 +260,7 @@ options = optimist
             .alias("s", "stdin")
             .alias("q", "quiet")
             .describe("f", "Specify a custom configuration file.")
+            .describe("rules", "Specify a custom rule or directory of rules.")
             .describe("makeconfig", "Prints a default config file")
             .describe("noconfig",
                 "Ignores the environment variable COFFEELINT_CONFIG.")
@@ -294,6 +308,8 @@ else
         else if (process.env.COFFEELINT_CONFIG and
         existsFn process.env.COFFEELINT_CONFIG)
             config = JSON.parse(read(process.env.COFFEELINT_CONFIG))
+
+    loadRules(options.argv.rules) if options.argv.rules
 
     if options.argv.s
         # Lint from stdin

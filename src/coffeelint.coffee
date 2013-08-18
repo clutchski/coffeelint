@@ -798,7 +798,25 @@ coffeelint.invertLiterate = (source) ->
 
 _plugins = {}
 coffeelint.registerPlugin = (PluginConstructor) ->
-    _plugins[PluginConstructor::rule.name] = PluginConstructor
+    p = new PluginConstructor
+
+    name = p?.rule?.name
+    e = (msg) -> throw new Error "Invalid plugin: #{name} #{msg}"
+    e "Plugins must provide rule defaults" unless p.rule?
+    e "Rule defaults require a name" unless p.rule.name?
+
+    e "Rule defaults require a message" unless p.rule.message?
+    e "Rule defaults require a description" unless p.rule.description?
+    unless p.rule.level in [ 'ignore', 'warn', 'error' ]
+        e "Default level must be 'ignore', 'warn', or 'error'"
+
+    if typeof p.lintToken is 'function'
+        e "'tokens' is required for 'lintToken'" unless p.tokens
+    else if typeof p.lintLine  isnt 'function'
+        e "Plugins must implement lintToken or lintLine"
+
+
+    _plugins[p.rule.name] = PluginConstructor
 
 coffeelint.registerPlugin require './plugin/arrow_spacing.coffee'
 coffeelint.registerPlugin require './plugin/no_tabs.coffee'

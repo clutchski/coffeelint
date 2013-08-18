@@ -90,6 +90,22 @@ vows.describe('commandline').addBatch({
         'works' : (error, stdout, stderr) ->
             assert.isNull(error)
 
+    'with custom plugin':
+        topic : () ->
+            args = [
+                '--rules'
+                'test/fixtures/custom_rules'
+                'test/fixtures/voldemort.coffee'
+            ]
+
+            commandline args, this.callback
+            return undefined
+
+        'works' : (error, stdout, stderr) ->
+            assert.isNotNull(error)
+            assert.include(stdout.toLowerCase(), 'forbidden variable name')
+
+
     'with multiple sources'  :
 
         topic : () ->
