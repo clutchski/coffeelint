@@ -235,7 +235,7 @@ loadRules = (p) ->
 
     for f in files
         rule = require path.resolve(process.cwd(), f)
-        coffeelint.registerPlugin rule
+        coffeelint.registerRule rule
 
 # Publish the error report and exit with the appropriate status.
 reportAndExit = (errorReport, options) ->

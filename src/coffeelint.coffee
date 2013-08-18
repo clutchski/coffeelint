@@ -87,7 +87,7 @@ block_config =
 #
 class LineLinter
 
-    constructor : (source, config, tokensByLine, plugins) ->
+    constructor : (source, config, tokensByLine, rules) ->
         @source = source
         @config = config
         @line = null
@@ -108,16 +108,17 @@ class LineLinter
                 classIndents : null
             }
         }
-        @setupPlugins(plugins)
+        @setupRules(rules)
 
-    # Only plugins that have a level of error or warn will even get constructed.
-    setupPlugins: (plugins) ->
-        @plugins = []
-        for rule, PluginConstructor of plugins
-            level = @config[rule].level
-            if level in ['error', 'warn'] and
-                    typeof PluginConstructor::lintLine is 'function'
-                @plugins.push new PluginConstructor this, @config
+    # Only rules that have a level of error or warn will even get constructed.
+    setupRules: (rules) ->
+        @rules = []
+        for name, RuleConstructor of rules
+            level = @config[name].level
+            if level in ['error', 'warn']
+                rule = new RuleConstructor this, @config
+                if typeof rule.lintLine is 'function'
+                    @rules.push rule
 
     lint : () ->
         errors = []
@@ -131,7 +132,7 @@ class LineLinter
 
     # Return an error if the line contained failed a rule, null otherwise.
     lintLine : () ->
-        for p in @plugins
+        for p in @rules
             # tokenApi is *temporarily* the lexicalLinter. I think it should be
             # separated.
             v = p.lintLine @line, this
@@ -295,7 +296,7 @@ class LineLinter
 #
 class LexicalLinter
 
-    constructor : (source, config, plugins) ->
+    constructor : (source, config, rules) ->
         @source = source
         @tokens = CoffeeScript.tokens(source)
         @config = config
@@ -306,16 +307,17 @@ class LexicalLinter
         @callTokens = []    # A stack tracking the call token pairs.
         @lines = source.split('\n')
         @braceScopes = []   # A stack tracking keys defined in nexted scopes.
-        @setupPlugins(plugins)
+        @setupRules(rules)
 
     # Only plugins that have a level of error or warn will even get constructed.
-    setupPlugins: (plugins) ->
-        @plugins = []
-        for rule, PluginConstructor of plugins
-            level = @config[rule].level
-            if level in ['error', 'warn'] and
-                    typeof PluginConstructor::lintToken is 'function'
-                @plugins.push new PluginConstructor this, @config
+    setupRules: (rules) ->
+        @rules = []
+        for name, RuleConstructor of rules
+            level = @config[name].level
+            if level in ['error', 'warn']
+                rule = new RuleConstructor this, @config
+                if typeof rule.lintToken is 'function'
+                    @rules.push rule
 
     # Return a list of errors encountered in the given source.
     lint : () ->
@@ -343,7 +345,7 @@ class LexicalLinter
         # regexes, so fake it by using the last line number we know.
         @lineNumber = lineNumber or @lineNumber or 0
 
-        for p in @plugins when token[0] in p.tokens
+        for p in @rules when token[0] in p.tokens
             # tokenApi is *temporarily* the lexicalLinter. I think it should be
             # separated.
             v = p.lintToken token, this
@@ -770,8 +772,9 @@ class ASTLinter
 # Merge default and user configuration.
 mergeDefaultConfig = (userConfig) ->
     config = {}
-    for rule, PluginConstructor of _plugins
-        RULES[rule] = PluginConstructor::rule
+    for rule, RuleConstructor of _rules
+        tmp = new RuleConstructor
+        RULES[rule] = tmp.rule
 
     for rule, ruleConfig of RULES
         config[rule] = defaults(userConfig[rule], ruleConfig)
@@ -796,13 +799,15 @@ coffeelint.invertLiterate = (source) ->
 
     newSource
 
-_plugins = {}
-coffeelint.registerPlugin = (PluginConstructor) ->
-    p = new PluginConstructor
+_rules = {}
+coffeelint.registerRule = (RuleConstructor) ->
+    p = new RuleConstructor
 
     name = p?.rule?.name
-    e = (msg) -> throw new Error "Invalid plugin: #{name} #{msg}"
-    e "Plugins must provide rule defaults" unless p.rule?
+    e = (msg) -> throw new Error "Invalid rule: #{name} #{msg}"
+    unless p.rule?
+        e "Rules must provide rule attribute with a default configuration."
+
     e "Rule defaults require a name" unless p.rule.name?
 
     e "Rule defaults require a message" unless p.rule.message?
@@ -813,13 +818,13 @@ coffeelint.registerPlugin = (PluginConstructor) ->
     if typeof p.lintToken is 'function'
         e "'tokens' is required for 'lintToken'" unless p.tokens
     else if typeof p.lintLine  isnt 'function'
-        e "Plugins must implement lintToken or lintLine"
+        e "Rules must implement lintToken or lintLine"
 
 
-    _plugins[p.rule.name] = PluginConstructor
+    _rules[p.rule.name] = RuleConstructor
 
-coffeelint.registerPlugin require './plugin/arrow_spacing.coffee'
-coffeelint.registerPlugin require './plugin/no_tabs.coffee'
+coffeelint.registerRule require './rules/arrow_spacing.coffee'
+coffeelint.registerRule require './rules/no_tabs.coffee'
 
 # Check the source against the given configuration and return an array
 # of any errors found. An error is an object with the following
@@ -853,12 +858,12 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
     astErrors = new ASTLinter(source, config).lint()
 
     # Do lexical linting.
-    lexicalLinter = new LexicalLinter(source, config, _plugins)
+    lexicalLinter = new LexicalLinter(source, config, _rules)
     lexErrors = lexicalLinter.lint()
 
     # Do line linting.
     tokensByLine = lexicalLinter.tokensByLine
-    lineLinter = new LineLinter(source, config, tokensByLine, _plugins)
+    lineLinter = new LineLinter(source, config, tokensByLine, _rules)
     lineErrors = lineLinter.lint()
 
     # Sort by line number and return.
