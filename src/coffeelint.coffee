@@ -180,7 +180,7 @@ coffeelint.RULES = RULES =
     cyclomatic_complexity :
         value : 10
         level : IGNORE
-        message : 'The cyclomatic complexity is too damn high'
+        message : 'The cyclomatic complexity is too high'
 
     no_backticks :
         level : ERROR
@@ -993,7 +993,7 @@ class ASTLinter
 
         if name == 'Code' and complexity >= rule.value
             attrs = {
-                context: complexity + 1
+                context: "Expected < #{rule.value + 1} got #{complexity + 1}"
                 level: rule.level
                 lineNumber: line + 1
                 lineNumberEnd: node.locationData.last_line + 1

@@ -12,7 +12,7 @@ getComplexity = (source) ->
     assert.lengthOf(errors, 1)
     error = errors[0]
     assert.equal(error.rule, 'cyclomatic_complexity')
-    return error.context
+    return +error.context.match(/got (\d+)/)[1]
 
 
 vows.describe('cyclomatic complexity').addBatch({
@@ -39,7 +39,7 @@ vows.describe('cyclomatic complexity').addBatch({
             assert.lengthOf(errors, 1)
             error = errors[0]
             assert.equal(error.rule, 'cyclomatic_complexity')
-            assert.equal(error.context, 11)
+            assert.equal(error.context, 'Expected < 11 got 11')
             assert.equal(error.lineNumber, 1)
             assert.equal(error.lineNumberEnd, 5)
 
@@ -255,6 +255,6 @@ vows.describe('cyclomatic complexity').addBatch({
             assert.equal(error.rule, 'cyclomatic_complexity')
             assert.equal(error.lineNumber, 1)
             assert.equal(error.lineNumberEnd, 10)
-            assert.equal(error.context, 14)
+            assert.equal(error.context, 'Expected < 11 got 14')
 
 }).export(module)

@@ -159,12 +159,14 @@ class CSVReporter extends Reporter
         @print header.join(",")
         for path, errors of @errorReport.paths
             for e in errors
+                {message, context} = e
+                message += ". #{context}."  if context?
                 f = [
                     path
                     e.lineNumber
                     e.lineNumberEnd ? e.lineNumberEnd
                     e.level
-                    e.message
+                    message
                 ]
                 @print f.join(",")
 
