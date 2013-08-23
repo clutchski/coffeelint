@@ -184,6 +184,26 @@ vows.describe('indent').addBatch({
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 
+    'Multiple indented chained invocations with inlined callbacks' :
+        topic : () ->
+            """
+            obj()
+                .r ->
+                    foo()
+                .s ->
+                    bar()
+
+                .t ->
+                    baz()
+            """
+        'should not result in an error' : (source) ->
+            config =
+                indentation:
+                    value: 4
+            errors = coffeelint.lint(source, config)
+            assert.isEmpty(errors)
+
+
     'Arbitrarily indented arguments' :
 
         topic : """
