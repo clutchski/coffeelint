@@ -7,15 +7,14 @@ BaseLinter = require './base_linter.coffee'
 module.exports = class LexicalLinter extends BaseLinter
 
     constructor : (CoffeeScript, source, config, rules) ->
+        super config
         @source = source
         @tokens = CoffeeScript.tokens(source)
-        @config = config
         @i = 0              # The index of the current token we're linting.
         @tokensByLine = {}  # A map of tokens by line.
         @lines = source.split('\n')
         @setupRules(rules)
 
-        super config
 
     # Only plugins that have a level of error or warn will even get constructed.
     setupRules: (rules) ->

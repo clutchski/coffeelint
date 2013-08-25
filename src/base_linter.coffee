@@ -12,7 +12,6 @@ module.exports = class BaseLinter
 
     constructor: (@config) ->
 
-
     isObject: (obj) ->
         obj is Object(obj)
 

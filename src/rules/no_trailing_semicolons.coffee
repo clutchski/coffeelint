@@ -30,6 +30,4 @@ module.exports = class NoTrailingSemicolons
         # Don't throw errors when the contents of  multiline strings,
         # regexes and the like end in ";"
         if hasSemicolon and not hasNewLine and lineApi.lineHasToken()
-            lineApi.createLineError('no_trailing_semicolons')
-        else
-            return null
+            return true
