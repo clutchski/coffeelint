@@ -6,7 +6,7 @@ regexes =
       http[^\s]+$ # Link that takes up the rest of the line without spaces.
     ///
 
-module.exports = class NoTrailingWhitespace
+module.exports = class MaxLineLength
 
     rule:
         name: 'max_line_length'

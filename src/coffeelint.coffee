@@ -38,14 +38,6 @@ coffeelint.RULES = RULES = require './rules.coffee'
 
 # Some repeatedly used regular expressions.
 regexes =
-    indentation : /\S/
-    longUrlComment : ///
-      ^\s*\# # indentation, up to comment
-      \s*
-      http[^\s]+$ # Link that takes up the rest of the line without spaces.
-    ///
-    camelCase : /^[A-Z][a-zA-Z\d]*$/
-    trailingSemicolon : /;\r?$/
     configStatement : /coffeelint:\s*(disable|enable)(?:=([\w\s,]*))?/
 
 
@@ -274,23 +266,12 @@ class LexicalLinter
 
         # Now lint it.
         switch type
-            # when "->"                     then @lintArrowSpacing(token)
-            when "INDENT"                 then @lintIndentation(token)
-            when "CLASS"                  then @lintClass(token)
             when "UNARY"                  then @lintUnary(token)
             when "{","}"                  then @lintBrace(token)
             when "IDENTIFIER"             then @lintIdentifier(token)
-            when "++", "--"               then @lintIncrement(token)
-            when "THROW"                  then @lintThrow(token)
             when "[", "]"                 then @lintArray(token)
             when "(", ")"                 then @lintParens(token)
-            when "JS"                     then @lintJavascript(token)
             when "CALL_START", "CALL_END" then @lintCall(token)
-            when "PARAM_START"            then @lintParam(token)
-            when "@"                      then @lintStandaloneAt(token)
-            when "+", "-"                 then @lintPlus(token)
-            when "=", "MATH", "COMPARE", "LOGIC", "COMPOUND_ASSIGN"
-                @lintMath(token)
             else null
 
     lintUnary : (token) ->
@@ -353,29 +334,6 @@ class LexicalLinter
             return true if t.isRegex
         return false
 
-    lintPlus : (token) ->
-        # We can't check this inside of interpolations right now, because the
-        # plusses used for the string type co-ercion are marked not spaced.
-        return null if @isInInterpolation() or @isInExtendedRegex()
-
-        p = @peek(-1)
-        unaries = ['TERMINATOR', '(', '=', '-', '+', ',', 'CALL_START',
-                    'INDEX_START', '..', '...', 'COMPARE', 'IF',
-                    'THROW', 'LOGIC', 'POST_IF', ':', '[', 'INDENT',
-                    'COMPOUND_ASSIGN', 'RETURN', 'MATH', 'BY']
-        isUnary = if not p then false else p[0] in unaries
-        if (isUnary and token.spaced) or
-                    (not isUnary and not token.spaced and not token.newLine)
-            @createLexError('space_operators', {context: token[1]})
-        else
-            null
-
-    lintMath : (token) ->
-        if not token.spaced and not token.newLine
-            @createLexError('space_operators', {context: token[1]})
-        else
-            null
-
     lintCall : (token) ->
         if token[0] == 'CALL_START'
             p = @peek(-1)
@@ -383,20 +341,9 @@ class LexicalLinter
             # extended regex.
             token.isRegex = p and p[0] == 'IDENTIFIER' and p[1] == 'RegExp'
             @callTokens.push(token)
-            if token.generated
-                return @createLexError('no_implicit_parens')
-            else
-                return null
         else
             @callTokens.pop()
-            return null
-
-    lintParam : (token) ->
-        nextType = @peek()[0]
-        if nextType == 'PARAM_END'
-            @createLexError('no_empty_param_list')
-        else
-            null
+        return null
 
     lintIdentifier : (token) ->
         key = token[1]
@@ -429,140 +376,7 @@ class LexicalLinter
         else
             @currentScope = @braceScopes.pop()
 
-        if token.generated and token[0] == '{'
-            # Peek back to the last line break. If there is a class
-            # definition, ignore the generated brace.
-            i = -1
-            loop
-                t = @peek(i)
-                if not t? or t[0] == 'TERMINATOR'
-                    return @createLexError('no_implicit_braces')
-                if t[0] == 'CLASS'
-                    return null
-                i -= 1
-        else
-            return null
-
-    lintJavascript : (token) ->
-        @createLexError('no_backticks')
-
-    lintThrow : (token) ->
-        [n1, n2] = [@peek(), @peek(2)]
-        # Catch literals and string interpolations, which are wrapped in
-        # parens.
-        nextIsString = n1[0] == 'STRING' or (n1[0] == '(' and n2[0] == 'STRING')
-        @createLexError('no_throwing_strings') if nextIsString
-
-    lintIncrement : (token) ->
-        attrs = {context : "found '#{token[0]}'"}
-        @createLexError('no_plusplus', attrs)
-
-    lintStandaloneAt : (token) ->
-        nextToken = @peek()
-        spaced = token.spaced
-        isIdentifier = nextToken[0] == 'IDENTIFIER'
-        isIndexStart = nextToken[0] == 'INDEX_START'
-        isDot = nextToken[0] == '.'
-
-        # https://github.com/jashkenas/coffee-script/issues/1601
-        # @::foo is valid, but @:: behaves inconsistently and is planned for
-        # removal. Technically @:: is a stand alone ::, but I think it makes
-        # sense to group it into no_stand_alone_at
-        if nextToken[0] == '::'
-            protoProperty = @peek(2)
-            isValidProtoProperty = protoProperty[0] == 'IDENTIFIER'
-
-        if spaced or (not isIdentifier and not isIndexStart and
-        not isDot and not isValidProtoProperty)
-            @createLexError('no_stand_alone_at')
-
-
-    # Return an error if the given indentation token is not correct.
-    lintIndentation : (token) ->
-        [type, numIndents, lineNumber] = token
-
-        return null if token.generated?
-
-        # HACK: CoffeeScript's lexer insert indentation in string
-        # interpolations that start with spaces e.g. "#{ 123 }"
-        # so ignore such cases. Are there other times an indentation
-        # could possibly follow a '+'?
-        previous = @peek(-2)
-        isInterpIndent = previous and previous[0] == '+'
-
-        # Ignore the indentation inside of an array, so that
-        # we can allow things like:
-        #   x = ["foo",
-        #             "bar"]
-        previous = @peek(-1)
-        isArrayIndent = @inArray() and previous?.newLine
-
-        # Ignore indents used to for formatting on multi-line expressions, so
-        # we can allow things like:
-        #   a = b =
-        #     c = d
-        previousSymbol = @peek(-1)?[0]
-        isMultiline = previousSymbol in ['=', ',']
-
-        # Summarize the indentation conditions we'd like to ignore
-        ignoreIndent = isInterpIndent or isArrayIndent or isMultiline
-
-        # Compensate for indentation in function invocations that span multiple
-        # lines, which can be ignored.
-        if @isChainedCall()
-            currentLine = @lines[@lineNumber]
-            prevNum = 1
-
-            # keep going back until we are not at a comment or a blank line
-            prevNum += 1 while (/^\s*(#|$)/.test(@lines[@lineNumber - prevNum]))
-            previousLine = @lines[@lineNumber - prevNum]
-
-            previousIndentation = previousLine.match(/^(\s*)/)[1].length
-            # I don't know why, but when inside a function, you make a chained
-            # call and define an inline callback as a parameter, the body of
-            # that callback gets the indentation reported higher than it really
-            # is. See issue #88
-            # NOTE: Adding this line moved the cyclomatic complexity over the
-            # limit, I'm not sure why
-            numIndents = currentLine.match(/^(\s*)/)[1].length
-            numIndents -= previousIndentation
-
-
-        # Now check the indentation.
-        expected = @config['indentation'].value
-        if not ignoreIndent and numIndents != expected
-            context = "Expected #{expected} " +
-                      "got #{numIndents}"
-            @createLexError('indentation', {context})
-        else
-            null
-
-    lintClass : (token) ->
-        # TODO: you can do some crazy shit in CoffeeScript, like
-        # class func().ClassName. Don't allow that.
-
-        # Don't try to lint the names of anonymous classes.
-        return null if token.newLine? or @peek()[0] in ['INDENT', 'EXTENDS']
-
-        # It's common to assign a class to a global namespace, e.g.
-        # exports.MyClassName, so loop through the next tokens until
-        # we find the real identifier.
-        className = null
-        offset = 1
-        until className
-            if @peek(offset + 1)?[0] == '.'
-                offset += 2
-            else if @peek(offset)?[0] == '@'
-                offset += 1
-            else
-                className = @peek(offset)[1]
-
-        # Now check for the error.
-        if not regexes.camelCase.test(className)
-            attrs = {context: "class name: #{className}"}
-            @createLexError('camel_case_classes', attrs)
-        else
-            null
+        return null
 
     createLexError : (rule, attrs = {}) ->
         attrs.lineNumber = @lineNumber + 1
@@ -741,12 +555,23 @@ coffeelint.registerRule = (RuleConstructor) ->
 
     _rules[p.rule.name] = RuleConstructor
 
+# These all need to be explicitly listed so they get picked up by browserify.
 coffeelint.registerRule require './rules/arrow_spacing.coffee'
 coffeelint.registerRule require './rules/no_tabs.coffee'
 coffeelint.registerRule require './rules/no_trailing_whitespace.coffee'
 coffeelint.registerRule require './rules/max_line_length.coffee'
 coffeelint.registerRule require './rules/line_endings.coffee'
 coffeelint.registerRule require './rules/no_trailing_semicolons.coffee'
+coffeelint.registerRule require './rules/indentation.coffee'
+coffeelint.registerRule require './rules/camel_case_classes.coffee'
+coffeelint.registerRule require './rules/no_implicit_braces.coffee'
+coffeelint.registerRule require './rules/no_plusplus.coffee'
+coffeelint.registerRule require './rules/no_throwing_strings.coffee'
+coffeelint.registerRule require './rules/no_backticks.coffee'
+coffeelint.registerRule require './rules/no_implicit_parens.coffee'
+coffeelint.registerRule require './rules/no_empty_param_list.coffee'
+coffeelint.registerRule require './rules/no_stand_alone_at.coffee'
+coffeelint.registerRule require './rules/space_operators.coffee'
 
 # Check the source against the given configuration and return an array
 # of any errors found. An error is an object with the following

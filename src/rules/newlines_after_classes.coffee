@@ -1,5 +1,5 @@
 
-module.exports = class NoTrailingSemicolons
+module.exports = class NewlinesAfterClasses
 
     rule:
         name: 'newlines_after_classes'

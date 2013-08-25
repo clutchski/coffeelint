@@ -1,6 +1,6 @@
 
 
-module.exports = class NoTrailingSemicolons
+module.exports = class LineEndings
 
     rule:
         name: 'line_endings'
