@@ -51,106 +51,9 @@ extend = (destination, sources...) ->
 defaults = (source, defaults) ->
     extend({}, defaults, source)
 
-isObject = (obj) ->
-    obj is Object(obj)
-
-# Create an error object for the given rule with the given
-# attributes.
-createError = (rule, attrs = {}) ->
-    level = attrs.level
-    if level not in [IGNORE, WARN, ERROR]
-        throw new Error("unknown level #{level}")
-
-    if level in [ERROR, WARN]
-        attrs.rule = rule
-        return defaults(attrs, RULES[rule])
-    else
-        null
-
-
 LineLinter = require './line_linter.coffee'
 LexicalLinter = require './lexical_linter.coffee'
-
-# A class that performs static analysis of the abstract
-# syntax tree.
-class ASTLinter
-
-    constructor : (source, config) ->
-        @source = source
-        @config = config
-        @errors = []
-
-    lint : () ->
-        try
-            @node = CoffeeScript.nodes(@source)
-        catch coffeeError
-            @errors.push @_parseCoffeeScriptError(coffeeError)
-            return @errors
-        @lintNode(@node)
-        @errors
-
-    # returns the "complexity" value of the current node.
-    getComplexity : (node) ->
-        name = node.constructor.name
-        complexity = if name in ['If', 'While', 'For', 'Try']
-            1
-        else if name == 'Op' and node.operator in ['&&', '||']
-            1
-        else if name == 'Switch'
-            node.cases.length
-        else
-            0
-        return complexity
-
-    # Lint the AST node and return its cyclomatic complexity.
-    lintNode : (node, line) ->
-
-        # Get the complexity of the current node.
-        name = node.constructor.name
-        complexity = @getComplexity(node)
-
-        # Add the complexity of all child's nodes to this one.
-        node.eachChild (childNode) =>
-            nodeLine = childNode.locationData.first_line
-            complexity += @lintNode(childNode, nodeLine) if childNode
-
-        # If the current node is a function, and it's over our limit, add an
-        # error to the list.
-        rule = @config.cyclomatic_complexity
-
-        if name == 'Code' and complexity >= rule.value
-            attrs = {
-                context: complexity + 1
-                level: rule.level
-                lineNumber: line + 1
-                lineNumberEnd: node.locationData.last_line + 1
-            }
-            error = createError 'cyclomatic_complexity', attrs
-            @errors.push error if error
-
-        # Return the complexity for the benefit of parent nodes.
-        return complexity
-
-    _parseCoffeeScriptError : (coffeeError) ->
-        rule = RULES['coffeescript_error']
-
-        message = coffeeError.toString()
-
-        # Parse the line number
-        lineNumber = -1
-        if coffeeError.location?
-            lineNumber = coffeeError.location.first_line + 1
-        else
-            match = /line (\d+)/.exec message
-            lineNumber = parseInt match[1], 10 if match?.length > 1
-        attrs = {
-            message: message
-            level: rule.level
-            lineNumber: lineNumber
-        }
-        return  createError 'coffeescript_error', attrs
-
-
+ASTLinter = require './ast_linter.coffee'
 
 # Merge default and user configuration.
 mergeDefaultConfig = (userConfig) ->
@@ -258,10 +161,10 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
                         config[r] = { level: 'error' }
 
     # Do AST linting first so all compile errors are caught.
-    astErrors = new ASTLinter(source, config).lint()
+    astErrors = new ASTLinter(source, config, CoffeeScript).lint()
 
     # Do lexical linting.
-    lexicalLinter = new LexicalLinter(CoffeeScript, source, config, _rules)
+    lexicalLinter = new LexicalLinter(source, config, CoffeeScript, _rules)
     lexErrors = lexicalLinter.lint()
 
     # Do line linting.

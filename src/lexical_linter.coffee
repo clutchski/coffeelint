@@ -6,9 +6,8 @@ BaseLinter = require './base_linter.coffee'
 #
 module.exports = class LexicalLinter extends BaseLinter
 
-    constructor : (CoffeeScript, source, config, rules) ->
-        super config
-        @source = source
+    constructor : (source, config, CoffeeScript, rules) ->
+        super source, config
         @tokens = CoffeeScript.tokens(source)
         @i = 0              # The index of the current token we're linting.
         @tokensByLine = {}  # A map of tokens by line.

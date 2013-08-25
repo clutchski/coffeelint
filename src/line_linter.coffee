@@ -11,13 +11,12 @@ regexes =
 module.exports = class LineLinter extends BaseLinter
 
     constructor : (source, config, tokensByLine, rules) ->
-        super config
+        super source, config
 
         # Store suppressions in the form of { line #: type }
         @block_config =
             enable : {}
             disable : {}
-        @source = source
         @line = null
         @lineNumber = 0
         @tokensByLine = tokensByLine

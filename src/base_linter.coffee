@@ -10,7 +10,7 @@ defaults = (source, defaults) ->
 
 module.exports = class BaseLinter
 
-    constructor: (@config) ->
+    constructor: (@source, @config) ->
 
     isObject: (obj) ->
         obj is Object(obj)
