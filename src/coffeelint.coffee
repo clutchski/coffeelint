@@ -260,35 +260,6 @@ class LexicalLinter
             if isObject v
                 return @createLexError p.rule.name, v
 
-        # Now lint it.
-        switch type
-            when "UNARY"                  then @lintUnary(token)
-            else null
-
-    lintUnary : (token) ->
-        if token[1] is 'new'
-            # Find the last chained identifier, e.g. Bar in new foo.bar.Bar().
-            identifierIndex = 1
-            loop
-                expectedIdentifier = @peek(identifierIndex)
-                expectedCallStart  = @peek(identifierIndex + 1)
-                if expectedIdentifier?[0] is 'IDENTIFIER'
-                    if expectedCallStart?[0] is '.'
-                        identifierIndex += 2
-                        continue
-                break
-
-            # The callStart is generated if your parameters are all on the same
-            # line with implicit parens, and if your parameters start on the
-            # next line, but is missing if there are no params and no parens.
-            if expectedIdentifier?[0] is 'IDENTIFIER' and expectedCallStart?
-                if expectedCallStart[0] is 'CALL_START'
-                    if expectedCallStart.generated
-                        @createLexError('non_empty_constructor_needs_parens')
-                else
-                    @createLexError('empty_constructor_needs_parens')
-
-
     createLexError : (rule, attrs = {}) ->
         attrs.lineNumber = @lineNumber + 1
         attrs.level = @config[rule].level
@@ -453,6 +424,10 @@ coffeelint.registerRule require './rules/no_empty_param_list.coffee'
 coffeelint.registerRule require './rules/no_stand_alone_at.coffee'
 coffeelint.registerRule require './rules/space_operators.coffee'
 coffeelint.registerRule require './rules/duplicate_key.coffee'
+coffeelint.registerRule require './rules/empty_constructor_needs_parens.coffee'
+coffeelint.registerRule(
+    require './rules/non_empty_constructor_needs_parens.coffee'
+)
 
 # Check the source against the given configuration and return an array
 # of any errors found. An error is an object with the following
