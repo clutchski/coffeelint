@@ -21,13 +21,6 @@ module.exports =
         message : 'Invoking a constructor without parens and with arguments'
 
 
-    # I don't know of any legitimate reason to define duplicate keys in an
-    # object. It seems to always be a mistake, it's also a syntax error in
-    # strict mode.
-    # See http://jslinterrors.com/duplicate-key-a/
-    duplicate_key :
-        level : ERROR
-        message : 'Duplicate key defined in object or class'
 
     coffeescript_error :
         level : ERROR

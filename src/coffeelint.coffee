@@ -214,7 +214,6 @@ class LexicalLinter
         @parenTokens = []   # A stack tracking the parens token pairs.
         @callTokens = []    # A stack tracking the call token pairs.
         @lines = source.split('\n')
-        @braceScopes = []   # A stack tracking keys defined in nexted scopes.
         @setupRules(rules)
 
     # Only plugins that have a level of error or warn will even get constructed.
@@ -267,8 +266,6 @@ class LexicalLinter
         # Now lint it.
         switch type
             when "UNARY"                  then @lintUnary(token)
-            when "{","}"                  then @lintBrace(token)
-            when "IDENTIFIER"             then @lintIdentifier(token)
             when "[", "]"                 then @lintArray(token)
             when "(", ")"                 then @lintParens(token)
             when "CALL_START", "CALL_END" then @lintCall(token)
@@ -345,38 +342,6 @@ class LexicalLinter
             @callTokens.pop()
         return null
 
-    lintIdentifier : (token) ->
-        key = token[1]
-
-        # Class names might not be in a scope
-        return null if not @currentScope?
-        nextToken = @peek(1)
-
-        # Exit if this identifier isn't being assigned. A and B
-        # are identifiers, but only A should be examined:
-        # A = B
-        return null if nextToken[1] isnt ':'
-        previousToken = @peek(-1)
-
-        # Assigning "@something" and "something" are not the same thing
-        key = "@#{key}" if previousToken[0] == '@'
-
-        # Added a prefix to not interfere with things like "constructor".
-        key = "identifier-#{key}"
-        if @currentScope[key]
-            @createLexError('duplicate_key')
-        else
-            @currentScope[key] = token
-            null
-
-    lintBrace : (token) ->
-        if token[0] == '{'
-            @braceScopes.push @currentScope if @currentScope?
-            @currentScope = {}
-        else
-            @currentScope = @braceScopes.pop()
-
-        return null
 
     createLexError : (rule, attrs = {}) ->
         attrs.lineNumber = @lineNumber + 1
@@ -572,6 +537,7 @@ coffeelint.registerRule require './rules/no_implicit_parens.coffee'
 coffeelint.registerRule require './rules/no_empty_param_list.coffee'
 coffeelint.registerRule require './rules/no_stand_alone_at.coffee'
 coffeelint.registerRule require './rules/space_operators.coffee'
+coffeelint.registerRule require './rules/duplicate_key.coffee'
 
 # Check the source against the given configuration and return an array
 # of any errors found. An error is an object with the following
