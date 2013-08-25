@@ -51,6 +51,15 @@ extend = (destination, sources...) ->
 defaults = (source, defaults) ->
     extend({}, defaults, source)
 
+# Helper to remove rules from disabled list
+difference = (a, b) ->
+    j = 0
+    while j < a.length
+        if a[j] in b
+            a.splice(j, 1)
+        else
+            j++
+
 LineLinter = require './line_linter.coffee'
 LexicalLinter = require './lexical_linter.coffee'
 ASTLinter = require './ast_linter.coffee'
@@ -161,29 +170,21 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
                         config[r] = { level: 'error' }
 
     # Do AST linting first so all compile errors are caught.
-    astErrors = new ASTLinter(source, config, CoffeeScript).lint()
+    astErrors = new ASTLinter(source, config, _rules, CoffeeScript).lint()
 
     # Do lexical linting.
-    lexicalLinter = new LexicalLinter(source, config, CoffeeScript, _rules)
+    lexicalLinter = new LexicalLinter(source, config, _rules, CoffeeScript)
     lexErrors = lexicalLinter.lint()
 
     # Do line linting.
     tokensByLine = lexicalLinter.tokensByLine
-    lineLinter = new LineLinter(source, config, tokensByLine, _rules)
+    lineLinter = new LineLinter(source, config, _rules, tokensByLine)
     lineErrors = lineLinter.lint()
 
     # Sort by line number and return.
     errors = lexErrors.concat(lineErrors, astErrors)
     errors.sort((a, b) -> a.lineNumber - b.lineNumber)
 
-    # Helper to remove rules from disabled list
-    difference = (a, b) ->
-        j = 0
-        while j < a.length
-            if a[j] in b
-                a.splice(j, 1)
-            else
-                j++
 
     # Disable/enable rules for inline blocks
     all_errors = errors
@@ -208,9 +209,5 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
             if e.lineNumber is i + 1 or not e.lineNumber?
                 e = all_errors.shift()
                 errors.push e unless e.rule in disabled
-
-    block_config =
-      'enable': {}
-      'disable': {}
 
     errors

@@ -6,26 +6,15 @@ BaseLinter = require './base_linter.coffee'
 #
 module.exports = class LexicalLinter extends BaseLinter
 
-    constructor : (source, config, CoffeeScript, rules) ->
-        super source, config
+    constructor : (source, config, rules, CoffeeScript) ->
+        super source, config, rules
         @tokens = CoffeeScript.tokens(source)
         @i = 0              # The index of the current token we're linting.
         @tokensByLine = {}  # A map of tokens by line.
         @lines = source.split('\n')
-        @setupRules(rules)
 
-
-    # Only plugins that have a level of error or warn will even get constructed.
-    setupRules: (rules) ->
-        @rules = []
-        for name, RuleConstructor of rules
-            level = @config[name].level
-            if level in ['error', 'warn']
-                rule = new RuleConstructor this, @config
-                if typeof rule.lintToken is 'function'
-                    @rules.push rule
-            else if level isnt 'ignore'
-                throw new Error("unknown level #{level}")
+    acceptRule: (rule) ->
+        return typeof rule.lintToken is 'function'
 
     # Return a list of errors encountered in the given source.
     lint : () ->

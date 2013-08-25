@@ -10,7 +10,8 @@ defaults = (source, defaults) ->
 
 module.exports = class BaseLinter
 
-    constructor: (@source, @config) ->
+    constructor: (@source, @config, rules) ->
+        @setupRules rules
 
     isObject: (obj) ->
         obj is Object(obj)
@@ -27,3 +28,19 @@ module.exports = class BaseLinter
             return defaults(attrs, @config[ruleName])
         else
             null
+
+    acceptRule: (rule) ->
+        throw new Error "acceptRule needs to be overridden in the subclass"
+
+    # Only rules that have a level of error or warn will even get constructed.
+    setupRules: (rules) ->
+        @rules = []
+        for name, RuleConstructor of rules
+            level = @config[name].level
+            if level in ['error', 'warn']
+                rule = new RuleConstructor this, @config
+                if @acceptRule(rule)
+                    @rules.push rule
+            else if level isnt 'ignore'
+                throw new Error("unknown level #{level}")
+

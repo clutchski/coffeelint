@@ -10,8 +10,8 @@ regexes =
 #
 module.exports = class LineLinter extends BaseLinter
 
-    constructor : (source, config, tokensByLine, rules) ->
-        super source, config
+    constructor : (source, config, rules, tokensByLine) ->
+        super source, config, rules
 
         # Store suppressions in the form of { line #: type }
         @block_config =
@@ -35,19 +35,9 @@ module.exports = class LineLinter extends BaseLinter
                 classIndents : null
             }
         }
-        @setupRules(rules)
 
-    # Only rules that have a level of error or warn will even get constructed.
-    setupRules: (rules) ->
-        @rules = []
-        for name, RuleConstructor of rules
-            level = @config[name].level
-            if level in ['error', 'warn']
-                rule = new RuleConstructor this, @config
-                if typeof rule.lintLine is 'function'
-                    @rules.push rule
-            else if level isnt 'ignore'
-                throw new Error("unknown level #{level}")
+    acceptRule: (rule) ->
+        return typeof rule.lintLine is 'function'
 
     lint : () ->
         errors = []

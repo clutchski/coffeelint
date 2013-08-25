@@ -4,9 +4,14 @@ BaseLinter = require './base_linter.coffee'
 # syntax tree.
 module.exports = class ASTLinter extends BaseLinter
 
-    constructor : (source, config, @CoffeeScript) ->
-        super source, config
+    constructor : (source, config, rules, @CoffeeScript) ->
+        super source, config, rules
         @errors = []
+
+    # Custom rules are not yet supported in the ASTLinter. Maybe we don't need
+    # them?
+    acceptRule: (rule) ->
+        false
 
     lint : () ->
         try
