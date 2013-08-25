@@ -36,11 +36,6 @@ IGNORE  = 'ignore'
 coffeelint.RULES = RULES = require './rules.coffee'
 
 
-# Some repeatedly used regular expressions.
-regexes =
-    configStatement : /coffeelint:\s*(disable|enable)(?:=([\w\s,]*))?/
-
-
 # Patch the source properties onto the destination.
 extend = (destination, sources...) ->
     for source in sources
@@ -161,7 +156,7 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
     # Check ahead for inline enabled rules
     disabled_initially = []
     for l in source.split('\n')
-        s = regexes.configStatement.exec(l)
+        s = LineLinter.configStatement.exec(l)
         if s?.length > 2 and 'enable' in s
             for r in s[1..]
                 unless r in ['enable','disable']
