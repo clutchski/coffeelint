@@ -24,11 +24,18 @@ module.exports = class Indentation
             """
 
 
-    tokens: [ 'INDENT' ]
+    tokens: [ 'INDENT', "[", "]" ]
+
+    constructor: ->
+        @arrayTokens = []   # A stack tracking the array token pairs.
 
     # Return an error if the given indentation token is not correct.
     lintToken: (token, tokenApi) ->
         [type, numIndents, lineNumber] = token
+
+        if type in [ "[", "]" ]
+            @lintArray(token)
+            return undefined
 
         return null if token.generated?
 
@@ -44,7 +51,7 @@ module.exports = class Indentation
         #   x = ["foo",
         #             "bar"]
         previous = tokenApi.peek(-1)
-        isArrayIndent = tokenApi.inArray() and previous?.newLine
+        isArrayIndent = @inArray() and previous?.newLine
 
         # Ignore indents used to for formatting on multi-line expressions, so
         # we can allow things like:
@@ -58,7 +65,7 @@ module.exports = class Indentation
 
         # Compensate for indentation in function invocations that span multiple
         # lines, which can be ignored.
-        if tokenApi.isChainedCall()
+        if @isChainedCall tokenApi
             { lines, lineNumber } = tokenApi
             currentLine = lines[lineNumber]
             prevNum = 1
@@ -84,3 +91,39 @@ module.exports = class Indentation
             return {
                 context: "Expected #{expected} got #{numIndents}"
             }
+    # Return true if the current token is inside of an array.
+    inArray : () ->
+        return @arrayTokens.length > 0
+
+    # Lint the given array token.
+    lintArray : (token) ->
+        # Track the array token pairs
+        if token[0] == '['
+            @arrayTokens.push(token)
+        else if token[0] == ']'
+            @arrayTokens.pop()
+        # Return null, since we're not really linting
+        # anything here.
+        null
+
+    # Return true if the current token is part of a property access
+    # that is split across lines, for example:
+    #   $('body')
+    #       .addClass('foo')
+    #       .removeClass('bar')
+    isChainedCall: (tokenApi) ->
+        { tokens, i } = tokenApi
+        # Get the index of the second most recent new line.
+        lines = (i for token, i in tokens[..i] when token.newLine?)
+
+        lastNewLineIndex = if lines then lines[lines.length - 2] else null
+
+        # Bail out if there is no such token.
+        return false if not lastNewLineIndex?
+
+        # Otherwise, figure out if that token or the next is an attribute
+        # look-up.
+        tokens = [tokens[lastNewLineIndex], tokens[lastNewLineIndex + 1]]
+
+        return !!(t for t in tokens when t and t[0] == '.').length
+

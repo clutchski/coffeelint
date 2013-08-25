@@ -210,9 +210,6 @@ class LexicalLinter
         @config = config
         @i = 0              # The index of the current token we're linting.
         @tokensByLine = {}  # A map of tokens by line.
-        @arrayTokens = []   # A stack tracking the array token pairs.
-        @parenTokens = []   # A stack tracking the parens token pairs.
-        @callTokens = []    # A stack tracking the call token pairs.
         @lines = source.split('\n')
         @setupRules(rules)
 
@@ -266,9 +263,6 @@ class LexicalLinter
         # Now lint it.
         switch type
             when "UNARY"                  then @lintUnary(token)
-            when "[", "]"                 then @lintArray(token)
-            when "(", ")"                 then @lintParens(token)
-            when "CALL_START", "CALL_END" then @lintCall(token)
             else null
 
     lintUnary : (token) ->
@@ -294,54 +288,6 @@ class LexicalLinter
                 else
                     @createLexError('empty_constructor_needs_parens')
 
-    # Lint the given array token.
-    lintArray : (token) ->
-        # Track the array token pairs
-        if token[0] == '['
-            @arrayTokens.push(token)
-        else if token[0] == ']'
-            @arrayTokens.pop()
-        # Return null, since we're not really linting
-        # anything here.
-        null
-
-    lintParens : (token) ->
-        if token[0] == '('
-            p1 = @peek(-1)
-            n1 = @peek(1)
-            n2 = @peek(2)
-            # String interpolations start with '' + so start the type co-ercion,
-            # so track if we're inside of one. This is most definitely not
-            # 100% true but what else can we do?
-            i = n1 and n2 and n1[0] == 'STRING' and n2[0] == '+'
-            token.isInterpolation = i
-            @parenTokens.push(token)
-        else
-            @parenTokens.pop()
-        # We're not linting, just tracking interpolations.
-        null
-
-    isInInterpolation : () ->
-        for t in @parenTokens
-            return true if t.isInterpolation
-        return false
-
-    isInExtendedRegex : () ->
-        for t in @callTokens
-            return true if t.isRegex
-        return false
-
-    lintCall : (token) ->
-        if token[0] == 'CALL_START'
-            p = @peek(-1)
-            # Track regex calls, to know (approximately) if we're in an
-            # extended regex.
-            token.isRegex = p and p[0] == 'IDENTIFIER' and p[1] == 'RegExp'
-            @callTokens.push(token)
-        else
-            @callTokens.pop()
-        return null
-
 
     createLexError : (rule, attrs = {}) ->
         attrs.lineNumber = @lineNumber + 1
@@ -352,37 +298,6 @@ class LexicalLinter
     # Return the token n places away from the current token.
     peek : (n = 1) ->
         @tokens[@i + n] || null
-
-    # Return true if the current token is inside of an array.
-    inArray : () ->
-        return @arrayTokens.length > 0
-
-    # Are there any more meaningful tokens following the current one?
-    atEof: ->
-        for token in @tokens.slice(@i + 1)
-            unless token.generated or token[0] in ['OUTDENT', 'TERMINATOR']
-                return false
-        true
-
-    # Return true if the current token is part of a property access
-    # that is split across lines, for example:
-    #   $('body')
-    #       .addClass('foo')
-    #       .removeClass('bar')
-    isChainedCall : () ->
-        # Get the index of the second most recent new line.
-        lines = (i for token, i in @tokens[..@i] when token.newLine?)
-
-        lastNewLineIndex = if lines then lines[lines.length - 2] else null
-
-        # Bail out if there is no such token.
-        return false if not lastNewLineIndex?
-
-        # Otherwise, figure out if that token or the next is an attribute
-        # look-up.
-        tokens = [@tokens[lastNewLineIndex], @tokens[lastNewLineIndex + 1]]
-
-        return !!(t for t in tokens when t and t[0] == '.').length
 
 
 # A class that performs static analysis of the abstract

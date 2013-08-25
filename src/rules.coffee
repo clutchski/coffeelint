@@ -20,8 +20,6 @@ module.exports =
         level : IGNORE
         message : 'Invoking a constructor without parens and with arguments'
 
-
-
     coffeescript_error :
         level : ERROR
         message : '' # The default coffeescript error is fine.
