@@ -11,7 +11,7 @@ fs   = require("fs")
 glob = require("glob")
 optimist = require("optimist")
 thisdir = path.dirname(fs.realpathSync(__filename))
-coffeelint = require(path.join(thisdir, "..", "lib", "coffeelint"))
+coffeelint = require(path.join(thisdir, "coffeelint"))
 CoffeeScript = require 'coffee-script'
 
 
