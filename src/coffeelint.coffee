@@ -38,8 +38,6 @@ coffeelint.RULES = RULES = require './rules.coffee'
 
 # Some repeatedly used regular expressions.
 regexes =
-    trailingWhitespace : /[^\s]+[\t ]+\r?$/
-    lineHasComment : /^\s*[^\#]*\#/
     indentation : /\S/
     longUrlComment : ///
       ^\s*\# # indentation, up to comment
@@ -119,6 +117,8 @@ class LineLinter
                 rule = new RuleConstructor this, @config
                 if typeof rule.lintLine is 'function'
                     @rules.push rule
+            else if level isnt 'ignore'
+                throw new Error("unknown level #{level}")
 
     lint : () ->
         errors = []
@@ -132,6 +132,8 @@ class LineLinter
 
     # Return an error if the line contained failed a rule, null otherwise.
     lintLine : () ->
+        @collectInlineConfig()
+
         for p in @rules
             # tokenApi is *temporarily* the lexicalLinter. I think it should be
             # separated.
@@ -141,79 +143,9 @@ class LineLinter
             if isObject v
                 return @createLineError p.rule.name, v
 
-        return @checkTrailingWhitespace() or
-               @checkLineLength() or
-               @checkTrailingSemicolon() or
-               @checkLineEndings() or
-               @checkComments() or
-               @checkNewlinesAfterClasses()
+        undefined
 
-    checkTrailingWhitespace : () ->
-        if regexes.trailingWhitespace.test(@line)
-            # By default only the regex above is needed.
-            if !@config['no_trailing_whitespace']?.allowed_in_comments
-                return @createLineError('no_trailing_whitespace')
-
-            line = @line
-            tokens = @tokensByLine[@lineNumber]
-
-            # If we're in a block comment there won't be any tokens on this
-            # line. Some previous line holds the token spanning multiple lines.
-            if !tokens
-                return null
-
-            # To avoid confusion when a string might contain a "#", every string
-            # on this line will be removed. before checking for a comment
-            for str in (token[1] for token in tokens when token[0] == 'STRING')
-                line = line.replace(str, 'STRING')
-
-            if !regexes.lineHasComment.test(line)
-                return @createLineError('no_trailing_whitespace')
-            else
-                return null
-        else
-            return null
-
-    checkLineLength : () ->
-        rule = 'max_line_length'
-        max = @config[rule]?.value
-        if max and max < @line.length and not regexes.longUrlComment.test(@line)
-            attrs =
-                context: "Length is #{@line.length}, max is #{max}"
-            @createLineError(rule, attrs)
-        else
-            null
-
-    checkTrailingSemicolon : () ->
-        hasSemicolon = regexes.trailingSemicolon.test(@line)
-        [first..., last] = @getLineTokens()
-        hasNewLine = last and last.newLine?
-        # Don't throw errors when the contents of  multiline strings,
-        # regexes and the like end in ";"
-        if hasSemicolon and not hasNewLine and @lineHasToken()
-            @createLineError('no_trailing_semicolons')
-        else
-            return null
-
-    checkLineEndings : () ->
-        rule = 'line_endings'
-        ending = @config[rule]?.value
-
-        return null if not ending or @isLastLine() or not @line
-
-        lastChar = @line[@line.length - 1]
-        valid = if ending == 'windows'
-            lastChar == '\r'
-        else if ending == 'unix'
-            lastChar != '\r'
-        else
-            throw new Error("unknown line ending type: #{ending}")
-        if not valid
-            return @createLineError(rule, {context:"Expected #{ending}"})
-        else
-            return null
-
-    checkComments : () ->
+    collectInlineConfig : () ->
         # Check for block config statements enable and disable
         result = regexes.configStatement.exec(@line)
         if result?
@@ -225,22 +157,6 @@ class LineLinter
             block_config[cmd][@lineNumber] = rules
         return null
 
-    checkNewlinesAfterClasses : () ->
-        rule = 'newlines_after_classes'
-        ending = @config[rule].value
-
-        return null if not ending or @isLastLine()
-
-        if not @context.class.inClass and
-                @context.class.lastUnemptyLineInClass? and
-                ((@lineNumber - 1) - @context.class.lastUnemptyLineInClass) isnt
-                ending
-            got = (@lineNumber - 1) - @context.class.lastUnemptyLineInClass
-            return @createLineError( rule, {
-                context: "Expected #{ending} got #{got}"
-            } )
-
-        null
 
     createLineError : (rule, attrs = {}) ->
         attrs.lineNumber = @lineNumber + 1 # Lines are indexed by zero.
@@ -318,6 +234,8 @@ class LexicalLinter
                 rule = new RuleConstructor this, @config
                 if typeof rule.lintToken is 'function'
                     @rules.push rule
+            else if level isnt 'ignore'
+                throw new Error("unknown level #{level}")
 
     # Return a list of errors encountered in the given source.
     lint : () ->
@@ -825,6 +743,10 @@ coffeelint.registerRule = (RuleConstructor) ->
 
 coffeelint.registerRule require './rules/arrow_spacing.coffee'
 coffeelint.registerRule require './rules/no_tabs.coffee'
+coffeelint.registerRule require './rules/no_trailing_whitespace.coffee'
+coffeelint.registerRule require './rules/max_line_length.coffee'
+coffeelint.registerRule require './rules/line_endings.coffee'
+coffeelint.registerRule require './rules/no_trailing_semicolons.coffee'
 
 # Check the source against the given configuration and return an array
 # of any errors found. An error is an object with the following

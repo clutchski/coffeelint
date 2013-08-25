@@ -7,28 +7,6 @@ IGNORE  = 'ignore'
 # CoffeeLint's default rule configuration.
 module.exports =
 
-    no_trailing_whitespace :
-        level : ERROR
-        message : 'Line ends with trailing whitespace'
-        allowed_in_comments : false
-        description: """
-            This rule forbids trailing whitespace in your code, since it is
-            needless cruft. It is enabled by default.
-            """
-
-    max_line_length :
-        value: 80
-        level : ERROR
-        message : 'Line exceeds maximum allowed length'
-        description: """
-            This rule imposes a maximum line length on your code. <a
-            href="http://www.python.org/dev/peps/pep-0008/">Python's style
-            guide</a> does a good job explaining why you might want to limit the
-            length of your lines, though this is a matter of taste.
-
-            Lines can be no longer than eighty characters by default.
-            """
-
     camel_case_classes :
         level : ERROR
         message : 'Class names should be camel cased'
@@ -89,23 +67,6 @@ module.exports =
             idiomatic CoffeeScript.
             """
 
-    no_trailing_semicolons :
-        level : ERROR
-        message : 'Line contains a trailing semicolon'
-        description: """
-            This rule prohibits trailing semicolons, since they are needless
-            cruft in CoffeeScript.
-            <pre>
-            <code># This semicolon is meaningful.
-            x = '1234'; console.log(x)
-
-            # This semicolon is redundant.
-            alert('end of line');
-            </code>
-            </pre>
-            Trailing semicolons are forbidden by default.
-            """
-
     no_plusplus :
         level : IGNORE
         message : 'The increment and decrement operators are forbidden'
@@ -158,14 +119,6 @@ module.exports =
             This rule is enabled by default.
             """
 
-    line_endings :
-        level : IGNORE
-        value : 'unix' # or 'windows'
-        message : 'Line contains incorrect line endings'
-        description: """
-            This rule ensures your project uses only <tt>windows</tt> or
-            <tt>unix</tt> line endings. This rule is disabled by default.
-            """
     no_implicit_parens :
         level : IGNORE
         message : 'Implicit parens are forbidden'
@@ -219,11 +172,6 @@ module.exports =
     duplicate_key :
         level : ERROR
         message : 'Duplicate key defined in object or class'
-
-    newlines_after_classes :
-        value : 3
-        level : IGNORE
-        message : 'Wrong count of newlines between a class and other code'
 
     no_stand_alone_at :
         level : IGNORE
