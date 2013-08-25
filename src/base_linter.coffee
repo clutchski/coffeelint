@@ -44,3 +44,8 @@ module.exports = class BaseLinter
             else if level isnt 'ignore'
                 throw new Error("unknown level #{level}")
 
+    normalizeResult: (p, result) ->
+        if result is true
+            return @createError p.rule.name
+        if @isObject result
+            return @createError p.rule.name, result

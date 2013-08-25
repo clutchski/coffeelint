@@ -1,4 +1,17 @@
 
+class TokenApi
+    constructor: (CoffeeScript, source, @config, @tokensByLine) ->
+        @tokens = CoffeeScript.tokens(source)
+        @lines = source.split('\n')
+        @tokensByLine = {}  # A map of tokens by line.
+
+    i: 0              # The index of the current token we're linting.
+
+    # Return the token n places away from the current token.
+    peek : (n = 1) ->
+        @tokens[@i + n] || null
+
+
 BaseLinter = require './base_linter.coffee'
 
 #
@@ -8,10 +21,11 @@ module.exports = class LexicalLinter extends BaseLinter
 
     constructor : (source, config, rules, CoffeeScript) ->
         super source, config, rules
-        @tokens = CoffeeScript.tokens(source)
-        @i = 0              # The index of the current token we're linting.
-        @tokensByLine = {}  # A map of tokens by line.
-        @lines = source.split('\n')
+
+        @tokenApi = new TokenApi CoffeeScript, source, @config, @tokensByLine
+        # This needs to be available on the LexicalLinter so it can be passed
+        # to the LineLinter when this finishes running.
+        @tokensByLine = @tokenApi.tokensByLine
 
     acceptRule: (rule) ->
         return typeof rule.lintToken is 'function'
@@ -20,15 +34,15 @@ module.exports = class LexicalLinter extends BaseLinter
     lint : () ->
         errors = []
 
-        for token, i in @tokens
-            @i = i
+        for token, i in @tokenApi.tokens
+            @tokenApi.i = i
             error = @lintToken(token)
             errors.push(error) if error
         errors
 
 
     # Return an error if the given token fails a lint check, false otherwise.
-    lintToken : (token) -> # Arrow intentionally spaced wrong for testing.
+    lintToken : (token) ->
         [type, value, lineNumber] = token
 
         if typeof lineNumber == "object"
@@ -42,21 +56,15 @@ module.exports = class LexicalLinter extends BaseLinter
         # regexes, so fake it by using the last line number we know.
         @lineNumber = lineNumber or @lineNumber or 0
 
-        for p in @rules when token[0] in p.tokens
-            # tokenApi is *temporarily* the lexicalLinter. I think it should be
-            # separated.
-            v = p.lintToken token, this
-            if v is true
-                return @createError p.rule.name
-            if @isObject v
-                return @createError p.rule.name, v
+        @tokenApi.lineNumber = @lineNumber
+
+        for rule in @rules when token[0] in rule.tokens
+            v = @normalizeResult rule, rule.lintToken(token, @tokenApi)
+            return v if v?
 
     createError : (ruleName, attrs = {}) ->
         attrs.lineNumber = @lineNumber + 1
         attrs.level = @config[ruleName].level
-        attrs.line = @lines[@lineNumber]
+        attrs.line = @tokenApi.lines[@lineNumber]
         super ruleName, attrs
 
-    # Return the token n places away from the current token.
-    peek : (n = 1) ->
-        @tokens[@i + n] || null

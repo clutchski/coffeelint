@@ -10,7 +10,7 @@ regexes =
 #
 module.exports = class LineLinter extends BaseLinter
 
-    constructor : (source, config, rules, tokensByLine) ->
+    constructor : (source, config, rules, @tokensByLine) ->
         super source, config, rules
 
         # Store suppressions in the form of { line #: type }
@@ -19,7 +19,6 @@ module.exports = class LineLinter extends BaseLinter
             disable : {}
         @line = null
         @lineNumber = 0
-        @tokensByLine = tokensByLine
         @lines = @source.split('\n')
         @lineCount = @lines.length
 
@@ -53,16 +52,9 @@ module.exports = class LineLinter extends BaseLinter
     lintLine : () ->
         @collectInlineConfig()
 
-        for p in @rules
-            # tokenApi is *temporarily* the lexicalLinter. I think it should be
-            # separated.
-            v = p.lintLine @line, this
-            if v is true
-                return @createError p.rule.name
-            if @isObject v
-                return @createError p.rule.name, v
-
-        undefined
+        for rule in @rules
+            v = @normalizeResult rule, rule.lintLine(@line, this)
+            return v if v?
 
     collectInlineConfig : () ->
         # Check for block config statements enable and disable
