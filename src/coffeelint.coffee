@@ -1061,7 +1061,7 @@ coffeelint.invertLiterate = (source) ->
 #       context:    'Optional details about why the rule was violated'
 #   }
 #
-coffeelint.lint = (source, userConfig = {}, literate = false) ->
+coffeelint.lint = (source, userConfig = {}, literate = userConfig.literate) ->
     source = @invertLiterate source if literate
 
     config = mergeDefaultConfig(userConfig)
