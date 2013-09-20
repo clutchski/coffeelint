@@ -107,8 +107,9 @@ coffeelint.registerRule = (RuleConstructor) ->
 
     if typeof p.lintToken is 'function'
         e "'tokens' is required for 'lintToken'" unless p.tokens
-    else if typeof p.lintLine  isnt 'function'
-        e "Rules must implement lintToken or lintLine"
+    else if typeof p.lintLine  isnt 'function' and
+            typeof p.lintAST isnt 'function'
+        e "Rules must implement lintToken, lintLine, or lintAST"
 
 
     _rules[p.rule.name] = RuleConstructor
@@ -132,6 +133,7 @@ coffeelint.registerRule require './rules/no_stand_alone_at.coffee'
 coffeelint.registerRule require './rules/space_operators.coffee'
 coffeelint.registerRule require './rules/duplicate_key.coffee'
 coffeelint.registerRule require './rules/empty_constructor_needs_parens.coffee'
+coffeelint.registerRule require './rules/cyclomatic_complexity.coffee'
 coffeelint.registerRule(
     require './rules/non_empty_constructor_needs_parens.coffee'
 )

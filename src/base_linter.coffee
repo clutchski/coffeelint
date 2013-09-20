@@ -19,6 +19,10 @@ module.exports = class BaseLinter
     # Create an error object for the given rule with the given
     # attributes.
     createError: (ruleName, attrs = {}) ->
+
+        # Level should default to what's in the config, but can be overridden.
+        attrs.level ?= @config[ruleName].level
+
         level = attrs.level
         if level not in ['ignore', 'warn', 'error']
             throw new Error("unknown level #{level}")

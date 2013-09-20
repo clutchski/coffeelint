@@ -1,68 +1,41 @@
 BaseLinter = require './base_linter.coffee'
 
+class ASTApi
+    constructor: (@config) ->
+
 # A class that performs static analysis of the abstract
 # syntax tree.
 module.exports = class ASTLinter extends BaseLinter
 
     constructor : (source, config, rules, @CoffeeScript) ->
         super source, config, rules
-        @errors = []
+        @astApi = new ASTApi @config
 
-    # Custom rules are not yet supported in the ASTLinter. Maybe we don't need
-    # them?
+    # This uses lintAST instead of lintNode because I think it makes it a bit
+    # more clear that the rule needs to walk the AST on it's own.
     acceptRule: (rule) ->
-        false
+        return typeof rule.lintAST is 'function'
 
     lint : () ->
+        errors = []
         try
             @node = @CoffeeScript.nodes(@source)
         catch coffeeError
-            @errors.push @_parseCoffeeScriptError(coffeeError)
-            return @errors
-        @lintNode(@node)
-        @errors
+            errors.push @_parseCoffeeScriptError(coffeeError)
+            return errors
 
-    # returns the "complexity" value of the current node.
-    getComplexity : (node) ->
-        name = node.constructor.name
-        complexity = if name in ['If', 'While', 'For', 'Try']
-            1
-        else if name == 'Op' and node.operator in ['&&', '||']
-            1
-        else if name == 'Switch'
-            node.cases.length
-        else
-            0
-        return complexity
+        for rule in @rules
+            @astApi.createError = (attrs = {}) =>
+                @createError rule.rule.name, attrs
 
-    # Lint the AST node and return its cyclomatic complexity.
-    lintNode : (node, line) ->
+            # HACK: Push the local errors object into the plugin. This is a
+            # temporary solution until I have a way for it to really return
+            # multiple errors.
+            rule.errors = errors
+            v = @normalizeResult rule, rule.lintAST(@node, @astApi)
 
-        # Get the complexity of the current node.
-        name = node.constructor.name
-        complexity = @getComplexity(node)
-
-        # Add the complexity of all child's nodes to this one.
-        node.eachChild (childNode) =>
-            nodeLine = childNode.locationData.first_line
-            complexity += @lintNode(childNode, nodeLine) if childNode
-
-        # If the current node is a function, and it's over our limit, add an
-        # error to the list.
-        rule = @config.cyclomatic_complexity
-
-        if name == 'Code' and complexity >= rule.value
-            attrs = {
-                context: complexity + 1
-                level: rule.level
-                lineNumber: line + 1
-                lineNumberEnd: node.locationData.last_line + 1
-            }
-            error = @createError 'cyclomatic_complexity', attrs
-            @errors.push error if error
-
-        # Return the complexity for the benefit of parent nodes.
-        return complexity
+            return v if v?
+        errors
 
     _parseCoffeeScriptError : (coffeeError) ->
         rule = @config['coffeescript_error']
