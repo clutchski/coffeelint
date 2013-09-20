@@ -99,16 +99,20 @@ module.exports = class LineLinter extends BaseLinter
             @lineApi.maintainClassContext line
             @collectInlineConfig line
 
-            error = @lintLine(line)
-            errors.push(error) if error
+            errors.push(error) for error in @lintLine(line)
         errors
 
     # Return an error if the line contained failed a rule, null otherwise.
     lintLine : (line) ->
 
+        # Multiple rules might run against the same line to build context.
+        # Every every rule should run even if something has already produced an
+        # error for the same token.
+        errors = []
         for rule in @rules
             v = @normalizeResult rule, rule.lintLine(line, @lineApi)
-            return v if v?
+            errors.push v if v?
+        errors
 
     collectInlineConfig : (line) ->
         # Check for block config statements enable and disable
