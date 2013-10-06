@@ -446,7 +446,33 @@ needless cruft. It is enabled by default.
             re-implemented as pluggable rules that come bundled in CoffeeLint.
           </p>
 
-          <h2 class="section_title" id="api">Building Custom Rules</h2>
+          <h2 class="section_title" id="api">Loading Custom Rules (NEW 0.6)</h2>
+          <p>
+            Not every possible rule will be included in the CoffeeLint project.
+            Maybe it's very specific to your project, or it's not specific to
+            CoffeeScript.
+          </p>
+          <p>
+            For example, maybe you want to get a warning if you don't have a
+            newline at the end of your files We'll imagine you globally
+            installed the fictional package "coffeelint-newline-eof".
+          </p>
+          <!-- Found this example at https://github.com/clutchski/coffeelint/pull/79 -->
+<pre><code>{
+    // This name MUST match the default configuration of the rule being loaded.
+    "no_eof_newline": {
+        // NodeJS module to load. It can also be a path to the rule (useful for devleopment)
+        "module": "coffeelint-newline-eof",
+        // Maybe the rule author set it to error by default and you only want a warning.
+        "level": "warn"
+    }
+}</code></pre>
+          <p>
+            Now every time you run CoffeeLint it will load that rule and
+            override it's default level to "warn".
+          </p>
+
+          <h2 class="section_title" id="api">Building Custom Rules (NEW 0.6)</h2>
           <p>
               CoffeeLint has three types of linters that run. In no particular order they are.
           
@@ -566,7 +592,6 @@ needless cruft. It is enabled by default.
             href="https://github.com/clutchski/coffeelint/compare/v0.5.7...v0.6.0">??<a></a></small>
           <ul class="changelog_history">
             <li>New internal structure to support custom rules.</li>
-            <li>New <tt>undefined_variables</tt> rule. It warns of both undefined variables and unused variables.</li>
           </ul>
           </div>
 
