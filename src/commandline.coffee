@@ -227,18 +227,27 @@ lintSource = (source, config, literate = false) ->
     errorReport.paths["stdin"] = coffeelint.lint(source, config, literate)
     return errorReport
 
-loadRules = (p) ->
-    files = []
-    if fs.statSync(p).isDirectory()
-        # The glob library only uses forward slashes.
-        files = files.concat(glob.sync("#{p}/**/*.coffee"))
-        files = files.concat(glob.sync("#{p}/**/*.js"))
-    else
-        files.push(p)
+# moduleName is a NodeJS module, or a path to a module NodeJS can load.
+loadRules = (moduleName, ruleName = undefined) ->
+    try
+        try
+            ruleModule = require moduleName
+        catch e
+            # Maybe the user used a relative path from the command line. This
+            # doesn't make much sense from a config file, but seems natural
+            # with the --rules option.
+            ruleModule = require path.resolve(process.cwd(), moduleName)
 
-    for f in files
-        rule = require path.resolve(process.cwd(), f)
-        coffeelint.registerRule rule
+        # Most rules can export as a single constructor function
+        if typeof ruleModule is 'function'
+            coffeelint.registerRule ruleModule, ruleName
+        else
+            # Or it can export an array of rules to load.
+            for rule of ruleModule
+                coffeelint.registerRule rule
+    catch e
+        console.error "Error loading #{moduleName}"
+        throw e
 
 # Publish the error report and exit with the appropriate status.
 reportAndExit = (errorReport, options) ->
@@ -311,6 +320,10 @@ else
         else if (process.env.COFFEELINT_CONFIG and
         existsFn process.env.COFFEELINT_CONFIG)
             config = JSON.parse(read(process.env.COFFEELINT_CONFIG))
+
+    for ruleName, data of config
+        if data.module?
+            loadRules(data.module, ruleName)
 
     loadRules(options.argv.rules) if options.argv.rules
 

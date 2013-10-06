@@ -90,15 +90,18 @@ coffeelint.invertLiterate = (source) ->
     newSource
 
 _rules = {}
-coffeelint.registerRule = (RuleConstructor) ->
+coffeelint.registerRule = (RuleConstructor, ruleName = undefined) ->
     p = new RuleConstructor
 
-    name = p?.rule?.name
+    name = p?.rule?.name or "(unknown)"
     e = (msg) -> throw new Error "Invalid rule: #{name} #{msg}"
     unless p.rule?
         e "Rules must provide rule attribute with a default configuration."
 
     e "Rule defaults require a name" unless p.rule.name?
+
+    if ruleName? and ruleName isnt p.rule.name
+        e "Mismatched rule name: #{ruleName}"
 
     e "Rule defaults require a message" unless p.rule.message?
     e "Rule defaults require a description" unless p.rule.description?
