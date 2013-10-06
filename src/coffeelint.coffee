@@ -62,10 +62,6 @@ ASTLinter = require './ast_linter.coffee'
 # Merge default and user configuration.
 mergeDefaultConfig = (userConfig) ->
     config = {}
-    for rule, RuleConstructor of _rules
-        tmp = new RuleConstructor
-        RULES[rule] = tmp.rule
-
     for rule, ruleConfig of RULES
         config[rule] = defaults(userConfig[rule], ruleConfig)
 
@@ -114,7 +110,8 @@ coffeelint.registerRule = (RuleConstructor, ruleName = undefined) ->
             typeof p.lintAST isnt 'function'
         e "Rules must implement lintToken, lintLine, or lintAST"
 
-
+    # Capture the default options for the new rule.
+    RULES[p.rule.name] = p.rule
     _rules[p.rule.name] = RuleConstructor
 
 # These all need to be explicitly listed so they get picked up by browserify.
