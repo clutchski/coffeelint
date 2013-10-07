@@ -441,7 +441,8 @@ class LineLinter
         hasNewLine = last and last.newLine?
         # Don't throw errors when the contents of  multiline strings,
         # regexes and the like end in ";"
-        if hasSemicolon and not hasNewLine and @lineHasToken()
+        if hasSemicolon and not hasNewLine and @lineHasToken() and
+                last[0] isnt 'STRING'
             @createLineError('no_trailing_semicolons')
         else
             return null
