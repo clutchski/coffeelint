@@ -6,6 +6,8 @@ module.exports = class NewlinesAfterClasses
         value : 3
         level : 'ignore'
         message : 'Wrong count of newlines between a class and other code'
+        description: "Checks the number of newlines between classes and other
+        code"
 
     lintLine: (line, lineApi) ->
         ending = lineApi.config[@rule.name].value
@@ -15,9 +17,9 @@ module.exports = class NewlinesAfterClasses
         { lineNumber, context } = lineApi
         if not context.class.inClass and
                 context.class.lastUnemptyLineInClass? and
-                ((lineNumber - 1) - context.class.lastUnemptyLineInClass) isnt
+                (lineNumber - context.class.lastUnemptyLineInClass) isnt
                 ending
-            got = (lineNumber - 1) - context.class.lastUnemptyLineInClass
+            got = lineNumber - context.class.lastUnemptyLineInClass
             return  { context: "Expected #{ending} got #{got}" }
 
         null

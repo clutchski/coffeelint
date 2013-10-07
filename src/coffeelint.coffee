@@ -134,6 +134,7 @@ coffeelint.registerRule require './rules/space_operators.coffee'
 coffeelint.registerRule require './rules/duplicate_key.coffee'
 coffeelint.registerRule require './rules/empty_constructor_needs_parens.coffee'
 coffeelint.registerRule require './rules/cyclomatic_complexity.coffee'
+coffeelint.registerRule require './rules/newlines_after_classes.coffee'
 coffeelint.registerRule(
     require './rules/non_empty_constructor_needs_parens.coffee'
 )
