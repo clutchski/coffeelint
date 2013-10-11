@@ -6,6 +6,9 @@
   "keywords" :      ["lint", "coffeescript", "coffee-script"],
   "author" :        "Matthew Perpick <clutchski@gmail.com>",
   "main" : "./lib/coffeelint.js",
+  "engines":      {
+    "node": ">=0.8.0"
+  },
   "repository" :    {
     "type": "git",
     "url": "git://github.com/clutchski/coffeelint.git"
