@@ -11,7 +11,7 @@ fs   = require("fs")
 glob = require("glob")
 optimist = require("optimist")
 thisdir = path.dirname(fs.realpathSync(__filename))
-coffeelint = require(path.join(thisdir, "..", "lib", "coffeelint"))
+coffeelint = require(path.join(thisdir, "coffeelint"))
 CoffeeScript = require 'coffee-script'
 
 
@@ -159,6 +159,9 @@ class CSVReporter extends Reporter
         @print header.join(",")
         for path, errors of @errorReport.paths
             for e in errors
+                # Having the context is useful for the cyclomatic_complexity
+                # rule and critical for the undefined_variables rule.
+                e.message += " #{e.context}." if e.context
                 f = [
                     path
                     e.lineNumber
@@ -224,6 +227,28 @@ lintSource = (source, config, literate = false) ->
     errorReport.paths["stdin"] = coffeelint.lint(source, config, literate)
     return errorReport
 
+# moduleName is a NodeJS module, or a path to a module NodeJS can load.
+loadRules = (moduleName, ruleName = undefined) ->
+    try
+        try
+            ruleModule = require moduleName
+        catch e
+            # Maybe the user used a relative path from the command line. This
+            # doesn't make much sense from a config file, but seems natural
+            # with the --rules option.
+            ruleModule = require path.resolve(process.cwd(), moduleName)
+
+        # Most rules can export as a single constructor function
+        if typeof ruleModule is 'function'
+            coffeelint.registerRule ruleModule, ruleName
+        else
+            # Or it can export an array of rules to load.
+            for rule of ruleModule
+                coffeelint.registerRule rule
+    catch e
+        console.error "Error loading #{moduleName}"
+        throw e
+
 # Publish the error report and exit with the appropriate status.
 reportAndExit = (errorReport, options) ->
     reporter = if options.argv.jslint
@@ -247,6 +272,7 @@ options = optimist
             .alias("s", "stdin")
             .alias("q", "quiet")
             .describe("f", "Specify a custom configuration file.")
+            .describe("rules", "Specify a custom rule or directory of rules.")
             .describe("makeconfig", "Prints a default config file")
             .describe("noconfig",
                 "Ignores the environment variable COFFEELINT_CONFIG.")
@@ -294,6 +320,12 @@ else
         else if (process.env.COFFEELINT_CONFIG and
         existsFn process.env.COFFEELINT_CONFIG)
             config = JSON.parse(read(process.env.COFFEELINT_CONFIG))
+
+    for ruleName, data of config
+        if data.module?
+            loadRules(data.module, ruleName)
+
+    loadRules(options.argv.rules) if options.argv.rules
 
     if options.argv.s
         # Lint from stdin

@@ -20,6 +20,14 @@ commandline = (args, callback) ->
     exec("#{coffeelintPath} #{args.join(" ")}", callback)
 
 
+process.env.COFFEELINT_CONFIG = ""
+
+# Custom rules are loaded by module name. Using a relative path in the test is
+# an unrealistic example when rules can be installed with `npm install -g
+# some-custom-rule`. This will setup a fake version of node_modules to a
+# relative path doesn't have to be used.
+process.env.NODE_PATH += ":" + path.resolve( __dirname,
+    "fixtures/mock_node_modules/")
 
 vows.describe('commandline').addBatch({
 
@@ -89,6 +97,39 @@ vows.describe('commandline').addBatch({
 
         'works' : (error, stdout, stderr) ->
             assert.isNull(error)
+
+    'with --rule parameter for a custom plugin':
+        topic : () ->
+            args = [
+                '--rules'
+                # It's up to NodeJS to resolve the actual path. The top of the
+                # file modifies NODE_PATH so this can look like a 3rd party
+                # module.
+                "he_who_must_not_be_named"
+                'test/fixtures/custom_rules/voldemort.coffee'
+            ]
+
+            commandline args, this.callback
+            return undefined
+
+        'works' : (error, stdout, stderr) ->
+            assert.isNotNull(error)
+            assert.include(stdout.toLowerCase(), 'forbidden variable name')
+
+    'with `module` specified for a specific rule':
+        topic : () ->
+            args = [
+                '-f'
+                'test/fixtures/custom_rules/rule_module.json'
+                'test/fixtures/custom_rules/voldemort.coffee'
+            ]
+
+            commandline args, this.callback
+            return undefined
+
+        'works' : (error, stdout, stderr) ->
+            assert.isNotNull(error)
+            assert.include(stdout.toLowerCase(), 'forbidden variable name')
 
     'with multiple sources'  :
 
