@@ -1504,7 +1504,7 @@ module.exports = NoTrailingSemicolons = (function() {
     hasSemicolon = regexes.trailingSemicolon.test(line);
     _ref = lineApi.getLineTokens(), first = 2 <= _ref.length ? __slice.call(_ref, 0, _i = _ref.length - 1) : (_i = 0, []), last = _ref[_i++];
     hasNewLine = last && (last.newLine != null);
-    if (hasSemicolon && !hasNewLine && lineApi.lineHasToken()) {
+    if (hasSemicolon && !hasNewLine && lineApi.lineHasToken() && last[0] !== 'STRING') {
       return true;
     }
   };
