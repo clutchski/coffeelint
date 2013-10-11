@@ -14,13 +14,14 @@ vows.describe('colonassignmentspacing').addBatch({
               barks : true
             stringyObject =
               'stringkey' : 'ok'
-            newlineObject =
-              obj :
-                key : 'value'
             '''
 
         'will not return an error' : (source) ->
-            config = 'colon_assignment_spacing' : {'level' : 'error'}
+            config = 'colon_assignment_spacing' :
+                level : 'error'
+                spacing :
+                    left : 1
+                    right : 1
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 
@@ -36,12 +37,20 @@ vows.describe('colonassignmentspacing').addBatch({
             '''
 
         'will return an error' : (source) ->
-            config = 'colon_assignment_spacing' : {'level' : 'error'}
+            config = 'colon_assignment_spacing' :
+                level : 'error'
+                spacing :
+                    left : 1
+                    right : 1
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 3)
 
         'will ignore an error' : (source) ->
-            config = 'colon_assignment_spacing' : {'level' : 'ignore'}
+            config = 'colon_assignment_spacing' :
+                level : 'ignore'
+                spacing :
+                    left : 1
+                    right : 1
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 
@@ -55,7 +64,11 @@ vows.describe('colonassignmentspacing').addBatch({
             '''
 
         'will return an error' : (source) ->
-            config = 'colon_assignment_spacing' : {'level' : 'error'}
+            config = 'colon_assignment_spacing' :
+                level : 'error'
+                spacing :
+                    left : 1
+                    right : 1
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 

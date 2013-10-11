@@ -298,11 +298,22 @@ coffeelint.RULES = RULES =
 
     colon_assignment_spacing :
         level : IGNORE
+        spacing :
+            left : 0
+            right : 0
         message : 'Colon assignment without spaces'
         description : """
             <p>This rule checks to see that there is spacing before and
-            after the colon in a colon assignment (i.e., classes, objects).</p>
+            after the colon in a colon assignment (i.e., classes, objects).
+            The spacing amount is specified by
+            spacing.left and spacing.right, respectively.
+            A zero value means no spacing required.
+            </p>
             <pre><code>
+            #
+            # If spacing.left and spacing.right is 1
+            #
+
             # Good
             object = {spacing : true}
             class Dog
@@ -674,8 +685,23 @@ class LexicalLinter
         null
 
     lintColonAssignment : (token) ->
-        leftSpaced = token[2].first_column - @peek(-1)?[2].last_column is 2
-        if (token.spaced or token.newLine) and leftSpaced
+        rule = 'colon_assignment_spacing'
+        spacingAllowances = @config[rule].spacing
+
+        leftSpacing = token[2].first_column - @peek(-1)?[2].last_column
+        leftAllowance = parseInt(spacingAllowances.left) + 1
+        leftSpaced = leftSpacing is leftAllowance
+
+        nextToken = @peek(1)
+        rightAllowance =
+            if nextToken[0] is 'STRING'
+                parseInt(spacingAllowances.right) + 1
+            else
+                parseInt(spacingAllowances.right)
+        rightSpacing = nextToken[2]?.first_column - token[2].last_column
+        rightSpaced = rightSpacing is rightAllowance
+
+        if rightSpaced and leftSpaced
             null
         else
             @createLexError('colon_assignment_spacing')
