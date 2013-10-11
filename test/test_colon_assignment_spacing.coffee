@@ -3,7 +3,7 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
-vows.describe('colonassignmentspacing').addBatch({
+vows.describe('colon_assignment_spacing').addBatch({
 
     'Spacing around assignment' :
 
@@ -17,11 +17,12 @@ vows.describe('colonassignmentspacing').addBatch({
             '''
 
         'will not return an error' : (source) ->
-            config = 'colon_assignment_spacing' :
-                level : 'error'
-                spacing :
-                    left : 1
-                    right : 1
+            config =
+                'colon_assignment_spacing' :
+                    level : 'error'
+                    spacing :
+                        left : 1
+                        right : 1
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 
@@ -37,20 +38,22 @@ vows.describe('colonassignmentspacing').addBatch({
             '''
 
         'will return an error' : (source) ->
-            config = 'colon_assignment_spacing' :
-                level : 'error'
-                spacing :
-                    left : 1
-                    right : 1
+            config =
+                'colon_assignment_spacing' :
+                    level : 'error'
+                    spacing :
+                        left : 1
+                        right : 1
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 3)
 
         'will ignore an error' : (source) ->
-            config = 'colon_assignment_spacing' :
-                level : 'ignore'
-                spacing :
-                    left : 1
-                    right : 1
+            config =
+                'colon_assignment_spacing' :
+                    level : 'ignore'
+                    spacing :
+                        left : 1
+                        right : 1
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 
@@ -64,11 +67,12 @@ vows.describe('colonassignmentspacing').addBatch({
             '''
 
         'will return an error' : (source) ->
-            config = 'colon_assignment_spacing' :
-                level : 'error'
-                spacing :
-                    left : 1
-                    right : 1
+            config =
+                'colon_assignment_spacing' :
+                    level : 'error'
+                    spacing :
+                        left : 1
+                        right : 1
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 
