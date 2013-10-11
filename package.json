@@ -1,11 +1,14 @@
 {
   "name":           "coffeelint",
   "description":    "Lint your CoffeeScript",
-  "version":        "0.5.7",
+  "version":        "0.6.0",
   "homepage" :      "http://www.coffeelint.org",
   "keywords" :      ["lint", "coffeescript", "coffee-script"],
   "author" :        "Matthew Perpick <clutchski@gmail.com>",
   "main" : "./lib/coffeelint.js",
+  "engines":      {
+    "node": ">=0.8.0"
+  },
   "repository" :    {
     "type": "git",
     "url": "git://github.com/clutchski/coffeelint.git"
@@ -16,7 +19,9 @@
   "dependencies": {
     "optimist" : ">=0.2.8",
     "coffee-script" : ">=1.6.0",
-    "glob" : ">=3.1.9"
+    "glob" : ">=3.1.9",
+    "browserify": "~2.26.0",
+    "coffeeify": "~0.5.1"
   },
   "devDependencies" : {
     "vows" : ">=0.6.0",
@@ -35,6 +40,6 @@
     "lint": "npm run compile && ./bin/coffeelint -f test/fixtures/coffeelint.json src/*.coffee test/*.coffee test/*.litcoffee",
     "lint-csv": "npm run compile && ./bin/coffeelint --csv -f test/fixtures/coffeelint.json src/*.coffee test/*.coffee",
     "lint-jslint": "npm run compile && ./bin/coffeelint --jslint -f test/fixtures/coffeelint.json src/*.coffee test/*.coffee",
-    "compile": "coffee -c -o lib src"
+    "compile": "coffee -c -o lib src && ./node_modules/browserify/bin/cmd.js -t coffeeify -s coffeelint -e  src/coffeelint.coffee > lib/coffeelint.js"
   }
 }

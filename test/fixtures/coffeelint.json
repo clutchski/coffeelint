@@ -1,4 +1,7 @@
 {
+    "arrow_spacing": {
+        "level": "error"
+    },
     "indentation" : {
         "level" : "error",
         "value" : 4

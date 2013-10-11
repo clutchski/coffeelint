@@ -1,3 +1,21 @@
 #!/usr/bin/env node
 
-require('../lib/commandline')
+var path = require("path");
+var fs   = require("fs");
+
+// path.existsSync was moved to fs.existsSync node 0.6 -> 0.8
+var existsFn = fs.existsSync || path.existsSync;
+
+var thisdir = path.dirname(fs.realpathSync(__filename));
+
+// This setup allows for VERY fast development. You can clear the lib
+// directory then run without having to recompile the coffeescript.
+//
+// I use this so vim runs the newest code while I work on CoffeeLint. -Asa
+commandline = path.join(thisdir, '..', "lib", "coffeelint");
+if (existsFn(commandline)) {
+    require(commandline);
+} else {
+    require('coffee-script');
+    require('../src/commandline');
+}
