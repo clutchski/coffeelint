@@ -36,7 +36,7 @@
     "test": "vows --spec test/*.coffee test/*.litcoffee",
     "posttest": "npm run lint",
     "prepublish": "npm run compile",
-    "install": "[ -e lib/commandline.js ] || npm run compile",
+    "install": "echo 'process.exit(require(\"fs\").existsSync(\"lib/commandline.js\") ? 0 : 1)' | node || npm run compile",
     "lint": "npm run compile && ./bin/coffeelint -f test/fixtures/coffeelint.json src/*.coffee test/*.coffee test/*.litcoffee",
     "lint-csv": "npm run compile && ./bin/coffeelint --csv -f test/fixtures/coffeelint.json src/*.coffee test/*.coffee",
     "lint-jslint": "npm run compile && ./bin/coffeelint --jslint -f test/fixtures/coffeelint.json src/*.coffee test/*.coffee",
