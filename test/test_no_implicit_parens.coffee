@@ -12,6 +12,17 @@ vows.describe('parens').addBatch({
             console.log 'implict parens'
             blah = (a, b) ->
             blah 'a', 'b'
+
+            class A
+              @configure(1, 2, 3)
+
+              constructor: ->
+
+            class B
+              _defaultC = 5
+
+              constructor: (a) ->
+                @c = a ? _defaultC
             '''
 
         'are allowed by default' : (source) ->
