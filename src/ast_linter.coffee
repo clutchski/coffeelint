@@ -12,7 +12,7 @@ module.exports = class ASTLinter extends BaseLinter
         @astApi = new ASTApi @config
 
     # This uses lintAST instead of lintNode because I think it makes it a bit
-    # more clear that the rule needs to walk the AST on it's own.
+    # more clear that the rule needs to walk the AST on its own.
     acceptRule: (rule) ->
         return typeof rule.lintAST is 'function'
 
