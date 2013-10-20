@@ -65,6 +65,24 @@ vows.describe('trailing').addBatch({
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 0)
 
+    "On empty lines": # https://github.com/clutchski/coffeelint/issues/39
+        topic: "x = 1234\n     \n"
+
+        'allowed by default': (source) ->
+            errors = coffeelint.lint(source)
+            assert.equal(errors.length, 0)
+
+        'can be forbidden': (source) ->
+            config = {no_trailing_whitespace: {allowed_in_empty_lines: false}}
+
+            errors = coffeelint.lint(source, config)
+            assert.equal(errors.length, 1)
+            error = errors[0]
+            assert.isObject(error)
+            assert.equal(error.lineNumber, 2)
+            assert.equal(error.message, "Line ends with trailing whitespace")
+            assert.equal(error.rule, 'no_trailing_whitespace')
+
     'Trailing tabs' :
 
         topic : () ->

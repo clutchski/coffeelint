@@ -1,6 +1,7 @@
 
 regexes =
     trailingWhitespace : /[^\s]+[\t ]+\r?$/
+    onlySpaces: /^[\t\s]+\r?$/
     lineHasComment : /^\s*[^\#]*\#/
 
 module.exports = class NoTrailingWhitespace
@@ -10,15 +11,20 @@ module.exports = class NoTrailingWhitespace
         level : 'error'
         message : 'Line ends with trailing whitespace'
         allowed_in_comments : false
+        allowed_in_empty_lines: true
         description: """
             This rule forbids trailing whitespace in your code, since it is
             needless cruft. It is enabled by default.
             """
 
     lintLine: (line, lineApi) ->
+        unless lineApi.config['no_trailing_whitespace']?.allowed_in_empty_lines
+            if regexes.onlySpaces.test(line)
+                return true
+
         if regexes.trailingWhitespace.test(line)
             # By default only the regex above is needed.
-            if !lineApi.config['no_trailing_whitespace']?.allowed_in_comments
+            unless lineApi.config['no_trailing_whitespace']?.allowed_in_comments
                 return true
 
             line = line
