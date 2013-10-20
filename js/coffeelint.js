@@ -202,7 +202,7 @@ if (typeof window !== "undefined" && window !== null) {
   CoffeeScript = require(cs);
 }
 
-coffeelint.VERSION = "0.6.0";
+coffeelint.VERSION = "0.6.1";
 
 ERROR = 'error';
 
@@ -805,7 +805,7 @@ module.exports = CamelCaseClasses = (function() {
     name: 'camel_case_classes',
     level: 'error',
     message: 'Class names should be camel cased',
-    description: "This rule mandates that all class names are camel cased. Camel\ncasing class names is a generally accepted way of distinguishing\nconstructor functions - which require the 'new' prefix to behave\nproperly - from plain old functions.\n<pre>\n<code># Good!\nclass BoaConstrictor\n\n# Bad!\nclass boaConstrictor\n</code>\n</pre>\nThis rule is enabled by default."
+    description: "This rule mandates that all class names are CamelCased. Camel\ncasing class names is a generally accepted way of distinguishing\nconstructor functions - which require the 'new' prefix to behave\nproperly - from plain old functions.\n<pre>\n<code># Good!\nclass BoaConstrictor\n\n# Bad!\nclass boaConstrictor\n</code>\n</pre>\nThis rule is enabled by default."
   };
 
   CamelCaseClasses.prototype.tokens = ['CLASS'];
@@ -1519,6 +1519,7 @@ var NoTrailingWhitespace, regexes;
 
 regexes = {
   trailingWhitespace: /[^\s]+[\t ]+\r?$/,
+  onlySpaces: /^[\t\s]+\r?$/,
   lineHasComment: /^\s*[^\#]*\#/
 };
 
@@ -1530,14 +1531,20 @@ module.exports = NoTrailingWhitespace = (function() {
     level: 'error',
     message: 'Line ends with trailing whitespace',
     allowed_in_comments: false,
+    allowed_in_empty_lines: true,
     description: "This rule forbids trailing whitespace in your code, since it is\nneedless cruft. It is enabled by default."
   };
 
   NoTrailingWhitespace.prototype.lintLine = function(line, lineApi) {
-    var str, token, tokens, _i, _len, _ref, _ref1;
+    var str, token, tokens, _i, _len, _ref, _ref1, _ref2;
 
+    if (!((_ref = lineApi.config['no_trailing_whitespace']) != null ? _ref.allowed_in_empty_lines : void 0)) {
+      if (regexes.onlySpaces.test(line)) {
+        return true;
+      }
+    }
     if (regexes.trailingWhitespace.test(line)) {
-      if (!((_ref = lineApi.config['no_trailing_whitespace']) != null ? _ref.allowed_in_comments : void 0)) {
+      if (!((_ref1 = lineApi.config['no_trailing_whitespace']) != null ? _ref1.allowed_in_comments : void 0)) {
         return true;
       }
       line = line;
@@ -1545,7 +1552,7 @@ module.exports = NoTrailingWhitespace = (function() {
       if (!tokens) {
         return null;
       }
-      _ref1 = (function() {
+      _ref2 = (function() {
         var _j, _len, _results;
 
         _results = [];
@@ -1557,8 +1564,8 @@ module.exports = NoTrailingWhitespace = (function() {
         }
         return _results;
       })();
-      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-        str = _ref1[_i];
+      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+        str = _ref2[_i];
         line = line.replace(str, 'STRING');
       }
       if (!regexes.lineHasComment.test(line)) {
