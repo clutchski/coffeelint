@@ -151,21 +151,26 @@ vows.describe('commandline').addBatch({
     'with configuration file' :
 
         topic : () ->
-            configPath = 'test/fixtures/generated_coffeelint.json'
+            configPath = 'generated_coffeelint.json'
             configFile = fs.openSync configPath, 'w'
-            stdio = stdio: [ null, configFile, null ]
-            commandline '--makeconfig', stdio, (error, stdout, stderr) =>
+            commandline ['--makeconfig'], (error, stdout, stderr) =>
+                fs.writeSync configFile, stdout
                 assert.isNull(error)
                 args = [
                     '-f'
                     configPath
                     'test/fixtures/clean.coffee'
                 ]
-                commandline args, this.callback
+                commandline args, (args...) =>
+                    this.callback stdout, args...
 
             return undefined
 
-        'works' : (error, stdout, stderr) ->
+        'works' : (config, error, stdout, stderr) ->
+            assert.isNotNull(config)
+            # This will throw an exception if it doesn't parse.
+            JSON.parse config
+            assert.isNotNull(stdout)
             assert.isNull(error)
 
     'does not fail on warnings' :
