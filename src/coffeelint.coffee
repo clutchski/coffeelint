@@ -35,7 +35,6 @@ IGNORE  = 'ignore'
 
 coffeelint.RULES = RULES = require './rules.coffee'
 
-
 # Patch the source properties onto the destination.
 extend = (destination, sources...) ->
     for source in sources
@@ -123,6 +122,7 @@ coffeelint.registerRule require './rules/line_endings.coffee'
 coffeelint.registerRule require './rules/no_trailing_semicolons.coffee'
 coffeelint.registerRule require './rules/indentation.coffee'
 coffeelint.registerRule require './rules/camel_case_classes.coffee'
+coffeelint.registerRule require './rules/colon_assignment_spacing.coffee'
 coffeelint.registerRule require './rules/no_implicit_braces.coffee'
 coffeelint.registerRule require './rules/no_plusplus.coffee'
 coffeelint.registerRule require './rules/no_throwing_strings.coffee'
