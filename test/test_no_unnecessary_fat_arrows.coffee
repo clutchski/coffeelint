@@ -7,7 +7,7 @@ runLint = (source) ->
     config = no_unnecessary_fat_arrows: level: 'error'
     coffeelint.lint source, config
 
-shouldError = (source, numErrors=1) ->
+shouldError = (source, numErrors = 1) ->
     topic: source
     'errors for unnecessary arrow': (source) ->
         errors = runLint source
