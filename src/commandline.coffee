@@ -211,6 +211,46 @@ class JSLintReporter extends Reporter
 
         msg
 
+class CheckstyleReporter extends Reporter
+
+    publish : () ->
+        @print "<?xml version=\"1.0\" encoding=\"utf-8\"?><checkstyle version=\"4.3\">"
+
+        for path, errors of @errorReport.paths
+            if errors.length
+                @print "<file name=\"#{path}\">"
+
+                for e in errors
+                    @print """
+                    <error line="#{e.lineNumber}"
+                            severity="#{@escape(e.level)}"
+                            message="#{@escape(e.message)}; context:#{@escape(e.context)}""
+                            source="coffeelint"/>
+                    """
+                @print "</file>"
+
+        @print "</checkstyle>"
+
+    escape : (msg) ->
+        # Force msg to be a String
+        msg = "" + msg
+        unless msg
+            return
+        # Perhaps some other HTML Special Chars should be added here
+        # But this are the XML Special Chars listed in Wikipedia
+        replacements = [
+            [/&/g, "&amp;"]
+            [/"/g, "&quot;"]
+            [/</g, "&lt;"]
+            [/>/g, "&gt;"]
+            [/'/g, "&apos;"]
+            ]
+
+        for r in replacements
+            msg = msg.replace r[0], r[1]
+
+        msg
+
 # Return an error report from linting the given paths.
 lintFiles = (paths, config) ->
     errorReport = new ErrorReport()
@@ -255,6 +295,8 @@ reportAndExit = (errorReport, options) ->
         new JSLintReporter(errorReport)
     else if options.argv.csv
         new CSVReporter(errorReport)
+    else if options.argv.checkstyle
+        new CheckstyleReporter(errorReport)
     else
         colorize = not options.argv.nocolor
         new Reporter(errorReport, colorize)
@@ -281,6 +323,7 @@ options = optimist
             .describe("r", "Recursively lint .coffee files in subdirectories.")
             .describe("csv", "Use the csv reporter.")
             .describe("jslint", "Use the JSLint XML reporter.")
+            .describe("checkstyle", "Use the checkstyle XML reporter.")
             .describe("nocolor", "Don't colorize the output")
             .describe("s", "Lint the source from stdin")
             .describe("q", "Only print errors.")
@@ -288,6 +331,7 @@ options = optimist
                 "Used with --stdin to process as Literate CoffeeScript")
             .boolean("csv")
             .boolean("jslint")
+            .boolean("checkstyle")
             .boolean("nocolor")
             .boolean("noconfig")
             .boolean("makeconfig")
