@@ -21,7 +21,10 @@ module.exports = class ASTLinter extends BaseLinter
         try
             @node = @CoffeeScript.nodes(@source)
         catch coffeeError
-            errors.push @_parseCoffeeScriptError(coffeeError)
+            # If for some reason you shut off the 'coffeescript_error' rule err
+            # will be null and should NOT be added to errors
+            err = @_parseCoffeeScriptError(coffeeError)
+            errors.push err if err?
             return errors
 
         for rule in @rules
