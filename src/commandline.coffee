@@ -183,7 +183,7 @@ class JSLintReporter extends Reporter
                 for e in errors
                     @print """
                     <issue line="#{e.lineNumber}"
-                            lineEnd=#{e.lineNumberEnd ? e.lineNumberEnd}
+                            lineEnd="#{e.lineNumberEnd ? e.lineNumber}"
                             reason="[#{@escape(e.level)}] #{@escape(e.message)}"
                             evidence="#{@escape(e.context)}"/>
                     """
