@@ -278,7 +278,7 @@ options = optimist
                 "Ignores the environment variable COFFEELINT_CONFIG.")
             .describe("h", "Print help information.")
             .describe("v", "Print current version number.")
-            .describe("r", "Recursively lint .coffee files in subdirectories.")
+            .describe("r", "(not used, but left for backward compatibility)")
             .describe("csv", "Use the csv reporter.")
             .describe("jslint", "Use the JSLint XML reporter.")
             .describe("nocolor", "Don't colorize the output")
@@ -339,7 +339,7 @@ else
     else
         # Find scripts to lint.
         paths = options.argv._
-        scripts = if options.argv.r then findCoffeeScripts(paths) else paths
+        scripts = findCoffeeScripts(paths)
 
         # Lint the code.
         errorReport = lintFiles(scripts, config, options.argv.literate)
