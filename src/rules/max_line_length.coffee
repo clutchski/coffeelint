@@ -12,6 +12,7 @@ module.exports = class MaxLineLength
         name: 'max_line_length'
         value: 80
         level : 'error'
+        limitComments: true
         message : 'Line exceeds maximum allowed length'
         description: """
             This rule imposes a maximum line length on your code. <a
@@ -24,7 +25,13 @@ module.exports = class MaxLineLength
 
     lintLine: (line, lineApi) ->
         max = lineApi.config[@rule.name]?.value
+        limitComments = lineApi.config[@rule.name]?.limitComments
         if max and max < line.length and not regexes.longUrlComment.test(line)
+
+            unless limitComments
+                if lineApi.getLineTokens().length is 0
+                    return
+
             return {
                 context: "Length is #{line.length}, max is #{max}"
             }

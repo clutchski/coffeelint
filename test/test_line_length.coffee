@@ -9,8 +9,9 @@ vows.describe('linelength').addBatch({
     'Maximum line length' :
 
         topic : () ->
+            # Every line generated here is a comment.
             line = (length) ->
-                return '"' + new Array(length - 1).join('-') + '"'
+                return '# ' + new Array(length - 1).join('-')
             lengths = [50, 79, 80, 81, 100, 200]
             (line(l) for l in lengths).join("\n")
 
@@ -38,6 +39,15 @@ vows.describe('linelength').addBatch({
                         level: 'ignore'
                 errors = coffeelint.lint(source, config)
                 assert.isEmpty(errors)
+
+        'can ignore comments': (source) ->
+            config =
+                max_line_length:
+                    limitComments: false
+
+            errors = coffeelint.lint(source, config)
+            assert.isEmpty(errors)
+
 
     'Maximum length exceptions':
         topic: """
