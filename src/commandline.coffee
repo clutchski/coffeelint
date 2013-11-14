@@ -211,6 +211,30 @@ class JSLintReporter extends Reporter
 
         msg
 
+class CheckstyleReporter extends JSLintReporter
+
+    publish : () ->
+        @print "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+        @print "<checkstyle version=\"4.3\">"
+
+        for path, errors of @errorReport.paths
+            if errors.length
+                @print "<file name=\"#{path}\">"
+
+                for e in errors
+                    # context is optional, this avoids generating the string
+                    # "context: undefined"
+                    context = e.context ? ""
+                    @print """
+                    <error line="#{e.lineNumber}"
+                        severity="#{@escape(e.level)}"
+                        message="#{@escape(e.message+'; context: '+context)}"
+                        source="coffeelint"/>
+                    """
+                @print "</file>"
+
+        @print "</checkstyle>"
+
 # Return an error report from linting the given paths.
 lintFiles = (paths, config) ->
     errorReport = new ErrorReport()
@@ -255,6 +279,8 @@ reportAndExit = (errorReport, options) ->
         new JSLintReporter(errorReport)
     else if options.argv.csv
         new CSVReporter(errorReport)
+    else if options.argv.checkstyle
+        new CheckstyleReporter(errorReport)
     else
         colorize = not options.argv.nocolor
         new Reporter(errorReport, colorize)
@@ -281,6 +307,7 @@ options = optimist
             .describe("r", "(not used, but left for backward compatibility)")
             .describe("csv", "Use the csv reporter.")
             .describe("jslint", "Use the JSLint XML reporter.")
+            .describe("checkstyle", "Use the checkstyle XML reporter.")
             .describe("nocolor", "Don't colorize the output")
             .describe("s", "Lint the source from stdin")
             .describe("q", "Only print errors.")
@@ -288,6 +315,7 @@ options = optimist
                 "Used with --stdin to process as Literate CoffeeScript")
             .boolean("csv")
             .boolean("jslint")
+            .boolean("checkstyle")
             .boolean("nocolor")
             .boolean("noconfig")
             .boolean("makeconfig")
