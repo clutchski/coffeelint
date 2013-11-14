@@ -13,7 +13,7 @@ module.exports = class NoUnnecessaryFatArrows
 
     rule:
         name: 'no_unnecessary_fat_arrows'
-        level: 'error'
+        level: 'warn'
         message: 'Unnecessary fat arrow'
         description: """
             Disallows defining functions with fat arrows when `this`
@@ -21,12 +21,9 @@ module.exports = class NoUnnecessaryFatArrows
             """
 
     lintAST: (node, astApi) ->
-        @lintNode node, astApi
-        undefined
-        
-    lintNode: (node, astApi) ->
         if (isFatArrowCode node) and (not needsFatArrow node)
             error = astApi.createError
                 lineNumber: node.locationData.first_line + 1
             @errors.push error
         node.eachChild (child) => @lintNode child, astApi
+        undefined

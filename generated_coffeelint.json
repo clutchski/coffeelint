@@ -39,6 +39,14 @@
         "name": "camel_case_classes",
         "level": "error"
     },
+    "colon_assignment_spacing": {
+        "name": "colon_assignment_spacing",
+        "level": "ignore",
+        "spacing": {
+            "left": 0,
+            "right": 0
+        }
+    },
     "no_implicit_braces": {
         "name": "no_implicit_braces",
         "level": "ignore"
@@ -91,7 +99,7 @@
     },
     "no_unnecessary_fat_arrows": {
         "name": "no_unnecessary_fat_arrows",
-        "level": "error"
+        "level": "warn"
     },
     "non_empty_constructor_needs_parens": {
         "name": "non_empty_constructor_needs_parens",
