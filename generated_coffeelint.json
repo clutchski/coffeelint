@@ -101,6 +101,10 @@
         "name": "no_unnecessary_fat_arrows",
         "level": "warn"
     },
+    "missing_fat_arrows": {
+        "name": "missing_fat_arrows",
+        "level": "ignore"
+    },
     "non_empty_constructor_needs_parens": {
         "name": "non_empty_constructor_needs_parens",
         "level": "ignore"
