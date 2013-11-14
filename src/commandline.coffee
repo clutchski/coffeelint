@@ -211,45 +211,29 @@ class JSLintReporter extends Reporter
 
         msg
 
-class CheckstyleReporter extends Reporter
+class CheckstyleReporter extends JSLintReporter
 
     publish : () ->
-        @print "<?xml version=\"1.0\" encoding=\"utf-8\"?><checkstyle version=\"4.3\">"
+        @print "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+        @print "<checkstyle version=\"4.3\">"
 
         for path, errors of @errorReport.paths
             if errors.length
                 @print "<file name=\"#{path}\">"
 
                 for e in errors
+                    # context is optional, this avoids generating the string
+                    # "context: undefined"
+                    context = e.context ? ""
                     @print """
                     <error line="#{e.lineNumber}"
-                            severity="#{@escape(e.level)}"
-                            message="#{@escape(e.message)}; context:#{@escape(e.context)}""
-                            source="coffeelint"/>
+                        severity="#{@escape(e.level)}"
+                        message="#{@escape(e.message+'; context: '+context)}"
+                        source="coffeelint"/>
                     """
                 @print "</file>"
 
         @print "</checkstyle>"
-
-    escape : (msg) ->
-        # Force msg to be a String
-        msg = "" + msg
-        unless msg
-            return
-        # Perhaps some other HTML Special Chars should be added here
-        # But this are the XML Special Chars listed in Wikipedia
-        replacements = [
-            [/&/g, "&amp;"]
-            [/"/g, "&quot;"]
-            [/</g, "&lt;"]
-            [/>/g, "&gt;"]
-            [/'/g, "&apos;"]
-            ]
-
-        for r in replacements
-            msg = msg.replace r[0], r[1]
-
-        msg
 
 # Return an error report from linting the given paths.
 lintFiles = (paths, config) ->
