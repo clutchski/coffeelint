@@ -89,6 +89,10 @@
         "value": 3,
         "level": "ignore"
     },
+    "no_unnecessary_fat_arrows": {
+        "name": "no_unnecessary_fat_arrows",
+        "level": "error"
+    },
     "non_empty_constructor_needs_parens": {
         "name": "non_empty_constructor_needs_parens",
         "level": "ignore"
