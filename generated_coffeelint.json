@@ -49,7 +49,8 @@
     },
     "no_implicit_braces": {
         "name": "no_implicit_braces",
-        "level": "ignore"
+        "level": "ignore",
+        "strict": true
     },
     "no_plusplus": {
         "name": "no_plusplus",

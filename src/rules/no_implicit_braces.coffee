@@ -5,6 +5,7 @@ module.exports = class NoImplicitBraces
         name: 'no_implicit_braces'
         level : 'ignore'
         message : 'Implicit braces are forbidden'
+        strict: true
         description: """
             This rule prohibits implicit braces when declaring object literals.
             Implicit braces can make code more difficult to understand,
@@ -27,6 +28,17 @@ module.exports = class NoImplicitBraces
 
     lintToken: (token, tokenApi) ->
         if token.generated
+            # If strict is turned off it will allow implicit braces any time
+            # it's the last token on a line.
+            unless tokenApi.config[@rule.name].strict
+                [ previousToken ] = tokenApi.peek(-1)
+                if  previousToken is 'INDENT'
+                    return
+
+            @isPartOfClass(tokenApi)
+
+
+    isPartOfClass: (tokenApi) ->
             # Peek back to the last line break. If there is a class
             # definition, ignore the generated brace.
             i = -1

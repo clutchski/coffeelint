@@ -30,6 +30,31 @@ vows.describe('braces').addBatch({
             assert.equal(error.message, 'Implicit braces are forbidden')
             assert.equal(error.rule, 'no_implicit_braces')
 
+    'Implicit braces strict' :
+        topic: """
+            foo =
+              bar:
+                baz: 1
+                thing: 'a'
+              baz: ['a', 'b', 'c']
+        """
+
+        "blocks all implicit braces by default": (source) ->
+            config = {no_implicit_braces : {level:'error'}}
+            errors = coffeelint.lint(source, config)
+            assert.isArray(errors)
+            assert.lengthOf(errors, 2)
+            assert.equal(rule, 'no_implicit_braces') for {rule} in errors
+
+        "allows braces at the end of lines when strict is false": (source) ->
+            config =
+                no_implicit_braces :
+                    level:'error'
+                    strict: false
+            errors = coffeelint.lint(source, config)
+            assert.isArray(errors)
+            assert.isEmpty(errors)
+
     'Implicit braces in class definitions' :
 
         topic : () ->
