@@ -28,8 +28,9 @@ module.exports = class NoImplicitBraces
 
     lintToken: (token, tokenApi) ->
         if token.generated
-            # If strict is turned off it will allow implicit braces any time
-            # it's the last token on a line.
+
+            # If strict mode is turned off it allows implicit braces when the
+            # object is declared over multiple lines.
             unless tokenApi.config[@rule.name].strict
                 [ previousToken ] = tokenApi.peek(-1)
                 if  previousToken is 'INDENT'
