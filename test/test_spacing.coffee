@@ -101,6 +101,9 @@ vows.describe('spacing').addBatch({
             a * -b
             return -1
             for x in xs by -1 then x
+
+            switch x
+              when -1 then 42
             '''
 
         'are permitted' : (source) ->
