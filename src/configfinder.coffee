@@ -6,9 +6,6 @@ JSHint does.
 fs = require 'fs'
 path = require 'path'
 
-# path.existsSync was moved to fs.existsSync node 0.6 -> 0.8
-existsFn = fs.existsSync ? path.existsSync
-
 # Cache for findFile
 findFileResults = {}
 
@@ -19,7 +16,7 @@ findFile = (name, dir) ->
     filename = path.normalize(path.join(dir, name))
     return findFileResults[filename]  if findFileResults[filename]
     parent = path.resolve(dir, "../")
-    if existsFn(filename)
+    if fs.existsSync(filename)
         findFileResults[filename] = filename
     else if dir is parent
         findFileResults[filename] = null
@@ -52,4 +49,4 @@ exports.getConfig = (filename = null) ->
         return loadJSON(projConfig)  if projConfig
     envs = process.env.HOME or process.env.HOMEPATH or process.env.USERPROFILE
     home = path.normalize(path.join(envs, "coffeelint.json"))
-    return loadJSON(home)  if existsFn(home)
+    return loadJSON(home)  if fs.existsSync(home)
