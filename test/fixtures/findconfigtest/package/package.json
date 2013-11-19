@@ -1,0 +1,9 @@
+{
+  "name": "test",
+  "coffeelintConfig": {
+	"indentation" : {
+      "level" : "error",
+	  "value" : 6
+	}
+  }
+}
