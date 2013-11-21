@@ -83,6 +83,32 @@ vows.describe('commandline').addBatch({
             assert.isNotNull(error)
             assert.include(stdout.toLowerCase(), 'line')
 
+    'with findconfig and local coffeelint.json' :
+
+        topic : () ->
+            args = [
+                '-F'
+                'test/fixtures/findconfigtest/sevenspaces.coffee'
+            ]
+            commandline args, this.callback
+            return undefined
+
+        'works' : (error, stdout, stderr) ->
+            assert.isNull(error)
+
+    'with findconfig and  local package.json' :
+
+        topic : () ->
+            args = [
+                '-F'
+                'test/fixtures/findconfigtest/package/sixspaces.coffee'
+            ]
+            commandline args, this.callback
+            return undefined
+
+        'works' : (error, stdout, stderr) ->
+            assert.isNull(error)
+
     'with custom configuration' :
 
         topic : () ->
