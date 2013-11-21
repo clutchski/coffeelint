@@ -258,10 +258,8 @@ lintSource = (source, config, literate = false) ->
 # will be used for each file being linted. Standard places are package.json or
 # coffeelint.json in a project's root folder or the user's home folder.
 getFallbackConfig = (filename = null) ->
-    if options.argv.F
+    unless options.argv.noconfig
         configfinder.getConfig(filename)
-    else
-        null
 
 # moduleName is a NodeJS module, or a path to a module NodeJS can load.
 loadRules = (moduleName, ruleName = undefined) ->
@@ -305,14 +303,11 @@ reportAndExit = (errorReport, options) ->
 options = optimist
             .usage("Usage: coffeelint [options] source [...]")
             .alias("f", "file")
-            .alias("F", "findconfig")
             .alias("h", "help")
             .alias("v", "version")
             .alias("s", "stdin")
             .alias("q", "quiet")
             .describe("f", "Specify a custom configuration file.")
-            .describe("F",
-                "Find config in package.json or coffeelint.json for each file.")
             .describe("rules", "Specify a custom rule or directory of rules.")
             .describe("makeconfig", "Prints a default config file")
             .describe("noconfig",
@@ -335,7 +330,6 @@ options = optimist
             .boolean("noconfig")
             .boolean("makeconfig")
             .boolean("literate")
-            .boolean("F")
             .boolean("r")
             .boolean("s")
             .boolean("q", "Print errors only.")
@@ -357,12 +351,10 @@ else
     # Load configuration.
     config = null
     unless options.argv.noconfig
-        # path.existsSync was moved to fs.existsSync node 0.6 -> 0.8
-        existsFn = fs.existsSync ? path.existsSync
         if options.argv.f
             config = JSON.parse read options.argv.f
         else if (process.env.COFFEELINT_CONFIG and
-        existsFn process.env.COFFEELINT_CONFIG)
+        fs.existsSync(process.env.COFFEELINT_CONFIG))
             config = JSON.parse(read(process.env.COFFEELINT_CONFIG))
 
     for ruleName, data of config

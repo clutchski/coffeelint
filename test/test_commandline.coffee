@@ -20,6 +20,9 @@ commandline = (args, callback) ->
     exec("#{coffeelintPath} #{args.join(" ")}", callback)
 
 
+process.env.HOME = ""
+process.env.HOMEPATH = ""
+process.env.USERPROFILE = ""
 process.env.COFFEELINT_CONFIG = ""
 
 # Custom rules are loaded by module name. Using a relative path in the test is
@@ -87,7 +90,6 @@ vows.describe('commandline').addBatch({
 
         topic : () ->
             args = [
-                '-F'
                 'test/fixtures/findconfigtest/sevenspaces.coffee'
             ]
             commandline args, this.callback
@@ -100,7 +102,6 @@ vows.describe('commandline').addBatch({
 
         topic : () ->
             args = [
-                '-F'
                 'test/fixtures/findconfigtest/package/sixspaces.coffee'
             ]
             commandline args, this.callback
@@ -249,7 +250,7 @@ vows.describe('commandline').addBatch({
         topic : () ->
             args = [
                 '-f'
-                'test/fixtures/coffeelint.json'
+                'coffeelint.json'
                 'test/fixtures/cyclo_fail.coffee'
                 '--jslint'
             ]
@@ -373,7 +374,6 @@ vows.describe('commandline').addBatch({
         'with option q not set':
             'and no errors occured':
                 topic: () ->
-                    console.log process.env.COFFEELINT_CONFIG
                     args = [ 'test/fixtures/clean.coffee' ]
                     commandline args, this.callback
                     return undefined

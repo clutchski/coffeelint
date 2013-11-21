@@ -49,4 +49,6 @@ exports.getConfig = (filename = null) ->
         return loadJSON(projConfig)  if projConfig
     envs = process.env.HOME or process.env.HOMEPATH or process.env.USERPROFILE
     home = path.normalize(path.join(envs, "coffeelint.json"))
-    return loadJSON(home)  if fs.existsSync(home)
+    if fs.existsSync(home)
+        console.log 'loaded', home
+        return loadJSON(home)
