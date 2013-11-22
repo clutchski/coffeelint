@@ -103,16 +103,24 @@ class Gangster
         <p>
           To specify your own configuration file, do the following:
         </p>
-        <code>coffeelint -f config.json application.coffee</code>
+        <code>coffeelint -f coffeelint.json application.coffee</code>
         <p>
           If any errors were found, a non-zero code will be returned.
         </p>
         <p>
           To generate a configuration file, do
         </p>
-        <code>coffeelint --makeconfig &gt; config.json</code>
+        <code>coffeelint --makeconfig &gt; coffeelint.json</code>
         <p>
           You can then configure the rules to your liking.
+        </p>
+        <p>
+          New in 1.0: CoffeeLint will automatically pick up config files. When
+          linting a file (as opposed to stdin) it will walk up the directory
+          tree looking for a coffeelint.json or a package.json that has a
+          "coffeelintConfig" object. If neither of those are found or you're
+          linting from stdin it will check your home for a coffeelint.json
+          file.
         </p>
         <h2 class="section_title" id="options">Options</h2>
         </p>
@@ -134,7 +142,8 @@ class Gangster
               <th>Description</th>
             </tr>
           </thead>
-          <tbody><tr>
+          <tbody>
+<tr>
 <td class="rule">arrow_spacing</td>
 <td class="description">
     <p>This rule checks to see that there is spacing before and after
@@ -179,6 +188,33 @@ This rule is enabled by default.
 <td class="description">
     [no description provided]
     <p><em>default level: error</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">colon_assignment_spacing</td>
+<td class="description">
+    <p>This rule checks to see that there is spacing before and
+after the colon in a colon assignment (i.e., classes, objects).
+The spacing amount is specified by
+spacing.left and spacing.right, respectively.
+A zero value means no spacing required.
+</p>
+<pre><code>
+#
+# If spacing.left and spacing.right is 1
+#
+
+# Good
+object = {spacing : true}
+class Dog
+  canBark : true
+
+# Bad
+object = {spacing: true}
+class Cat
+  canBark: false
+</code></pre>
+    <p><em>default level: ignore</em></p>
 </td>
 </tr>
 <tr>
@@ -240,6 +276,21 @@ length of your lines, though this is a matter of taste.
 
 Lines can be no longer than eighty characters by default.
     <p><em>default level: error</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">missing_fat_arrows</td>
+<td class="description">
+    Warns when you use `this` inside a function that wasn't defined
+with a fat arrow. This rule does not apply to methods defined in a
+class, since they have `this` bound to the class instance (or the
+class itself, for class methods).
+
+It is impossible to statically determine whether a function using
+`this` will be bound with the correct `this` value due to language
+features like `Function.prototype.call` and
+`Function.prototype.bind`, so this rule may produce false positives.
+    <p><em>default level: ignore</em></p>
 </td>
 </tr>
 <tr>
@@ -391,6 +442,14 @@ Trailing semicolons are forbidden by default.
     This rule forbids trailing whitespace in your code, since it is
 needless cruft. It is enabled by default.
     <p><em>default level: error</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">no_unnecessary_fat_arrows</td>
+<td class="description">
+    Disallows defining functions with fat arrows when `this`
+is not used within the function.
+    <p><em>default level: warn</em></p>
 </td>
 </tr>
 <tr>
@@ -593,6 +652,28 @@ needless cruft. It is enabled by default.
           </p>
 
           <h2 class="section_title" id="changelog">Change Log</h2>
+
+          <div>
+            <h3 class="changelog_header">0.6.0-1.0.0</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v0.6.0...v1.0.0">2013.11.21<a></a></small>
+          <ul class="changelog_history">
+
+            <li>CoffeeLint will detect config files by default.</li>
+
+            <li>New rule <tt>colon_assignment_spacing</tt></li>
+            <li>New rule <tt>no_unnecessary_fat_arrows</tt></li>
+            <li>New rule <tt>missing_fat_arrows</tt></li>
+            <li>Added an option to <tt>no_trailing_whitespace</tt> to forbid trailing space on empty lines</li>
+            <li>Added an option to <tt>no_implicit_braces</tt> to allow unambiguous implicit braces</li>
+            <li>Fixed --makeconfig</li>
+            <li>New option: --checkstyle</li>
+
+            <li>Fixed invalid XML produced by --jslint</li>
+            <li>Removed the need for the -r flag. It remains for backward compatibility but doesn't do anything now</li>
+
+          </ul>
+          </div>
 
           <div>
             <h3 class="changelog_header">0.5.7-0.6.0</h3>

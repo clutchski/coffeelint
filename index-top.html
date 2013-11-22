@@ -103,16 +103,24 @@ class Gangster
         <p>
           To specify your own configuration file, do the following:
         </p>
-        <code>coffeelint -f config.json application.coffee</code>
+        <code>coffeelint -f coffeelint.json application.coffee</code>
         <p>
           If any errors were found, a non-zero code will be returned.
         </p>
         <p>
           To generate a configuration file, do
         </p>
-        <code>coffeelint --makeconfig &gt; config.json</code>
+        <code>coffeelint --makeconfig &gt; coffeelint.json</code>
         <p>
           You can then configure the rules to your liking.
+        </p>
+        <p>
+          New in 1.0: CoffeeLint will automatically pick up config files. When
+          linting a file (as opposed to stdin) it will walk up the directory
+          tree looking for a coffeelint.json or a package.json that has a
+          "coffeelintConfig" object. If neither of those are found or you're
+          linting from stdin it will check your home for a coffeelint.json
+          file.
         </p>
         <h2 class="section_title" id="options">Options</h2>
         </p>

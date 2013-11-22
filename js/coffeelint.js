@@ -29,7 +29,7 @@ module.exports = ASTLinter = (function(_super) {
   };
 
   ASTLinter.prototype.lint = function() {
-    var coffeeError, errors, rule, v, _i, _len, _ref,
+    var coffeeError, err, errors, rule, v, _i, _len, _ref,
       _this = this;
 
     errors = [];
@@ -37,7 +37,10 @@ module.exports = ASTLinter = (function(_super) {
       this.node = this.CoffeeScript.nodes(this.source);
     } catch (_error) {
       coffeeError = _error;
-      errors.push(this._parseCoffeeScriptError(coffeeError));
+      err = this._parseCoffeeScriptError(coffeeError);
+      if (err != null) {
+        errors.push(err);
+      }
       return errors;
     }
     _ref = this.rules;
@@ -337,6 +340,8 @@ coffeelint.registerRule(require('./rules/indentation.coffee'));
 
 coffeelint.registerRule(require('./rules/camel_case_classes.coffee'));
 
+coffeelint.registerRule(require('./rules/colon_assignment_spacing.coffee'));
+
 coffeelint.registerRule(require('./rules/no_implicit_braces.coffee'));
 
 coffeelint.registerRule(require('./rules/no_plusplus.coffee'));
@@ -360,6 +365,10 @@ coffeelint.registerRule(require('./rules/empty_constructor_needs_parens.coffee')
 coffeelint.registerRule(require('./rules/cyclomatic_complexity.coffee'));
 
 coffeelint.registerRule(require('./rules/newlines_after_classes.coffee'));
+
+coffeelint.registerRule(require('./rules/no_unnecessary_fat_arrows.coffee'));
+
+coffeelint.registerRule(require('./rules/missing_fat_arrows.coffee'));
 
 coffeelint.registerRule(require('./rules/non_empty_constructor_needs_parens.coffee'));
 
@@ -443,7 +452,7 @@ coffeelint.lint = function(source, userConfig, literate) {
 };
 
 
-},{"./ast_linter.coffee":1,"./lexical_linter.coffee":4,"./line_linter.coffee":5,"./rules.coffee":6,"./rules/arrow_spacing.coffee":7,"./rules/camel_case_classes.coffee":8,"./rules/cyclomatic_complexity.coffee":9,"./rules/duplicate_key.coffee":10,"./rules/empty_constructor_needs_parens.coffee":11,"./rules/indentation.coffee":12,"./rules/line_endings.coffee":13,"./rules/max_line_length.coffee":14,"./rules/newlines_after_classes.coffee":15,"./rules/no_backticks.coffee":16,"./rules/no_empty_param_list.coffee":17,"./rules/no_implicit_braces.coffee":18,"./rules/no_implicit_parens.coffee":19,"./rules/no_plusplus.coffee":20,"./rules/no_stand_alone_at.coffee":21,"./rules/no_tabs.coffee":22,"./rules/no_throwing_strings.coffee":23,"./rules/no_trailing_semicolons.coffee":24,"./rules/no_trailing_whitespace.coffee":25,"./rules/non_empty_constructor_needs_parens.coffee":26,"./rules/space_operators.coffee":27}],4:[function(require,module,exports){
+},{"./ast_linter.coffee":1,"./lexical_linter.coffee":4,"./line_linter.coffee":5,"./rules.coffee":6,"./rules/arrow_spacing.coffee":7,"./rules/camel_case_classes.coffee":8,"./rules/colon_assignment_spacing.coffee":9,"./rules/cyclomatic_complexity.coffee":10,"./rules/duplicate_key.coffee":11,"./rules/empty_constructor_needs_parens.coffee":12,"./rules/indentation.coffee":13,"./rules/line_endings.coffee":14,"./rules/max_line_length.coffee":15,"./rules/missing_fat_arrows.coffee":16,"./rules/newlines_after_classes.coffee":17,"./rules/no_backticks.coffee":18,"./rules/no_empty_param_list.coffee":19,"./rules/no_implicit_braces.coffee":20,"./rules/no_implicit_parens.coffee":21,"./rules/no_plusplus.coffee":22,"./rules/no_stand_alone_at.coffee":23,"./rules/no_tabs.coffee":24,"./rules/no_throwing_strings.coffee":25,"./rules/no_trailing_semicolons.coffee":26,"./rules/no_trailing_whitespace.coffee":27,"./rules/no_unnecessary_fat_arrows.coffee":28,"./rules/non_empty_constructor_needs_parens.coffee":29,"./rules/space_operators.coffee":30}],4:[function(require,module,exports){
 var BaseLinter, LexicalLinter, TokenApi,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -840,6 +849,50 @@ module.exports = CamelCaseClasses = (function() {
 
 
 },{}],9:[function(require,module,exports){
+var ColonAssignmentSpacing;
+
+module.exports = ColonAssignmentSpacing = (function() {
+  function ColonAssignmentSpacing() {}
+
+  ColonAssignmentSpacing.prototype.rule = {
+    name: 'colon_assignment_spacing',
+    level: 'ignore',
+    message: 'Colon assignment without proper spacing',
+    spacing: {
+      left: 0,
+      right: 0
+    },
+    description: "<p>This rule checks to see that there is spacing before and\nafter the colon in a colon assignment (i.e., classes, objects).\nThe spacing amount is specified by\nspacing.left and spacing.right, respectively.\nA zero value means no spacing required.\n</p>\n<pre><code>\n#\n# If spacing.left and spacing.right is 1\n#\n\n# Good\nobject = {spacing : true}\nclass Dog\n  canBark : true\n\n# Bad\nobject = {spacing: true}\nclass Cat\n  canBark: false\n</code></pre>"
+  };
+
+  ColonAssignmentSpacing.prototype.tokens = [':'];
+
+  ColonAssignmentSpacing.prototype.lintToken = function(token, tokenApi) {
+    var leftAllowance, leftSpaced, leftSpacing, nextToken, rightAllowance, rightSpaced, rightSpacing, spacingAllowances, _ref, _ref1;
+
+    spacingAllowances = tokenApi.config[this.rule.name].spacing;
+    leftSpacing = token[2].first_column - ((_ref = tokenApi.peek(-1)) != null ? _ref[2].last_column : void 0);
+    leftAllowance = parseInt(spacingAllowances.left) + 1;
+    leftSpaced = leftSpacing === leftAllowance;
+    nextToken = tokenApi.peek(1);
+    rightAllowance = nextToken[0] === 'STRING' ? parseInt(spacingAllowances.right) + 1 : parseInt(spacingAllowances.right);
+    rightSpacing = ((_ref1 = nextToken[2]) != null ? _ref1.first_column : void 0) - token[2].last_column;
+    rightSpaced = rightSpacing === rightAllowance;
+    if (rightSpaced && leftSpaced) {
+      return null;
+    } else {
+      return {
+        context: ("Expect colon spacing left: " + spacingAllowances.left + ", right: " + spacingAllowances.right + ".") + (" Got left: " + leftSpacing + ", right: " + rightSpacing + ".")
+      };
+    }
+  };
+
+  return ColonAssignmentSpacing;
+
+})();
+
+
+},{}],10:[function(require,module,exports){
 var NoTabs;
 
 module.exports = NoTabs = (function() {
@@ -900,7 +953,7 @@ module.exports = NoTabs = (function() {
 })();
 
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 var DuplicateKey;
 
 module.exports = DuplicateKey = (function() {
@@ -971,7 +1024,7 @@ module.exports = DuplicateKey = (function() {
 })();
 
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 var EmptyConstructorNeedsParens;
 
 module.exports = EmptyConstructorNeedsParens = (function() {
@@ -1019,7 +1072,7 @@ module.exports = EmptyConstructorNeedsParens = (function() {
 })();
 
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 var Indentation;
 
 module.exports = Indentation = (function() {
@@ -1129,7 +1182,7 @@ module.exports = Indentation = (function() {
 })();
 
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 var LineEndings;
 
 module.exports = LineEndings = (function() {
@@ -1174,7 +1227,7 @@ module.exports = LineEndings = (function() {
 })();
 
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 var MaxLineLength, regexes;
 
 regexes = {
@@ -1188,15 +1241,22 @@ module.exports = MaxLineLength = (function() {
     name: 'max_line_length',
     value: 80,
     level: 'error',
+    limitComments: true,
     message: 'Line exceeds maximum allowed length',
     description: "This rule imposes a maximum line length on your code. <a\nhref=\"http://www.python.org/dev/peps/pep-0008/\">Python's style\nguide</a> does a good job explaining why you might want to limit the\nlength of your lines, though this is a matter of taste.\n\nLines can be no longer than eighty characters by default."
   };
 
   MaxLineLength.prototype.lintLine = function(line, lineApi) {
-    var max, _ref;
+    var limitComments, max, _ref, _ref1;
 
     max = (_ref = lineApi.config[this.rule.name]) != null ? _ref.value : void 0;
+    limitComments = (_ref1 = lineApi.config[this.rule.name]) != null ? _ref1.limitComments : void 0;
     if (max && max < line.length && !regexes.longUrlComment.test(line)) {
+      if (!limitComments) {
+        if (lineApi.getLineTokens().length === 0) {
+          return;
+        }
+      }
       return {
         context: "Length is " + line.length + ", max is " + max
       };
@@ -1208,7 +1268,100 @@ module.exports = MaxLineLength = (function() {
 })();
 
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
+var MissingFatArrows, isClass, isCode, isFatArrowCode, isObject, isThis, isValue, methodsOfClass, needsFatArrow,
+  __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+isCode = function(node) {
+  return node.constructor.name === 'Code';
+};
+
+isClass = function(node) {
+  return node.constructor.name === 'Class';
+};
+
+isValue = function(node) {
+  return node.constructor.name === 'Value';
+};
+
+isObject = function(node) {
+  return node.constructor.name === 'Obj';
+};
+
+isThis = function(node) {
+  return isValue(node) && node.base.value === 'this';
+};
+
+isFatArrowCode = function(node) {
+  return isCode(node) && node.bound;
+};
+
+needsFatArrow = function(node) {
+  return isCode(node) && (node.body.contains(isThis) != null);
+};
+
+methodsOfClass = function(classNode) {
+  var bodyNodes, returnNode;
+
+  bodyNodes = classNode.body.expressions;
+  returnNode = bodyNodes[bodyNodes.length - 1];
+  if ((returnNode != null) && isValue(returnNode) && isObject(returnNode.base)) {
+    return returnNode.base.properties.map(function(assignNode) {
+      return assignNode.value;
+    }).filter(isCode);
+  } else {
+    return [];
+  }
+};
+
+module.exports = MissingFatArrows = (function() {
+  function MissingFatArrows() {}
+
+  MissingFatArrows.prototype.rule = {
+    name: 'missing_fat_arrows',
+    level: 'ignore',
+    message: 'Used `this` in a function without a fat arrow',
+    description: "Warns when you use `this` inside a function that wasn't defined\nwith a fat arrow. This rule does not apply to methods defined in a\nclass, since they have `this` bound to the class instance (or the\nclass itself, for class methods).\n\nIt is impossible to statically determine whether a function using\n`this` will be bound with the correct `this` value due to language\nfeatures like `Function.prototype.call` and\n`Function.prototype.bind`, so this rule may produce false positives."
+  };
+
+  MissingFatArrows.prototype.lintAST = function(node, astApi) {
+    this.lintNode(node, astApi);
+    return void 0;
+  };
+
+  MissingFatArrows.prototype.lintNode = function(node, astApi, methods) {
+    var error,
+      _this = this;
+
+    if (methods == null) {
+      methods = [];
+    }
+    if ((!isFatArrowCode(node)) && (__indexOf.call(methods, node) < 0) && (needsFatArrow(node))) {
+      error = astApi.createError({
+        lineNumber: node.locationData.first_line + 1
+      });
+      this.errors.push(error);
+    }
+    return node.eachChild(function(child) {
+      return _this.lintNode(child, astApi, (function() {
+        switch (false) {
+          case !isClass(node):
+            return methodsOfClass(node);
+          case !isCode(node):
+            return [];
+          default:
+            return methods;
+        }
+      })());
+    });
+  };
+
+  return MissingFatArrows;
+
+})();
+
+
+},{}],17:[function(require,module,exports){
 var NewlinesAfterClasses;
 
 module.exports = NewlinesAfterClasses = (function() {
@@ -1244,7 +1397,7 @@ module.exports = NewlinesAfterClasses = (function() {
 })();
 
 
-},{}],16:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 var NoBackticks;
 
 module.exports = NoBackticks = (function() {
@@ -1268,7 +1421,7 @@ module.exports = NoBackticks = (function() {
 })();
 
 
-},{}],17:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 var NoEmptyParamList;
 
 module.exports = NoEmptyParamList = (function() {
@@ -1295,7 +1448,7 @@ module.exports = NoEmptyParamList = (function() {
 })();
 
 
-},{}],18:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 var NoImplicitBraces;
 
 module.exports = NoImplicitBraces = (function() {
@@ -1305,26 +1458,39 @@ module.exports = NoImplicitBraces = (function() {
     name: 'no_implicit_braces',
     level: 'ignore',
     message: 'Implicit braces are forbidden',
+    strict: true,
     description: "This rule prohibits implicit braces when declaring object literals.\nImplicit braces can make code more difficult to understand,\nespecially when used in combination with optional parenthesis.\n<pre>\n<code># Do you find this code ambiguous? Is it a\n# function call with three arguments or four?\nmyFunction a, b, 1:2, 3:4\n\n# While the same code written in a more\n# explicit manner has no ambiguity.\nmyFunction(a, b, {1:2, 3:4})\n</code>\n</pre>\nImplicit braces are permitted by default, since their use is\nidiomatic CoffeeScript."
   };
 
   NoImplicitBraces.prototype.tokens = ["{"];
 
   NoImplicitBraces.prototype.lintToken = function(token, tokenApi) {
-    var i, t;
+    var previousToken;
 
     if (token.generated) {
-      i = -1;
-      while (true) {
-        t = tokenApi.peek(i);
-        if ((t == null) || t[0] === 'TERMINATOR') {
-          return true;
+      if (!tokenApi.config[this.rule.name].strict) {
+        previousToken = tokenApi.peek(-1)[0];
+        if (previousToken === 'INDENT') {
+          return;
         }
-        if (t[0] === 'CLASS') {
-          return null;
-        }
-        i -= 1;
       }
+      return this.isPartOfClass(tokenApi);
+    }
+  };
+
+  NoImplicitBraces.prototype.isPartOfClass = function(tokenApi) {
+    var i, t;
+
+    i = -1;
+    while (true) {
+      t = tokenApi.peek(i);
+      if ((t == null) || t[0] === 'TERMINATOR') {
+        return true;
+      }
+      if (t[0] === 'CLASS') {
+        return null;
+      }
+      i -= 1;
     }
   };
 
@@ -1333,7 +1499,7 @@ module.exports = NoImplicitBraces = (function() {
 })();
 
 
-},{}],19:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 var NoImplicitParens;
 
 module.exports = NoImplicitParens = (function() {
@@ -1357,7 +1523,7 @@ module.exports = NoImplicitParens = (function() {
 })();
 
 
-},{}],20:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 var NoPlusPlus;
 
 module.exports = NoPlusPlus = (function() {
@@ -1383,7 +1549,7 @@ module.exports = NoPlusPlus = (function() {
 })();
 
 
-},{}],21:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 var NoStandAloneAt;
 
 module.exports = NoStandAloneAt = (function() {
@@ -1420,7 +1586,7 @@ module.exports = NoStandAloneAt = (function() {
 })();
 
 
-},{}],22:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 var NoTabs, indentationRegex,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -1452,7 +1618,7 @@ module.exports = NoTabs = (function() {
 })();
 
 
-},{}],23:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 var NoThrowingStrings;
 
 module.exports = NoThrowingStrings = (function() {
@@ -1480,7 +1646,7 @@ module.exports = NoThrowingStrings = (function() {
 })();
 
 
-},{}],24:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 var NoTrailingSemicolons, regexes,
   __slice = [].slice;
 
@@ -1514,7 +1680,7 @@ module.exports = NoTrailingSemicolons = (function() {
 })();
 
 
-},{}],25:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 var NoTrailingWhitespace, regexes;
 
 regexes = {
@@ -1579,7 +1745,63 @@ module.exports = NoTrailingWhitespace = (function() {
 })();
 
 
-},{}],26:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
+var NoUnnecessaryFatArrows, isCode, isFatArrowCode, isThis, needsFatArrow;
+
+isCode = function(node) {
+  return node.constructor.name === 'Code';
+};
+
+isFatArrowCode = function(node) {
+  return isCode(node) && node.bound;
+};
+
+isThis = function(node) {
+  return node.constructor.name === 'Value' && node.base.value === 'this';
+};
+
+needsFatArrow = function(node) {
+  return isCode(node) && ((node.body.contains(isThis) != null) || (node.body.contains(function(child) {
+    return isFatArrowCode(child) && needsFatArrow(child);
+  }) != null));
+};
+
+module.exports = NoUnnecessaryFatArrows = (function() {
+  function NoUnnecessaryFatArrows() {}
+
+  NoUnnecessaryFatArrows.prototype.rule = {
+    name: 'no_unnecessary_fat_arrows',
+    level: 'warn',
+    message: 'Unnecessary fat arrow',
+    description: "Disallows defining functions with fat arrows when `this`\nis not used within the function."
+  };
+
+  NoUnnecessaryFatArrows.prototype.lintAST = function(node, astApi) {
+    this.lintNode(node, astApi);
+    return void 0;
+  };
+
+  NoUnnecessaryFatArrows.prototype.lintNode = function(node, astApi) {
+    var error,
+      _this = this;
+
+    if ((isFatArrowCode(node)) && (!needsFatArrow(node))) {
+      error = astApi.createError({
+        lineNumber: node.locationData.first_line + 1
+      });
+      this.errors.push(error);
+    }
+    return node.eachChild(function(child) {
+      return _this.lintNode(child, astApi);
+    });
+  };
+
+  return NoUnnecessaryFatArrows;
+
+})();
+
+
+},{}],29:[function(require,module,exports){
 var NonEmptyConstructorNeedsParens, ParentClass, _ref,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -1612,7 +1834,7 @@ module.exports = NonEmptyConstructorNeedsParens = (function(_super) {
 })(ParentClass);
 
 
-},{"./empty_constructor_needs_parens.coffee":11}],27:[function(require,module,exports){
+},{"./empty_constructor_needs_parens.coffee":12}],30:[function(require,module,exports){
 var SpaceOperators,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -1657,7 +1879,7 @@ module.exports = SpaceOperators = (function() {
       return null;
     }
     p = tokenApi.peek(-1);
-    unaries = ['TERMINATOR', '(', '=', '-', '+', ',', 'CALL_START', 'INDEX_START', '..', '...', 'COMPARE', 'IF', 'THROW', 'LOGIC', 'POST_IF', ':', '[', 'INDENT', 'COMPOUND_ASSIGN', 'RETURN', 'MATH', 'BY'];
+    unaries = ['TERMINATOR', '(', '=', '-', '+', ',', 'CALL_START', 'INDEX_START', '..', '...', 'COMPARE', 'IF', 'THROW', 'LOGIC', 'POST_IF', ':', '[', 'INDENT', 'COMPOUND_ASSIGN', 'RETURN', 'MATH', 'BY', 'LEADING_WHEN'];
     isUnary = !p ? false : (_ref = p[0], __indexOf.call(unaries, _ref) >= 0);
     if ((isUnary && token.spaced) || (!isUnary && !token.spaced && !token.newLine)) {
       return {
