@@ -1,36 +1,42 @@
 {
-  "name":           "coffeelint",
-  "description":    "Lint your CoffeeScript",
-  "version":        "0.6.1",
-  "homepage" :      "http://www.coffeelint.org",
-  "keywords" :      ["lint", "coffeescript", "coffee-script"],
-  "author" :        "Matthew Perpick <clutchski@gmail.com>",
-  "main" : "./lib/coffeelint.js",
-  "engines":      {
+  "name": "coffeelint",
+  "description": "Lint your CoffeeScript",
+  "version": "1.0.0",
+  "homepage": "http://www.coffeelint.org",
+  "keywords": [
+    "lint",
+    "coffeescript",
+    "coffee-script"
+  ],
+  "author": "Matthew Perpick <clutchski@gmail.com>",
+  "main": "./lib/coffeelint.js",
+  "engines": {
     "node": ">=0.8.0"
   },
-  "repository" :    {
+  "repository": {
     "type": "git",
     "url": "git://github.com/clutchski/coffeelint.git"
   },
-  "bin" : {
+  "bin": {
     "coffeelint": "./bin/coffeelint"
   },
   "dependencies": {
-    "optimist" : ">=0.2.8",
-    "coffee-script" : ">=1.6.0",
-    "glob" : ">=3.1.9",
+    "optimist": ">=0.2.8",
+    "coffee-script": ">=1.6.0",
+    "glob": ">=3.1.9",
     "browserify": "~2.26.0",
     "coffeeify": "~0.5.1"
   },
-  "devDependencies" : {
-    "vows" : ">=0.6.0",
+  "devDependencies": {
+    "vows": ">=0.6.0",
     "underscore": ">=1.4.4"
   },
-  "licenses":[{
-    "type": "MIT",
-    "url": "http://github.com/clutchski/coffeelint/raw/master/LICENSE"
-  }],
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://github.com/clutchski/coffeelint/raw/master/LICENSE"
+    }
+  ],
   "scripts": {
     "pretest": "npm run compile",
     "test": "vows --spec test/*.coffee test/*.litcoffee",
