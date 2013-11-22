@@ -277,7 +277,7 @@ loadRules = (moduleName, ruleName = undefined) ->
             coffeelint.registerRule ruleModule, ruleName
         else
             # Or it can export an array of rules to load.
-            for rule of ruleModule
+            for rule in ruleModule
                 coffeelint.registerRule rule
     catch e
         console.error "Error loading #{moduleName}"
