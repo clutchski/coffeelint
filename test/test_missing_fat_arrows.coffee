@@ -57,6 +57,10 @@ vows.describe(RULE).addBatch({
             z ((a) -> a; this.x)
         """, 2
 
+    'functions with parameters'                        : shouldPass '(a) ->'
+    'functions with parameter assignment'              : shouldError '(@a) ->'
+    'functions with destructuring parameter assignment': shouldError '({@a}) ->'
+
     'class instance method':
         'without this': shouldPass """
             class A

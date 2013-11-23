@@ -5,7 +5,13 @@ isObject = (node) -> node.constructor.name is 'Obj'
 isThis = (node) -> isValue(node) and node.base.value is 'this'
 isFatArrowCode = (node) -> isCode(node) and node.bound
 
-needsFatArrow = (node) -> isCode(node) and node.body.contains(isThis)?
+any = (arr, test) -> arr.reduce ((res, elt) -> res or test elt), false
+
+needsFatArrow = (node) ->
+    isCode(node) and (
+        any(node.params, (param) -> param.contains(isThis)?) or
+        node.body.contains(isThis)?
+      )
 
 methodsOfClass = (classNode) ->
     bodyNodes = classNode.body.expressions
