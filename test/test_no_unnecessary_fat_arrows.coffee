@@ -48,10 +48,14 @@ vows.describe('no unnecessary fat arrows').addBatch({
     'deeply nested simple function'     : shouldError '-> -> -> -> => 1'
     'deeply nested function with this'  : shouldPass '-> -> -> -> => this'
 
-    'functions with multiple statements' : shouldError """
+    'functions with multiple statements': shouldError """
         f = ->
           x = 2
           z ((a) => x; a)
         """
+
+    'functions with parameters'                        : shouldError '(a) =>'
+    'functions with parameter assignment'              : shouldPass '(@a) =>'
+    'functions with destructuring parameter assignment': shouldPass '({@a}) =>'
 
 }).export(module)

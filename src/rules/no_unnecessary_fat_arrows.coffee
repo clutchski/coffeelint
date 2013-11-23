@@ -3,11 +3,15 @@ isFatArrowCode = (node) -> isCode(node) and node.bound
 isThis = (node) ->
     node.constructor.name is 'Value' and node.base.value is 'this'
 
+any = (arr, test) -> arr.reduce ((res, elt) -> res or test elt), false
+
 needsFatArrow = (node) ->
-    isCode(node) and
-        (node.body.contains(isThis)? or
+    isCode(node) and (
+        any(node.params, (param) -> param.contains(isThis)?) or
+        node.body.contains(isThis)? or
         node.body.contains((child) ->
-            isFatArrowCode(child) and needsFatArrow(child))?)
+            isFatArrowCode(child) and needsFatArrow(child))?
+    )
 
 module.exports = class NoUnnecessaryFatArrows
 
