@@ -24,6 +24,14 @@ module.exports = class NoTrailingSemicolons
 
 
     lintLine: (line, lineApi) ->
+
+        # The TERMINATOR token is extended through to the next token. As a
+        # result a line with a comment DOES have a token: the TERMINATOR from
+        # the last line of code.
+        lineTokens = lineApi.getLineTokens()
+        if lineTokens.length is 1 and lineTokens[0][0] is 'TERMINATOR'
+            return
+
         hasSemicolon = regexes.trailingSemicolon.test(line)
         [first..., last] = lineApi.getLineTokens()
         hasNewLine = last and last.newLine?

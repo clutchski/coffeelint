@@ -49,6 +49,12 @@ vows.describe('semicolons').addBatch({
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
 
+    "Trailing Semicolons in comments":
+        topic: "undefined\n# comment;\nundefined"
+        "are ignored": (source) ->
+            errors = coffeelint.lint(source, {})
+            assert.isEmpty(errors)
+
     'Semicolons with windows line endings' :
 
         topic : () ->
