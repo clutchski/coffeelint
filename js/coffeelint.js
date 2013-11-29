@@ -205,7 +205,7 @@ if (typeof window !== "undefined" && window !== null) {
   CoffeeScript = require(cs);
 }
 
-coffeelint.VERSION = "0.6.1";
+coffeelint.VERSION = "1.0.2";
 
 ERROR = 'error';
 
@@ -1269,7 +1269,7 @@ module.exports = MaxLineLength = (function() {
 
 
 },{}],16:[function(require,module,exports){
-var MissingFatArrows, isClass, isCode, isFatArrowCode, isObject, isThis, isValue, methodsOfClass, needsFatArrow,
+var MissingFatArrows, any, isClass, isCode, isFatArrowCode, isObject, isThis, isValue, methodsOfClass, needsFatArrow,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 isCode = function(node) {
@@ -1296,8 +1296,16 @@ isFatArrowCode = function(node) {
   return isCode(node) && node.bound;
 };
 
+any = function(arr, test) {
+  return arr.reduce((function(res, elt) {
+    return res || test(elt);
+  }), false);
+};
+
 needsFatArrow = function(node) {
-  return isCode(node) && (node.body.contains(isThis) != null);
+  return isCode(node) && (any(node.params, function(param) {
+    return param.contains(isThis) != null;
+  }) || (node.body.contains(isThis) != null));
 };
 
 methodsOfClass = function(classNode) {
@@ -1665,8 +1673,12 @@ module.exports = NoTrailingSemicolons = (function() {
   };
 
   NoTrailingSemicolons.prototype.lintLine = function(line, lineApi) {
-    var first, hasNewLine, hasSemicolon, last, _i, _ref;
+    var first, hasNewLine, hasSemicolon, last, lineTokens, _i, _ref;
 
+    lineTokens = lineApi.getLineTokens();
+    if (lineTokens.length === 1 && lineTokens[0][0] === 'TERMINATOR') {
+      return;
+    }
     hasSemicolon = regexes.trailingSemicolon.test(line);
     _ref = lineApi.getLineTokens(), first = 2 <= _ref.length ? __slice.call(_ref, 0, _i = _ref.length - 1) : (_i = 0, []), last = _ref[_i++];
     hasNewLine = last && (last.newLine != null);
@@ -1746,7 +1758,7 @@ module.exports = NoTrailingWhitespace = (function() {
 
 
 },{}],28:[function(require,module,exports){
-var NoUnnecessaryFatArrows, isCode, isFatArrowCode, isThis, needsFatArrow;
+var NoUnnecessaryFatArrows, any, isCode, isFatArrowCode, isThis, needsFatArrow;
 
 isCode = function(node) {
   return node.constructor.name === 'Code';
@@ -1760,8 +1772,16 @@ isThis = function(node) {
   return node.constructor.name === 'Value' && node.base.value === 'this';
 };
 
+any = function(arr, test) {
+  return arr.reduce((function(res, elt) {
+    return res || test(elt);
+  }), false);
+};
+
 needsFatArrow = function(node) {
-  return isCode(node) && ((node.body.contains(isThis) != null) || (node.body.contains(function(child) {
+  return isCode(node) && (any(node.params, function(param) {
+    return param.contains(isThis) != null;
+  }) || (node.body.contains(isThis) != null) || (node.body.contains(function(child) {
     return isFatArrowCode(child) && needsFatArrow(child);
   }) != null));
 };
