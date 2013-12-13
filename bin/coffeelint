@@ -12,7 +12,7 @@ var thisdir = path.dirname(fs.realpathSync(__filename));
 // directory then run without having to recompile the coffeescript.
 //
 // I use this so vim runs the newest code while I work on CoffeeLint. -Asa
-commandline = path.join(thisdir, '..', "lib", "coffeelint");
+commandline = path.join(thisdir, '..', "lib", "commandline.js");
 if (existsFn(commandline)) {
     require(commandline);
 } else {
