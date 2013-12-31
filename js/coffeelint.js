@@ -868,21 +868,33 @@ module.exports = ColonAssignmentSpacing = (function() {
   ColonAssignmentSpacing.prototype.tokens = [':'];
 
   ColonAssignmentSpacing.prototype.lintToken = function(token, tokenApi) {
-    var leftAllowance, leftSpaced, leftSpacing, nextToken, rightAllowance, rightSpaced, rightSpacing, spacingAllowances, _ref, _ref1;
+    var checkSpacing, getSpaceFromToken, isLeftSpaced, isRightSpaced, leftSpacing, nextToken, previousToken, rightSpacing, spacingAllowances, _ref, _ref1;
 
     spacingAllowances = tokenApi.config[this.rule.name].spacing;
-    leftSpacing = token[2].first_column - ((_ref = tokenApi.peek(-1)) != null ? _ref[2].last_column : void 0);
-    leftAllowance = parseInt(spacingAllowances.left) + 1;
-    leftSpaced = leftSpacing === leftAllowance;
+    previousToken = tokenApi.peek(-1);
     nextToken = tokenApi.peek(1);
-    rightAllowance = nextToken[0] === 'STRING' ? parseInt(spacingAllowances.right) + 1 : parseInt(spacingAllowances.right);
-    rightSpacing = ((_ref1 = nextToken[2]) != null ? _ref1.first_column : void 0) - token[2].last_column;
-    rightSpaced = rightSpacing === rightAllowance;
-    if (rightSpaced && leftSpaced) {
+    getSpaceFromToken = function(direction) {
+      switch (direction) {
+        case 'left':
+          return token[2].first_column - previousToken[2].last_column - 1;
+        case 'right':
+          return nextToken[2].first_column - token[2].first_column - 1;
+      }
+    };
+    checkSpacing = function(direction) {
+      var isSpaced, spacing;
+
+      spacing = getSpaceFromToken(direction);
+      isSpaced = spacing < 0 ? true : spacing === parseInt(spacingAllowances[direction]);
+      return [isSpaced, spacing];
+    };
+    _ref = checkSpacing('left'), isLeftSpaced = _ref[0], leftSpacing = _ref[1];
+    _ref1 = checkSpacing('right'), isRightSpaced = _ref1[0], rightSpacing = _ref1[1];
+    if (isLeftSpaced && isRightSpaced) {
       return null;
     } else {
       return {
-        context: ("Expect colon spacing left: " + spacingAllowances.left + ", right: " + spacingAllowances.right + ".") + (" Got left: " + leftSpacing + ", right: " + rightSpacing + ".")
+        context: "Incorrect spacing around column " + token[2].first_column + ".\nExpected left: " + spacingAllowances.left + ", right: " + spacingAllowances.right + ".\nGot left: " + leftSpacing + ", right: " + rightSpacing + "."
       };
     }
   };
