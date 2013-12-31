@@ -35,22 +35,31 @@ module.exports = class ColonAssignmentSpacing
 
     lintToken : (token, tokenApi) ->
         spacingAllowances = tokenApi.config[@rule.name].spacing
+        previousToken = tokenApi.peek -1
+        nextToken = tokenApi.peek 1
 
-        leftSpacing = token[2].first_column - tokenApi.peek(-1)?[2].last_column
-        leftAllowance = parseInt(spacingAllowances.left) + 1
-        leftSpaced = leftSpacing is leftAllowance
+        getSpaceFromToken = (direction) ->
+            switch direction
+                when 'left'
+                    token[2].first_column - previousToken[2].last_column - 1
+                when 'right'
+                    nextToken[2].first_column - token[2].first_column - 1
 
-        nextToken = tokenApi.peek(1)
-        rightAllowance =
-            if nextToken[0] is 'STRING'
-                parseInt(spacingAllowances.right) + 1
-            else
-                parseInt(spacingAllowances.right)
-        rightSpacing = nextToken[2]?.first_column - token[2].last_column
-        rightSpaced = rightSpacing is rightAllowance
+        checkSpacing = (direction) ->
+            spacing = getSpaceFromToken direction
+            # when spacing is negative, the neighboring token is a newline
+            isSpaced = if spacing < 0 then true else spacing is parseInt spacingAllowances[direction]
+            [isSpaced, spacing]
 
-        if rightSpaced and leftSpaced
+        [isLeftSpaced, leftSpacing] = checkSpacing 'left'
+        [isRightSpaced, rightSpacing] = checkSpacing 'right'
+
+        if isLeftSpaced and isRightSpaced
             null
         else
-            context : "Expect colon spacing left: #{spacingAllowances.left}, right: #{spacingAllowances.right}." +
-                " Got left: #{leftSpacing}, right: #{rightSpacing}."
+            context :
+                """
+                Incorrect spacing around column #{token[2].first_column}.
+                Expected left: #{spacingAllowances.left}, right: #{spacingAllowances.right}.
+                Got left: #{leftSpacing}, right: #{rightSpacing}.
+                """
