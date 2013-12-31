@@ -5,7 +5,7 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 
 vows.describe('colon_assignment_spacing').addBatch({
 
-    'Spacing around assignment' :
+    'Equal spacing around assignment' :
 
         topic : ->
             '''
@@ -26,7 +26,49 @@ vows.describe('colon_assignment_spacing').addBatch({
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 
-    'No spacing around assignment' :
+    'No space before assignment' :
+
+        topic : ->
+            '''
+            object = {spacing: true}
+            object =
+              spacing: true
+            class Dog
+              barks: true
+            stringyObject =
+              'stringkey': 'ok'
+            '''
+
+        'will not return an error' : (source) ->
+            config =
+                'colon_assignment_spacing' :
+                    level : 'error'
+                    spacing :
+                        left : 0
+                        right : 1
+            errors = coffeelint.lint(source, config)
+            assert.isEmpty(errors)
+
+    'Newline to the right of assignment' :
+
+        topic : ->
+            """
+            query:
+              method: 'GET'
+              isArray: false
+            """
+
+        'will not return an error' : (source) ->
+            config =
+                'colon_assignment_spacing' :
+                    level : 'error'
+                    spacing :
+                        left : 0
+                        right : 1
+            errors = coffeelint.lint(source, config)
+            assert.isEmpty(errors)
+
+    'Improper spacing around assignment' :
 
         topic : ->
             '''
