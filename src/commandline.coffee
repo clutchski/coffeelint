@@ -240,19 +240,19 @@ class CheckstyleReporter extends JSLintReporter
         @print "</checkstyle>"
 
 # Return an error report from linting the given paths.
-lintFiles = (paths, config) ->
+lintFiles = (files, config) ->
     errorReport = new ErrorReport()
-    for path in paths
-        source = read(path)
-        literate = CoffeeScript.helpers.isLiterate path
+    for file in files
+        source = read(file)
+        literate = CoffeeScript.helpers.isLiterate file
 
-        fileConfig = if config then config else getFallbackConfig(path)
+        fileConfig = if config then config else getFallbackConfig(file)
 
         for ruleName, data of fileConfig
             if data.module?
                 loadRules(data.module, ruleName)
 
-        errorReport.paths[path] = coffeelint.lint(source, fileConfig, literate)
+        errorReport.paths[file] = coffeelint.lint(source, fileConfig, literate)
     return errorReport
 
 # Return an error report from linting the given coffeescript source.
