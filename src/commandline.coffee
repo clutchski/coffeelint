@@ -247,6 +247,11 @@ lintFiles = (paths, config) ->
         literate = CoffeeScript.helpers.isLiterate path
 
         fileConfig = if config then config else getFallbackConfig(path)
+
+        for ruleName, data of fileConfig
+            if data.module?
+                loadRules(data.module, ruleName)
+
         errorReport.paths[path] = coffeelint.lint(source, fileConfig, literate)
     return errorReport
 
@@ -254,6 +259,11 @@ lintFiles = (paths, config) ->
 lintSource = (source, config, literate = false) ->
     errorReport = new ErrorReport()
     config or= getFallbackConfig()
+
+    for ruleName, data of config
+        if data.module?
+            loadRules(data.module, ruleName)
+
     errorReport.paths["stdin"] = coffeelint.lint(source, config, literate)
     return errorReport
 
@@ -359,10 +369,6 @@ else
         else if (process.env.COFFEELINT_CONFIG and
         fs.existsSync(process.env.COFFEELINT_CONFIG))
             config = JSON.parse(read(process.env.COFFEELINT_CONFIG))
-
-    for ruleName, data of config
-        if data.module?
-            loadRules(data.module, ruleName)
 
     loadRules(options.argv.rules) if options.argv.rules
 
