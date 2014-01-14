@@ -1,7 +1,7 @@
 
 regexes =
     trailingWhitespace : /[^\s]+[\t ]+\r?$/
-    onlySpaces: /^[\t\s]+\r?$/
+    onlySpaces: /^[\t ]+\r?$/
     lineHasComment : /^\s*[^\#]*\#/
 
 module.exports = class NoTrailingWhitespace
