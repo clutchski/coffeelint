@@ -171,27 +171,36 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
 
     # Do AST linting first so all compile errors are caught.
     astErrors = new ASTLinter(source, config, _rules, CoffeeScript).lint()
+    errors = [].concat(astErrors)
 
-    # Do lexical linting.
-    lexicalLinter = new LexicalLinter(source, config, _rules, CoffeeScript)
-    lexErrors = lexicalLinter.lint()
+    # only do further checks if the syntax is okay, otherwise they just fail
+    # with syntax error exceptions
+    if astErrors.length == 0
+        # Do lexical linting.
+        lexicalLinter = new LexicalLinter(source, config, _rules, CoffeeScript)
+        lexErrors = lexicalLinter.lint()
+        errors = errors.concat(lexErrors)
 
-    # Do line linting.
-    tokensByLine = lexicalLinter.tokensByLine
-    lineLinter = new LineLinter(source, config, _rules, tokensByLine)
-    lineErrors = lineLinter.lint()
+        # Do line linting.
+        tokensByLine = lexicalLinter.tokensByLine
+        lineLinter = new LineLinter(source, config, _rules, tokensByLine)
+        lineErrors = lineLinter.lint()
+        errors = errors.concat(lineErrors)
+        block_config = lineLinter.block_config
+    else
+        # default this so it knows what to do
+        block_config = 
+            enable : {}
+            disable : {}
 
     # Sort by line number and return.
-    errors = lexErrors.concat(lineErrors, astErrors)
     errors.sort((a, b) -> a.lineNumber - b.lineNumber)
-
 
     # Disable/enable rules for inline blocks
     all_errors = errors
     errors = []
     disabled = disabled_initially
     next_line = 0
-    block_config = lineLinter.block_config
     for i in [0...source.split('\n').length]
         for cmd of block_config
             rules = block_config[cmd][i]
