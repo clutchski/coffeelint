@@ -369,7 +369,8 @@ vows.describe('commandline').addBatch({
                     return undefined
 
                 'output': (error, stdout, stderr) ->
-                    assert.isNotEmpty(stderr)
+                    console.log(error, stdout, stderr)
+                    assert.isNotEmpty(stdout)
 
         'with option q not set':
             'and no errors occured':
@@ -388,6 +389,6 @@ vows.describe('commandline').addBatch({
                     return undefined
 
                 'output': (error, stdout, stderr) ->
-                    assert.isNotEmpty(stderr)
+                    assert.isNotEmpty(stdout)
 
 }).export(module)
