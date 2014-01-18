@@ -223,12 +223,15 @@ class CheckstyleReporter extends JSLintReporter
                 @print "<file name=\"#{path}\">"
 
                 for e in errors
+                    level = e.level
+                    level = 'warning' if level is 'warn'
+
                     # context is optional, this avoids generating the string
                     # "context: undefined"
                     context = e.context ? ""
                     @print """
                     <error line="#{e.lineNumber}"
-                        severity="#{@escape(e.level)}"
+                        severity="#{@escape(level)}"
                         message="#{@escape(e.message+'; context: '+context)}"
                         source="coffeelint"/>
                     """
@@ -237,20 +240,30 @@ class CheckstyleReporter extends JSLintReporter
         @print "</checkstyle>"
 
 # Return an error report from linting the given paths.
-lintFiles = (paths, config) ->
+lintFiles = (files, config) ->
     errorReport = new ErrorReport()
-    for path in paths
-        source = read(path)
-        literate = CoffeeScript.helpers.isLiterate path
+    for file in files
+        source = read(file)
+        literate = CoffeeScript.helpers.isLiterate file
 
-        fileConfig = if config then config else getFallbackConfig(path)
-        errorReport.paths[path] = coffeelint.lint(source, fileConfig, literate)
+        fileConfig = if config then config else getFallbackConfig(file)
+
+        for ruleName, data of fileConfig
+            if data.module?
+                loadRules(data.module, ruleName)
+
+        errorReport.paths[file] = coffeelint.lint(source, fileConfig, literate)
     return errorReport
 
 # Return an error report from linting the given coffeescript source.
 lintSource = (source, config, literate = false) ->
     errorReport = new ErrorReport()
     config or= getFallbackConfig()
+
+    for ruleName, data of config
+        if data.module?
+            loadRules(data.module, ruleName)
+
     errorReport.paths["stdin"] = coffeelint.lint(source, config, literate)
     return errorReport
 
@@ -356,10 +369,6 @@ else
         else if (process.env.COFFEELINT_CONFIG and
         fs.existsSync(process.env.COFFEELINT_CONFIG))
             config = JSON.parse(read(process.env.COFFEELINT_CONFIG))
-
-    for ruleName, data of config
-        if data.module?
-            loadRules(data.module, ruleName)
 
     loadRules(options.argv.rules) if options.argv.rules
 
