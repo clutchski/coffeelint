@@ -23,9 +23,11 @@ else
     cs = 'coffee-script'
     CoffeeScript = require cs
 
+# Browserify will inline the file at compile time.
+packageJSON = require('./../package.json')
 
 # The current version of Coffeelint.
-coffeelint.VERSION = "1.0.2"
+coffeelint.VERSION = packageJSON.version
 
 
 # CoffeeLint error levels.
@@ -189,7 +191,7 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
         block_config = lineLinter.block_config
     else
         # default this so it knows what to do
-        block_config = 
+        block_config =
             enable : {}
             disable : {}
 
