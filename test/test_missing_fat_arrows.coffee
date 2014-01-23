@@ -113,4 +113,14 @@ vows.describe(RULE).addBatch({
                 @p: -> this
             """
 
+    'https://github.com/clutchski/coffeelint/issues/215':
+        'method with block comment': shouldPass """
+            class SimpleClass
+
+                ###
+                A block comment
+                ###
+                doNothing: () ->
+        """
+
 }).export(module)

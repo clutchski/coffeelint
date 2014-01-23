@@ -1,4 +1,4 @@
-isCode = (node) -> node.constructor.name is 'Code'
+isCode = (node) -> node?.constructor.name is 'Code'
 isClass = (node) -> node.constructor.name is 'Class'
 isValue = (node) -> node.constructor.name is 'Value'
 isObject = (node) -> node.constructor.name is 'Obj'
