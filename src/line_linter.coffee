@@ -1,6 +1,6 @@
 
 class LineApi
-    constructor: (source, @config, @tokensByLine) ->
+    constructor: (source, @config, @tokensByLine, @literate) ->
         @line = null
         @lines = source.split('\n')
         @lineCount = @lines.length
@@ -19,6 +19,8 @@ class LineApi
         }
 
     lineNumber: 0
+
+    isLiterate: -> @literate
 
     # maintain the contextual information for class-related stuff
     maintainClassContext : (line) ->
@@ -78,10 +80,10 @@ module.exports = class LineLinter extends BaseLinter
     # This is exposed here so coffeelint.coffee can reuse it
     @configStatement: configStatement
 
-    constructor : (source, config, rules, tokensByLine) ->
+    constructor : (source, config, rules, tokensByLine, literate = false) ->
         super source, config, rules
 
-        @lineApi = new LineApi source, config, tokensByLine
+        @lineApi = new LineApi source, config, tokensByLine, literate
 
         # Store suppressions in the form of { line #: type }
         @block_config =

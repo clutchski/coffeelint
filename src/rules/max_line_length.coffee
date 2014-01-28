@@ -1,5 +1,9 @@
 
 regexes =
+    literateComment: ///
+        ^
+        \#\s # This is prefixed on MarkDown lines.
+    ///
     longUrlComment : ///
       ^\s*\# # indentation, up to comment
       \s*
@@ -26,12 +30,17 @@ module.exports = class MaxLineLength
     lintLine: (line, lineApi) ->
         max = lineApi.config[@rule.name]?.value
         limitComments = lineApi.config[@rule.name]?.limitComments
-        if max and max < line.length and not regexes.longUrlComment.test(line)
+
+        lineLength = line.length
+        if lineApi.isLiterate() and regexes.literateComment.test(line)
+            lineLength -= 2
+
+        if max and max < lineLength and not regexes.longUrlComment.test(line)
 
             unless limitComments
                 if lineApi.getLineTokens().length is 0
                     return
 
             return {
-                context: "Length is #{line.length}, max is #{max}"
+                context: "Length is #{lineLength}, max is #{max}"
             }

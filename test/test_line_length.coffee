@@ -48,6 +48,18 @@ vows.describe('linelength').addBatch({
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 
+    'Literate Line Length' :
+        topic: ->
+            # This creates a line with 80 Xs.
+            source = new Array(81).join('X') + "\n"
+
+            # Long URLs are ignored by default even in Literate code.
+            source += "http://testing.example.com/really-really-long-url-" +
+                "that-shouldnt-have-to-be-split-to-avoid-the-lint-error"
+
+        '': (source) ->
+            errors = coffeelint.lint(source, {}, true)
+            assert.isEmpty(errors)
 
     'Maximum length exceptions':
         topic: """
