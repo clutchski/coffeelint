@@ -143,6 +143,14 @@ coffeelint.registerRule(
     require './rules/non_empty_constructor_needs_parens.coffee'
 )
 
+hasSyntaxError = (source) ->
+    try
+        # If there are syntax errors this will abort the lexical and line
+        # linters.
+        CoffeeScript.tokens(source)
+        return false
+    return true
+
 # Check the source against the given configuration and return an array
 # of any errors found. An error is an object with the following
 # properties:
@@ -177,7 +185,7 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
 
     # only do further checks if the syntax is okay, otherwise they just fail
     # with syntax error exceptions
-    if astErrors.length == 0
+    unless hasSyntaxError(source)
         # Do lexical linting.
         lexicalLinter = new LexicalLinter(source, config, _rules, CoffeeScript)
         lexErrors = lexicalLinter.lint()
