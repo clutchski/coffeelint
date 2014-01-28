@@ -193,7 +193,8 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
 
         # Do line linting.
         tokensByLine = lexicalLinter.tokensByLine
-        lineLinter = new LineLinter(source, config, _rules, tokensByLine, literate)
+        lineLinter = new LineLinter(source, config, _rules, tokensByLine,
+            literate)
         lineErrors = lineLinter.lint()
         errors = errors.concat(lineErrors)
         block_config = lineLinter.block_config
