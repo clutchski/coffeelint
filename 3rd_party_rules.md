@@ -48,6 +48,11 @@ Once you're ready you can publish it as a normal npm package. Remember to
 mention in your readme that they will need to `npm install -g your-rule-name`.
 If it's not global CoffeeLint won't see it.
 
+By convention rule authors add the keyword `coffeelintrule` to their npm 
+`package.json` so custom rules can be found easily. Click
+[here](https://npmjs.org/search?q=coffeelintrule) to list all currently available
+custom rules on npm.
+
 Verify Installation
 -------------------
 
