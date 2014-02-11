@@ -38,14 +38,15 @@
     }
   ],
   "scripts": {
-    "pretest": "npm run compile",
+    "pretest": "cake compile",
     "test": "vows --spec test/*.coffee test/*.litcoffee",
     "posttest": "npm run lint",
-    "prepublish": "npm run compile",
-    "install": "echo 'process.exit(require(\"fs\").existsSync(\"lib/commandline.js\") ? 0 : 1)' | node || npm run compile",
-    "lint": "npm run compile && ./bin/coffeelint -f coffeelint.json src/*.coffee test/*.coffee test/*.litcoffee",
-    "lint-csv": "npm run compile && ./bin/coffeelint --csv -f coffeelint.json src/*.coffee test/*.coffee",
-    "lint-jslint": "npm run compile && ./bin/coffeelint --jslint -f coffeelint.json src/*.coffee test/*.coffee",
-    "compile": "coffee -c -o lib src && ./node_modules/browserify/bin/cmd.js -t coffeeify -s coffeelint -e  src/coffeelint.coffee > lib/coffeelint.js"
+    "prepublish": "cake prepublish",
+    "postpublish": "cake postpublish",
+    "install": "cake install",
+    "lint": "cake compile && ./bin/coffeelint -f coffeelint.json src/*.coffee test/*.coffee test/*.litcoffee",
+    "lint-csv": "cake compile && ./bin/coffeelint --csv -f coffeelint.json src/*.coffee test/*.coffee",
+    "lint-jslint": "cake compile && ./bin/coffeelint --jslint -f coffeelint.json src/*.coffee test/*.coffee",
+    "compile": "cake compile"
   }
 }
