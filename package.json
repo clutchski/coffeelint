@@ -39,7 +39,7 @@
   ],
   "scripts": {
     "pretest": "cake compile",
-    "test": "vows --spec test/*.coffee test/*.litcoffee",
+    "test": "coffee vowsrunner.coffee --spec test/*.coffee test/*.litcoffee",
     "posttest": "npm run lint",
     "prepublish": "cake prepublish",
     "postpublish": "cake postpublish",
