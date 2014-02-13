@@ -42,7 +42,7 @@
     "test": "vows --spec test/*.coffee test/*.litcoffee",
     "posttest": "npm run lint",
     "prepublish": "cake prepublish",
-    "postpublish": "cake postpublish",
+    "publish": "cake publish",
     "install": "cake install",
     "lint": "cake compile && ./bin/coffeelint -f coffeelint.json src/*.coffee test/*.coffee test/*.litcoffee",
     "lint-csv": "cake compile && ./bin/coffeelint --csv -f coffeelint.json src/*.coffee test/*.coffee",

@@ -29,6 +29,10 @@ task 'compile:browserify', 'Uses browserify to compile coffeelint', ->
     b.bundle(opts).pipe fs.createWriteStream('lib/coffeelint.js')
 
 task 'prepublish', 'Prepublish', ->
+    { npm_config_argv } = process.env
+    if npm_config_argv? and JSON.parse(npm_config_argv).original[0] is 'install'
+        return
+
     copySync 'package.json', '.package.json'
     packageJson = require './package.json'
 
@@ -40,7 +44,7 @@ task 'prepublish', 'Prepublish', ->
 
     invoke 'compile'
 
-task 'postpublish', 'Postpublish', ->
+task 'publish', 'publish', ->
     copySync '.package.json', 'package.json'
 
 task 'install', 'Install', ->
