@@ -14,6 +14,7 @@ thisdir = path.dirname(fs.realpathSync(__filename))
 coffeelint = require(path.join(thisdir, "coffeelint"))
 configfinder = require(path.join(thisdir, "configfinder"))
 CoffeeScript = require 'coffee-script'
+CoffeeScript.register()
 
 
 # Return the contents of the given file synchronously.
