@@ -16,6 +16,6 @@ commandline = path.join(thisdir, '..', "lib", "commandline.js");
 if (existsFn(commandline)) {
     require(commandline);
 } else {
-    require('coffee-script');
+    require('coffee-script/register');
     require('../src/commandline');
 }
