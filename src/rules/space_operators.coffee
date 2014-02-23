@@ -7,8 +7,8 @@ module.exports = class SpaceOperators
         message : 'Operators must be spaced properly'
         description: "This rule enforces that operators have space around them."
 
-    tokens: [ "+", "-", "=", "MATH", "COMPARE", "LOGIC", "COMPOUND_ASSIGN",
-        "(", ")", "CALL_START", "CALL_END" ]
+    tokens: [ "+", "-", "=", "**", "MATH", "COMPARE", "LOGIC",
+        "COMPOUND_ASSIGN", "(", ")", "CALL_START", "CALL_END" ]
 
     constructor: ->
         @callTokens = []    # A stack tracking the call token pairs.
