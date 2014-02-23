@@ -1,10 +1,63 @@
-(function(e){if("function"==typeof bootstrap)bootstrap("coffeelint",e);else if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else if("undefined"!=typeof ses){if(!ses.ok())return;ses.makeCoffeelint=e}else"undefined"!=typeof window?window.coffeelint=e():global.coffeelint=e()})(function(){var define,ses,bootstrap,module,exports;
-return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+!function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.coffeelint=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+module.exports={
+  "name": "coffeelint",
+  "description": "Lint your CoffeeScript",
+  "version": "1.1.0",
+  "homepage": "http://www.coffeelint.org",
+  "keywords": [
+    "lint",
+    "coffeescript",
+    "coffee-script"
+  ],
+  "author": "Matthew Perpick <clutchski@gmail.com>",
+  "main": "./lib/coffeelint.js",
+  "engines": {
+    "node": ">=0.8.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/clutchski/coffeelint.git"
+  },
+  "bin": {
+    "coffeelint": "./bin/coffeelint"
+  },
+  "dependencies": {
+    "optimist": ">=0.2.8",
+    "coffee-script": "~1.7",
+    "glob": ">=3.1.9",
+    "browserify": "~3.x",
+    "coffeeify": "~0.6.0"
+  },
+  "devDependencies": {
+    "vows": ">=0.6.0",
+    "underscore": ">=1.4.4"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://github.com/clutchski/coffeelint/raw/master/LICENSE"
+    }
+  ],
+  "scripts": {
+    "pretest": "cake compile",
+    "test": "coffee vowsrunner.coffee --spec test/*.coffee test/*.litcoffee",
+    "posttest": "npm run lint",
+    "prepublish": "cake prepublish",
+    "publish": "cake publish",
+    "install": "cake install",
+    "lint": "cake compile && ./bin/coffeelint -f coffeelint.json src/*.coffee test/*.coffee test/*.litcoffee",
+    "lint-csv": "cake compile && ./bin/coffeelint --csv -f coffeelint.json src/*.coffee test/*.coffee",
+    "lint-jslint": "cake compile && ./bin/coffeelint --jslint -f coffeelint.json src/*.coffee test/*.coffee",
+    "compile": "cake compile"
+  }
+}
+
+},{}],2:[function(_dereq_,module,exports){
 var ASTApi, ASTLinter, BaseLinter,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-BaseLinter = require('./base_linter.coffee');
+BaseLinter = _dereq_('./base_linter.coffee');
 
 ASTApi = (function() {
   function ASTApi(config) {
@@ -29,9 +82,7 @@ module.exports = ASTLinter = (function(_super) {
   };
 
   ASTLinter.prototype.lint = function() {
-    var coffeeError, err, errors, rule, v, _i, _len, _ref,
-      _this = this;
-
+    var coffeeError, err, errors, rule, v, _i, _len, _ref;
     errors = [];
     try {
       this.node = this.CoffeeScript.nodes(this.source);
@@ -46,12 +97,14 @@ module.exports = ASTLinter = (function(_super) {
     _ref = this.rules;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       rule = _ref[_i];
-      this.astApi.createError = function(attrs) {
-        if (attrs == null) {
-          attrs = {};
-        }
-        return _this.createError(rule.rule.name, attrs);
-      };
+      this.astApi.createError = (function(_this) {
+        return function(attrs) {
+          if (attrs == null) {
+            attrs = {};
+          }
+          return _this.createError(rule.rule.name, attrs);
+        };
+      })(this);
       rule.errors = errors;
       v = this.normalizeResult(rule, rule.lintAST(this.node, this.astApi));
       if (v != null) {
@@ -63,7 +116,6 @@ module.exports = ASTLinter = (function(_super) {
 
   ASTLinter.prototype._parseCoffeeScriptError = function(coffeeError) {
     var attrs, lineNumber, match, message, rule;
-
     rule = this.config['coffeescript_error'];
     message = coffeeError.toString();
     lineNumber = -1;
@@ -88,13 +140,12 @@ module.exports = ASTLinter = (function(_super) {
 })(BaseLinter);
 
 
-},{"./base_linter.coffee":2}],2:[function(require,module,exports){
+},{"./base_linter.coffee":3}],3:[function(_dereq_,module,exports){
 var BaseLinter, defaults, extend,
   __slice = [].slice;
 
 extend = function() {
   var destination, k, source, sources, v, _i, _len;
-
   destination = arguments[0], sources = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
   for (_i = 0, _len = sources.length; _i < _len; _i++) {
     source = sources[_i];
@@ -122,12 +173,11 @@ module.exports = BaseLinter = (function() {
   };
 
   BaseLinter.prototype.createError = function(ruleName, attrs) {
-    var level, _ref;
-
+    var level;
     if (attrs == null) {
       attrs = {};
     }
-    if ((_ref = attrs.level) == null) {
+    if (attrs.level == null) {
       attrs.level = this.config[ruleName].level;
     }
     level = attrs.level;
@@ -148,7 +198,6 @@ module.exports = BaseLinter = (function() {
 
   BaseLinter.prototype.setupRules = function(rules) {
     var RuleConstructor, level, name, rule, _results;
-
     this.rules = [];
     _results = [];
     for (name in rules) {
@@ -184,15 +233,15 @@ module.exports = BaseLinter = (function() {
 })();
 
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(_dereq_,module,exports){
+
 /*
 CoffeeLint
 
 Copyright (c) 2011 Matthew Perpick.
 CoffeeLint is freely distributable under the MIT license.
-*/
-
-var ASTLinter, CoffeeScript, ERROR, IGNORE, LexicalLinter, LineLinter, RULES, WARN, coffeelint, cs, defaults, difference, extend, mergeDefaultConfig, _rules,
+ */
+var ASTLinter, CoffeeScript, ERROR, IGNORE, LexicalLinter, LineLinter, RULES, WARN, coffeelint, cs, defaults, difference, extend, hasSyntaxError, mergeDefaultConfig, packageJSON, _rules,
   __slice = [].slice,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -202,10 +251,12 @@ if (typeof window !== "undefined" && window !== null) {
   CoffeeScript = window.CoffeeScript;
 } else {
   cs = 'coffee-script';
-  CoffeeScript = require(cs);
+  CoffeeScript = _dereq_(cs);
 }
 
-coffeelint.VERSION = "1.0.2";
+packageJSON = _dereq_('./../package.json');
+
+coffeelint.VERSION = packageJSON.version;
 
 ERROR = 'error';
 
@@ -213,11 +264,10 @@ WARN = 'warn';
 
 IGNORE = 'ignore';
 
-coffeelint.RULES = RULES = require('./rules.coffee');
+coffeelint.RULES = RULES = _dereq_('./rules.coffee');
 
 extend = function() {
   var destination, k, source, sources, v, _i, _len;
-
   destination = arguments[0], sources = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
   for (_i = 0, _len = sources.length; _i < _len; _i++) {
     source = sources[_i];
@@ -235,7 +285,6 @@ defaults = function(source, defaults) {
 
 difference = function(a, b) {
   var j, _ref, _results;
-
   j = 0;
   _results = [];
   while (j < a.length) {
@@ -248,15 +297,14 @@ difference = function(a, b) {
   return _results;
 };
 
-LineLinter = require('./line_linter.coffee');
+LineLinter = _dereq_('./line_linter.coffee');
 
-LexicalLinter = require('./lexical_linter.coffee');
+LexicalLinter = _dereq_('./lexical_linter.coffee');
 
-ASTLinter = require('./ast_linter.coffee');
+ASTLinter = _dereq_('./ast_linter.coffee');
 
 mergeDefaultConfig = function(userConfig) {
   var config, rule, ruleConfig;
-
   config = {};
   for (rule in RULES) {
     ruleConfig = RULES[rule];
@@ -267,7 +315,6 @@ mergeDefaultConfig = function(userConfig) {
 
 coffeelint.invertLiterate = function(source) {
   var line, newSource, _i, _len, _ref;
-
   source = CoffeeScript.helpers.invertLiterate(source);
   newSource = "";
   _ref = source.split("\n");
@@ -286,7 +333,6 @@ _rules = {};
 
 coffeelint.registerRule = function(RuleConstructor, ruleName) {
   var e, name, p, _ref, _ref1;
-
   if (ruleName == null) {
     ruleName = void 0;
   }
@@ -324,57 +370,64 @@ coffeelint.registerRule = function(RuleConstructor, ruleName) {
   return _rules[p.rule.name] = RuleConstructor;
 };
 
-coffeelint.registerRule(require('./rules/arrow_spacing.coffee'));
+coffeelint.registerRule(_dereq_('./rules/arrow_spacing.coffee'));
 
-coffeelint.registerRule(require('./rules/no_tabs.coffee'));
+coffeelint.registerRule(_dereq_('./rules/no_tabs.coffee'));
 
-coffeelint.registerRule(require('./rules/no_trailing_whitespace.coffee'));
+coffeelint.registerRule(_dereq_('./rules/no_trailing_whitespace.coffee'));
 
-coffeelint.registerRule(require('./rules/max_line_length.coffee'));
+coffeelint.registerRule(_dereq_('./rules/max_line_length.coffee'));
 
-coffeelint.registerRule(require('./rules/line_endings.coffee'));
+coffeelint.registerRule(_dereq_('./rules/line_endings.coffee'));
 
-coffeelint.registerRule(require('./rules/no_trailing_semicolons.coffee'));
+coffeelint.registerRule(_dereq_('./rules/no_trailing_semicolons.coffee'));
 
-coffeelint.registerRule(require('./rules/indentation.coffee'));
+coffeelint.registerRule(_dereq_('./rules/indentation.coffee'));
 
-coffeelint.registerRule(require('./rules/camel_case_classes.coffee'));
+coffeelint.registerRule(_dereq_('./rules/camel_case_classes.coffee'));
 
-coffeelint.registerRule(require('./rules/colon_assignment_spacing.coffee'));
+coffeelint.registerRule(_dereq_('./rules/colon_assignment_spacing.coffee'));
 
-coffeelint.registerRule(require('./rules/no_implicit_braces.coffee'));
+coffeelint.registerRule(_dereq_('./rules/no_implicit_braces.coffee'));
 
-coffeelint.registerRule(require('./rules/no_plusplus.coffee'));
+coffeelint.registerRule(_dereq_('./rules/no_plusplus.coffee'));
 
-coffeelint.registerRule(require('./rules/no_throwing_strings.coffee'));
+coffeelint.registerRule(_dereq_('./rules/no_throwing_strings.coffee'));
 
-coffeelint.registerRule(require('./rules/no_backticks.coffee'));
+coffeelint.registerRule(_dereq_('./rules/no_backticks.coffee'));
 
-coffeelint.registerRule(require('./rules/no_implicit_parens.coffee'));
+coffeelint.registerRule(_dereq_('./rules/no_implicit_parens.coffee'));
 
-coffeelint.registerRule(require('./rules/no_empty_param_list.coffee'));
+coffeelint.registerRule(_dereq_('./rules/no_empty_param_list.coffee'));
 
-coffeelint.registerRule(require('./rules/no_stand_alone_at.coffee'));
+coffeelint.registerRule(_dereq_('./rules/no_stand_alone_at.coffee'));
 
-coffeelint.registerRule(require('./rules/space_operators.coffee'));
+coffeelint.registerRule(_dereq_('./rules/space_operators.coffee'));
 
-coffeelint.registerRule(require('./rules/duplicate_key.coffee'));
+coffeelint.registerRule(_dereq_('./rules/duplicate_key.coffee'));
 
-coffeelint.registerRule(require('./rules/empty_constructor_needs_parens.coffee'));
+coffeelint.registerRule(_dereq_('./rules/empty_constructor_needs_parens.coffee'));
 
-coffeelint.registerRule(require('./rules/cyclomatic_complexity.coffee'));
+coffeelint.registerRule(_dereq_('./rules/cyclomatic_complexity.coffee'));
 
-coffeelint.registerRule(require('./rules/newlines_after_classes.coffee'));
+coffeelint.registerRule(_dereq_('./rules/newlines_after_classes.coffee'));
 
-coffeelint.registerRule(require('./rules/no_unnecessary_fat_arrows.coffee'));
+coffeelint.registerRule(_dereq_('./rules/no_unnecessary_fat_arrows.coffee'));
 
-coffeelint.registerRule(require('./rules/missing_fat_arrows.coffee'));
+coffeelint.registerRule(_dereq_('./rules/missing_fat_arrows.coffee'));
 
-coffeelint.registerRule(require('./rules/non_empty_constructor_needs_parens.coffee'));
+coffeelint.registerRule(_dereq_('./rules/non_empty_constructor_needs_parens.coffee'));
+
+hasSyntaxError = function(source) {
+  try {
+    CoffeeScript.tokens(source);
+    return false;
+  } catch (_error) {}
+  return true;
+};
 
 coffeelint.lint = function(source, userConfig, literate) {
   var all_errors, astErrors, block_config, cmd, config, disabled, disabled_initially, e, errors, i, l, lexErrors, lexicalLinter, lineErrors, lineLinter, next_line, r, rules, s, tokensByLine, _i, _j, _k, _len, _len1, _ref, _ref1, _ref2, _ref3, _ref4;
-
   if (userConfig == null) {
     userConfig = {};
   }
@@ -406,12 +459,22 @@ coffeelint.lint = function(source, userConfig, literate) {
     }
   }
   astErrors = new ASTLinter(source, config, _rules, CoffeeScript).lint();
-  lexicalLinter = new LexicalLinter(source, config, _rules, CoffeeScript);
-  lexErrors = lexicalLinter.lint();
-  tokensByLine = lexicalLinter.tokensByLine;
-  lineLinter = new LineLinter(source, config, _rules, tokensByLine);
-  lineErrors = lineLinter.lint();
-  errors = lexErrors.concat(lineErrors, astErrors);
+  errors = [].concat(astErrors);
+  if (!hasSyntaxError(source)) {
+    lexicalLinter = new LexicalLinter(source, config, _rules, CoffeeScript);
+    lexErrors = lexicalLinter.lint();
+    errors = errors.concat(lexErrors);
+    tokensByLine = lexicalLinter.tokensByLine;
+    lineLinter = new LineLinter(source, config, _rules, tokensByLine, literate);
+    lineErrors = lineLinter.lint();
+    errors = errors.concat(lineErrors);
+    block_config = lineLinter.block_config;
+  } else {
+    block_config = {
+      enable: {},
+      disable: {}
+    };
+  }
   errors.sort(function(a, b) {
     return a.lineNumber - b.lineNumber;
   });
@@ -419,7 +482,6 @@ coffeelint.lint = function(source, userConfig, literate) {
   errors = [];
   disabled = disabled_initially;
   next_line = 0;
-  block_config = lineLinter.block_config;
   for (i = _k = 0, _ref3 = source.split('\n').length; 0 <= _ref3 ? _k < _ref3 : _k > _ref3; i = 0 <= _ref3 ? ++_k : --_k) {
     for (cmd in block_config) {
       rules = block_config[cmd][i];
@@ -452,7 +514,7 @@ coffeelint.lint = function(source, userConfig, literate) {
 };
 
 
-},{"./ast_linter.coffee":1,"./lexical_linter.coffee":4,"./line_linter.coffee":5,"./rules.coffee":6,"./rules/arrow_spacing.coffee":7,"./rules/camel_case_classes.coffee":8,"./rules/colon_assignment_spacing.coffee":9,"./rules/cyclomatic_complexity.coffee":10,"./rules/duplicate_key.coffee":11,"./rules/empty_constructor_needs_parens.coffee":12,"./rules/indentation.coffee":13,"./rules/line_endings.coffee":14,"./rules/max_line_length.coffee":15,"./rules/missing_fat_arrows.coffee":16,"./rules/newlines_after_classes.coffee":17,"./rules/no_backticks.coffee":18,"./rules/no_empty_param_list.coffee":19,"./rules/no_implicit_braces.coffee":20,"./rules/no_implicit_parens.coffee":21,"./rules/no_plusplus.coffee":22,"./rules/no_stand_alone_at.coffee":23,"./rules/no_tabs.coffee":24,"./rules/no_throwing_strings.coffee":25,"./rules/no_trailing_semicolons.coffee":26,"./rules/no_trailing_whitespace.coffee":27,"./rules/no_unnecessary_fat_arrows.coffee":28,"./rules/non_empty_constructor_needs_parens.coffee":29,"./rules/space_operators.coffee":30}],4:[function(require,module,exports){
+},{"./../package.json":1,"./ast_linter.coffee":2,"./lexical_linter.coffee":5,"./line_linter.coffee":6,"./rules.coffee":7,"./rules/arrow_spacing.coffee":8,"./rules/camel_case_classes.coffee":9,"./rules/colon_assignment_spacing.coffee":10,"./rules/cyclomatic_complexity.coffee":11,"./rules/duplicate_key.coffee":12,"./rules/empty_constructor_needs_parens.coffee":13,"./rules/indentation.coffee":14,"./rules/line_endings.coffee":15,"./rules/max_line_length.coffee":16,"./rules/missing_fat_arrows.coffee":17,"./rules/newlines_after_classes.coffee":18,"./rules/no_backticks.coffee":19,"./rules/no_empty_param_list.coffee":20,"./rules/no_implicit_braces.coffee":21,"./rules/no_implicit_parens.coffee":22,"./rules/no_plusplus.coffee":23,"./rules/no_stand_alone_at.coffee":24,"./rules/no_tabs.coffee":25,"./rules/no_throwing_strings.coffee":26,"./rules/no_trailing_semicolons.coffee":27,"./rules/no_trailing_whitespace.coffee":28,"./rules/no_unnecessary_fat_arrows.coffee":29,"./rules/non_empty_constructor_needs_parens.coffee":30,"./rules/space_operators.coffee":31}],5:[function(_dereq_,module,exports){
 var BaseLinter, LexicalLinter, TokenApi,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -480,7 +542,7 @@ TokenApi = (function() {
 
 })();
 
-BaseLinter = require('./base_linter.coffee');
+BaseLinter = _dereq_('./base_linter.coffee');
 
 module.exports = LexicalLinter = (function(_super) {
   __extends(LexicalLinter, _super);
@@ -497,7 +559,6 @@ module.exports = LexicalLinter = (function(_super) {
 
   LexicalLinter.prototype.lint = function() {
     var error, errors, i, token, _i, _j, _len, _len1, _ref, _ref1;
-
     errors = [];
     _ref = this.tokenApi.tokens;
     for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
@@ -513,8 +574,7 @@ module.exports = LexicalLinter = (function(_super) {
   };
 
   LexicalLinter.prototype.lintToken = function(token) {
-    var errors, lineNumber, rule, type, v, value, _base, _i, _len, _ref, _ref1, _ref2;
-
+    var errors, lineNumber, rule, type, v, value, _base, _i, _len, _ref, _ref1;
     type = token[0], value = token[1], lineNumber = token[2];
     if (typeof lineNumber === "object") {
       if (type === 'OUTDENT' || type === 'INDENT') {
@@ -523,17 +583,17 @@ module.exports = LexicalLinter = (function(_super) {
         lineNumber = lineNumber.first_line;
       }
     }
-    if ((_ref = (_base = this.tokensByLine)[lineNumber]) == null) {
+    if ((_base = this.tokensByLine)[lineNumber] == null) {
       _base[lineNumber] = [];
     }
     this.tokensByLine[lineNumber].push(token);
     this.lineNumber = lineNumber || this.lineNumber || 0;
     this.tokenApi.lineNumber = this.lineNumber;
     errors = [];
-    _ref1 = this.rules;
-    for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-      rule = _ref1[_i];
-      if (!(_ref2 = token[0], __indexOf.call(rule.tokens, _ref2) >= 0)) {
+    _ref = this.rules;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      rule = _ref[_i];
+      if (!(_ref1 = token[0], __indexOf.call(rule.tokens, _ref1) >= 0)) {
         continue;
       }
       v = this.normalizeResult(rule, rule.lintToken(token, this.tokenApi));
@@ -558,15 +618,16 @@ module.exports = LexicalLinter = (function(_super) {
 })(BaseLinter);
 
 
-},{"./base_linter.coffee":2}],5:[function(require,module,exports){
+},{"./base_linter.coffee":3}],6:[function(_dereq_,module,exports){
 var BaseLinter, LineApi, LineLinter, configStatement,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 LineApi = (function() {
-  function LineApi(source, config, tokensByLine) {
+  function LineApi(source, config, tokensByLine, literate) {
     this.config = config;
     this.tokensByLine = tokensByLine;
+    this.literate = literate;
     this.line = null;
     this.lines = source.split('\n');
     this.lineCount = this.lines.length;
@@ -580,6 +641,10 @@ LineApi = (function() {
   }
 
   LineApi.prototype.lineNumber = 0;
+
+  LineApi.prototype.isLiterate = function() {
+    return this.literate;
+  };
 
   LineApi.prototype.maintainClassContext = function(line) {
     if (this.context["class"].inClass) {
@@ -614,7 +679,6 @@ LineApi = (function() {
 
   LineApi.prototype.lineHasToken = function(tokenType, lineNumber) {
     var token, tokens, _i, _len;
-
     if (tokenType == null) {
       tokenType = null;
     }
@@ -647,7 +711,7 @@ LineApi = (function() {
 
 })();
 
-BaseLinter = require('./base_linter.coffee');
+BaseLinter = _dereq_('./base_linter.coffee');
 
 configStatement = /coffeelint:\s*(disable|enable)(?:=([\w\s,]*))?/;
 
@@ -656,9 +720,12 @@ module.exports = LineLinter = (function(_super) {
 
   LineLinter.configStatement = configStatement;
 
-  function LineLinter(source, config, rules, tokensByLine) {
+  function LineLinter(source, config, rules, tokensByLine, literate) {
+    if (literate == null) {
+      literate = false;
+    }
     LineLinter.__super__.constructor.call(this, source, config, rules);
-    this.lineApi = new LineApi(source, config, tokensByLine);
+    this.lineApi = new LineApi(source, config, tokensByLine, literate);
     this.block_config = {
       enable: {},
       disable: {}
@@ -671,7 +738,6 @@ module.exports = LineLinter = (function(_super) {
 
   LineLinter.prototype.lint = function() {
     var error, errors, line, lineNumber, _i, _j, _len, _len1, _ref, _ref1;
-
     errors = [];
     _ref = this.lineApi.lines;
     for (lineNumber = _i = 0, _len = _ref.length; _i < _len; lineNumber = ++_i) {
@@ -690,7 +756,6 @@ module.exports = LineLinter = (function(_super) {
 
   LineLinter.prototype.lintLine = function(line) {
     var errors, rule, v, _i, _len, _ref;
-
     errors = [];
     _ref = this.rules;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -705,7 +770,6 @@ module.exports = LineLinter = (function(_super) {
 
   LineLinter.prototype.collectInlineConfig = function(line) {
     var cmd, r, result, rules, _i, _len, _ref;
-
     result = configStatement.exec(line);
     if (result != null) {
       cmd = result[1];
@@ -724,7 +788,6 @@ module.exports = LineLinter = (function(_super) {
 
   LineLinter.prototype.createError = function(rule, attrs) {
     var _ref;
-
     if (attrs == null) {
       attrs = {};
     }
@@ -738,7 +801,7 @@ module.exports = LineLinter = (function(_super) {
 })(BaseLinter);
 
 
-},{"./base_linter.coffee":2}],6:[function(require,module,exports){
+},{"./base_linter.coffee":3}],7:[function(_dereq_,module,exports){
 var ERROR, IGNORE, WARN;
 
 ERROR = 'error';
@@ -755,7 +818,7 @@ module.exports = {
 };
 
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(_dereq_,module,exports){
 var ArrowSpacing;
 
 module.exports = ArrowSpacing = (function() {
@@ -772,7 +835,6 @@ module.exports = ArrowSpacing = (function() {
 
   ArrowSpacing.prototype.lintToken = function(token, tokenApi) {
     var pp;
-
     pp = tokenApi.peek(-1);
     if (!(((token.spaced != null) || (token.newLine != null) || this.atEof(tokenApi)) && (((pp.spaced != null) || pp[0] === 'TERMINATOR') || (pp.generated != null) || pp[0] === "INDENT" || (pp[1] === "(" && (pp.generated == null))))) {
       return true;
@@ -783,7 +845,6 @@ module.exports = ArrowSpacing = (function() {
 
   ArrowSpacing.prototype.atEof = function(tokenApi) {
     var i, token, tokens, _i, _len, _ref, _ref1;
-
     tokens = tokenApi.tokens, i = tokenApi.i;
     _ref = tokens.slice(i + 1);
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -800,7 +861,7 @@ module.exports = ArrowSpacing = (function() {
 })();
 
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(_dereq_,module,exports){
 var CamelCaseClasses, regexes;
 
 regexes = {
@@ -821,7 +882,6 @@ module.exports = CamelCaseClasses = (function() {
 
   CamelCaseClasses.prototype.lintToken = function(token, tokenApi) {
     var className, offset, _ref, _ref1, _ref2;
-
     if ((token.newLine != null) || ((_ref = tokenApi.peek()[0]) === 'INDENT' || _ref === 'EXTENDS')) {
       return null;
     }
@@ -848,7 +908,7 @@ module.exports = CamelCaseClasses = (function() {
 })();
 
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(_dereq_,module,exports){
 var ColonAssignmentSpacing;
 
 module.exports = ColonAssignmentSpacing = (function() {
@@ -869,7 +929,6 @@ module.exports = ColonAssignmentSpacing = (function() {
 
   ColonAssignmentSpacing.prototype.lintToken = function(token, tokenApi) {
     var checkSpacing, getSpaceFromToken, isLeftSpaced, isRightSpaced, leftSpacing, nextToken, previousToken, rightSpacing, spacingAllowances, _ref, _ref1;
-
     spacingAllowances = tokenApi.config[this.rule.name].spacing;
     previousToken = tokenApi.peek(-1);
     nextToken = tokenApi.peek(1);
@@ -883,7 +942,6 @@ module.exports = ColonAssignmentSpacing = (function() {
     };
     checkSpacing = function(direction) {
       var isSpaced, spacing;
-
       spacing = getSpaceFromToken(direction);
       isSpaced = spacing < 0 ? true : spacing === parseInt(spacingAllowances[direction]);
       return [isSpaced, spacing];
@@ -904,7 +962,7 @@ module.exports = ColonAssignmentSpacing = (function() {
 })();
 
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(_dereq_,module,exports){
 var NoTabs;
 
 module.exports = NoTabs = (function() {
@@ -920,7 +978,6 @@ module.exports = NoTabs = (function() {
 
   NoTabs.prototype.getComplexity = function(node) {
     var complexity, name, _ref;
-
     name = node.constructor.name;
     complexity = name === 'If' || name === 'While' || name === 'For' || name === 'Try' ? 1 : name === 'Op' && ((_ref = node.operator) === '&&' || _ref === '||') ? 1 : name === 'Switch' ? node.cases.length : 0;
     return complexity;
@@ -933,19 +990,18 @@ module.exports = NoTabs = (function() {
   };
 
   NoTabs.prototype.lintNode = function(node, line) {
-    var complexity, error, name, rule,
-      _this = this;
-
+    var complexity, error, name, rule;
     name = node.constructor.name;
     complexity = this.getComplexity(node);
-    node.eachChild(function(childNode) {
-      var nodeLine;
-
-      nodeLine = childNode.locationData.first_line;
-      if (childNode) {
-        return complexity += _this.lintNode(childNode, nodeLine);
-      }
-    });
+    node.eachChild((function(_this) {
+      return function(childNode) {
+        var nodeLine;
+        nodeLine = childNode.locationData.first_line;
+        if (childNode) {
+          return complexity += _this.lintNode(childNode, nodeLine);
+        }
+      };
+    })(this));
     rule = this.astApi.config[this.rule.name];
     if (name === 'Code' && complexity >= rule.value) {
       error = this.astApi.createError({
@@ -965,7 +1021,7 @@ module.exports = NoTabs = (function() {
 })();
 
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(_dereq_,module,exports){
 var DuplicateKey;
 
 module.exports = DuplicateKey = (function() {
@@ -984,7 +1040,6 @@ module.exports = DuplicateKey = (function() {
 
   DuplicateKey.prototype.lintToken = function(_arg, tokenApi) {
     var type;
-
     type = _arg[0];
     if (type === "{" || type === "}") {
       this.lintBrace.apply(this, arguments);
@@ -997,7 +1052,6 @@ module.exports = DuplicateKey = (function() {
 
   DuplicateKey.prototype.lintIdentifier = function(token, tokenApi) {
     var key, nextToken, previousToken;
-
     key = token[1];
     if (this.currentScope == null) {
       return null;
@@ -1036,7 +1090,7 @@ module.exports = DuplicateKey = (function() {
 })();
 
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(_dereq_,module,exports){
 var EmptyConstructorNeedsParens;
 
 module.exports = EmptyConstructorNeedsParens = (function() {
@@ -1053,7 +1107,6 @@ module.exports = EmptyConstructorNeedsParens = (function() {
 
   EmptyConstructorNeedsParens.prototype.lintToken = function(token, tokenApi) {
     var expectedCallStart, expectedIdentifier, identifierIndex;
-
     if (token[1] === 'new') {
       identifierIndex = 1;
       while (true) {
@@ -1084,7 +1137,7 @@ module.exports = EmptyConstructorNeedsParens = (function() {
 })();
 
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(_dereq_,module,exports){
 var Indentation;
 
 module.exports = Indentation = (function() {
@@ -1104,7 +1157,6 @@ module.exports = Indentation = (function() {
 
   Indentation.prototype.lintToken = function(token, tokenApi) {
     var currentLine, expected, ignoreIndent, isArrayIndent, isInterpIndent, isMultiline, lineNumber, lines, numIndents, prevNum, previous, previousIndentation, previousLine, previousSymbol, type, _ref;
-
     type = token[0], numIndents = token[1], lineNumber = token[2];
     if (type === "[" || type === "]") {
       this.lintArray(token);
@@ -1155,11 +1207,9 @@ module.exports = Indentation = (function() {
 
   Indentation.prototype.isChainedCall = function(tokenApi) {
     var i, lastNewLineIndex, lines, t, token, tokens;
-
     tokens = tokenApi.tokens, i = tokenApi.i;
     lines = (function() {
       var _i, _len, _ref, _results;
-
       _ref = tokens.slice(0, +i + 1 || 9e9);
       _results = [];
       for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
@@ -1177,7 +1227,6 @@ module.exports = Indentation = (function() {
     tokens = [tokens[lastNewLineIndex], tokens[lastNewLineIndex + 1]];
     return !!((function() {
       var _i, _len, _results;
-
       _results = [];
       for (_i = 0, _len = tokens.length; _i < _len; _i++) {
         t = tokens[_i];
@@ -1194,7 +1243,7 @@ module.exports = Indentation = (function() {
 })();
 
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(_dereq_,module,exports){
 var LineEndings;
 
 module.exports = LineEndings = (function() {
@@ -1210,7 +1259,6 @@ module.exports = LineEndings = (function() {
 
   LineEndings.prototype.lintLine = function(line, lineApi) {
     var ending, lastChar, valid, _ref;
-
     ending = (_ref = lineApi.config[this.rule.name]) != null ? _ref.value : void 0;
     if (!ending || lineApi.isLastLine() || !line) {
       return null;
@@ -1239,10 +1287,11 @@ module.exports = LineEndings = (function() {
 })();
 
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(_dereq_,module,exports){
 var MaxLineLength, regexes;
 
 regexes = {
+  literateComment: /^\#\s/,
   longUrlComment: /^\s*\#\s*http[^\s]+$/
 };
 
@@ -1259,18 +1308,21 @@ module.exports = MaxLineLength = (function() {
   };
 
   MaxLineLength.prototype.lintLine = function(line, lineApi) {
-    var limitComments, max, _ref, _ref1;
-
+    var limitComments, lineLength, max, _ref, _ref1;
     max = (_ref = lineApi.config[this.rule.name]) != null ? _ref.value : void 0;
     limitComments = (_ref1 = lineApi.config[this.rule.name]) != null ? _ref1.limitComments : void 0;
-    if (max && max < line.length && !regexes.longUrlComment.test(line)) {
+    lineLength = line.length;
+    if (lineApi.isLiterate() && regexes.literateComment.test(line)) {
+      lineLength -= 2;
+    }
+    if (max && max < lineLength && !regexes.longUrlComment.test(line)) {
       if (!limitComments) {
         if (lineApi.getLineTokens().length === 0) {
           return;
         }
       }
       return {
-        context: "Length is " + line.length + ", max is " + max
+        context: "Length is " + lineLength + ", max is " + max
       };
     }
   };
@@ -1280,12 +1332,12 @@ module.exports = MaxLineLength = (function() {
 })();
 
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(_dereq_,module,exports){
 var MissingFatArrows, any, isClass, isCode, isFatArrowCode, isObject, isThis, isValue, methodsOfClass, needsFatArrow,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 isCode = function(node) {
-  return node.constructor.name === 'Code';
+  return (node != null ? node.constructor.name : void 0) === 'Code';
 };
 
 isClass = function(node) {
@@ -1322,7 +1374,6 @@ needsFatArrow = function(node) {
 
 methodsOfClass = function(classNode) {
   var bodyNodes, returnNode;
-
   bodyNodes = classNode.body.expressions;
   returnNode = bodyNodes[bodyNodes.length - 1];
   if ((returnNode != null) && isValue(returnNode) && isObject(returnNode.base)) {
@@ -1350,9 +1401,7 @@ module.exports = MissingFatArrows = (function() {
   };
 
   MissingFatArrows.prototype.lintNode = function(node, astApi, methods) {
-    var error,
-      _this = this;
-
+    var error;
     if (methods == null) {
       methods = [];
     }
@@ -1362,18 +1411,20 @@ module.exports = MissingFatArrows = (function() {
       });
       this.errors.push(error);
     }
-    return node.eachChild(function(child) {
-      return _this.lintNode(child, astApi, (function() {
-        switch (false) {
-          case !isClass(node):
-            return methodsOfClass(node);
-          case !isCode(node):
-            return [];
-          default:
-            return methods;
-        }
-      })());
-    });
+    return node.eachChild((function(_this) {
+      return function(child) {
+        return _this.lintNode(child, astApi, (function() {
+          switch (false) {
+            case !isClass(node):
+              return methodsOfClass(node);
+            case !isCode(node):
+              return [];
+            default:
+              return methods;
+          }
+        })());
+      };
+    })(this));
   };
 
   return MissingFatArrows;
@@ -1381,7 +1432,7 @@ module.exports = MissingFatArrows = (function() {
 })();
 
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(_dereq_,module,exports){
 var NewlinesAfterClasses;
 
 module.exports = NewlinesAfterClasses = (function() {
@@ -1392,12 +1443,11 @@ module.exports = NewlinesAfterClasses = (function() {
     value: 3,
     level: 'ignore',
     message: 'Wrong count of newlines between a class and other code',
-    description: "Checks the number of newlines between classes and other        code"
+    description: "Checks the number of newlines between classes and other code"
   };
 
   NewlinesAfterClasses.prototype.lintLine = function(line, lineApi) {
     var context, ending, got, lineNumber;
-
     ending = lineApi.config[this.rule.name].value;
     if (!ending || lineApi.isLastLine()) {
       return null;
@@ -1417,7 +1467,7 @@ module.exports = NewlinesAfterClasses = (function() {
 })();
 
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(_dereq_,module,exports){
 var NoBackticks;
 
 module.exports = NoBackticks = (function() {
@@ -1441,7 +1491,7 @@ module.exports = NoBackticks = (function() {
 })();
 
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(_dereq_,module,exports){
 var NoEmptyParamList;
 
 module.exports = NoEmptyParamList = (function() {
@@ -1458,7 +1508,6 @@ module.exports = NoEmptyParamList = (function() {
 
   NoEmptyParamList.prototype.lintToken = function(token, tokenApi) {
     var nextType;
-
     nextType = tokenApi.peek()[0];
     return nextType === 'PARAM_END';
   };
@@ -1468,7 +1517,7 @@ module.exports = NoEmptyParamList = (function() {
 })();
 
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(_dereq_,module,exports){
 var NoImplicitBraces;
 
 module.exports = NoImplicitBraces = (function() {
@@ -1486,7 +1535,6 @@ module.exports = NoImplicitBraces = (function() {
 
   NoImplicitBraces.prototype.lintToken = function(token, tokenApi) {
     var previousToken;
-
     if (token.generated) {
       if (!tokenApi.config[this.rule.name].strict) {
         previousToken = tokenApi.peek(-1)[0];
@@ -1500,7 +1548,6 @@ module.exports = NoImplicitBraces = (function() {
 
   NoImplicitBraces.prototype.isPartOfClass = function(tokenApi) {
     var i, t;
-
     i = -1;
     while (true) {
       t = tokenApi.peek(i);
@@ -1519,7 +1566,7 @@ module.exports = NoImplicitBraces = (function() {
 })();
 
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(_dereq_,module,exports){
 var NoImplicitParens;
 
 module.exports = NoImplicitParens = (function() {
@@ -1543,7 +1590,7 @@ module.exports = NoImplicitParens = (function() {
 })();
 
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(_dereq_,module,exports){
 var NoPlusPlus;
 
 module.exports = NoPlusPlus = (function() {
@@ -1569,7 +1616,7 @@ module.exports = NoPlusPlus = (function() {
 })();
 
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(_dereq_,module,exports){
 var NoStandAloneAt;
 
 module.exports = NoStandAloneAt = (function() {
@@ -1586,7 +1633,6 @@ module.exports = NoStandAloneAt = (function() {
 
   NoStandAloneAt.prototype.lintToken = function(token, tokenApi) {
     var isDot, isIdentifier, isIndexStart, isValidProtoProperty, nextToken, protoProperty, spaced;
-
     nextToken = tokenApi.peek();
     spaced = token.spaced;
     isIdentifier = nextToken[0] === 'IDENTIFIER';
@@ -1606,7 +1652,7 @@ module.exports = NoStandAloneAt = (function() {
 })();
 
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(_dereq_,module,exports){
 var NoTabs, indentationRegex,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -1624,7 +1670,6 @@ module.exports = NoTabs = (function() {
 
   NoTabs.prototype.lintLine = function(line, lineApi) {
     var indentation;
-
     indentation = line.split(indentationRegex)[0];
     if (lineApi.lineHasToken() && __indexOf.call(indentation, '\t') >= 0) {
       return true;
@@ -1638,7 +1683,7 @@ module.exports = NoTabs = (function() {
 })();
 
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(_dereq_,module,exports){
 var NoThrowingStrings;
 
 module.exports = NoThrowingStrings = (function() {
@@ -1655,7 +1700,6 @@ module.exports = NoThrowingStrings = (function() {
 
   NoThrowingStrings.prototype.lintToken = function(token, tokenApi) {
     var n1, n2, nextIsString, _ref;
-
     _ref = [tokenApi.peek(), tokenApi.peek(2)], n1 = _ref[0], n2 = _ref[1];
     nextIsString = n1[0] === 'STRING' || (n1[0] === '(' && n2[0] === 'STRING');
     return nextIsString;
@@ -1666,7 +1710,7 @@ module.exports = NoThrowingStrings = (function() {
 })();
 
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(_dereq_,module,exports){
 var NoTrailingSemicolons, regexes,
   __slice = [].slice;
 
@@ -1685,14 +1729,25 @@ module.exports = NoTrailingSemicolons = (function() {
   };
 
   NoTrailingSemicolons.prototype.lintLine = function(line, lineApi) {
-    var first, hasNewLine, hasSemicolon, last, lineTokens, _i, _ref;
-
+    var endPos, first, hasNewLine, hasSemicolon, last, lineTokens, newLine, startCounter, startPos, _i, _ref;
     lineTokens = lineApi.getLineTokens();
-    if (lineTokens.length === 1 && lineTokens[0][0] === 'TERMINATOR') {
+    if (lineTokens.length === 1 && ((_ref = lineTokens[0][0]) === 'TERMINATOR' || _ref === 'HERECOMMENT')) {
       return;
     }
-    hasSemicolon = regexes.trailingSemicolon.test(line);
-    _ref = lineApi.getLineTokens(), first = 2 <= _ref.length ? __slice.call(_ref, 0, _i = _ref.length - 1) : (_i = 0, []), last = _ref[_i++];
+    newLine = line;
+    if (lineTokens.length > 1 && lineTokens[lineTokens.length - 1][0] === 'TERMINATOR') {
+      startPos = lineTokens[lineTokens.length - 2][2].last_column + 1;
+      endPos = lineTokens[lineTokens.length - 1][2].first_column;
+      if (startPos !== endPos) {
+        startCounter = startPos;
+        while (line[startCounter] !== "#" && startCounter < line.length) {
+          startCounter++;
+        }
+        newLine = line.substring(0, startCounter).replace(/\s*$/, '');
+      }
+    }
+    hasSemicolon = regexes.trailingSemicolon.test(newLine);
+    first = 2 <= lineTokens.length ? __slice.call(lineTokens, 0, _i = lineTokens.length - 1) : (_i = 0, []), last = lineTokens[_i++];
     hasNewLine = last && (last.newLine != null);
     if (hasSemicolon && !hasNewLine && lineApi.lineHasToken() && last[0] !== 'STRING') {
       return true;
@@ -1704,12 +1759,12 @@ module.exports = NoTrailingSemicolons = (function() {
 })();
 
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(_dereq_,module,exports){
 var NoTrailingWhitespace, regexes;
 
 regexes = {
   trailingWhitespace: /[^\s]+[\t ]+\r?$/,
-  onlySpaces: /^[\t\s]+\r?$/,
+  onlySpaces: /^[\t ]+\r?$/,
   lineHasComment: /^\s*[^\#]*\#/
 };
 
@@ -1727,7 +1782,6 @@ module.exports = NoTrailingWhitespace = (function() {
 
   NoTrailingWhitespace.prototype.lintLine = function(line, lineApi) {
     var str, token, tokens, _i, _len, _ref, _ref1, _ref2;
-
     if (!((_ref = lineApi.config['no_trailing_whitespace']) != null ? _ref.allowed_in_empty_lines : void 0)) {
       if (regexes.onlySpaces.test(line)) {
         return true;
@@ -1744,7 +1798,6 @@ module.exports = NoTrailingWhitespace = (function() {
       }
       _ref2 = (function() {
         var _j, _len, _results;
-
         _results = [];
         for (_j = 0, _len = tokens.length; _j < _len; _j++) {
           token = tokens[_j];
@@ -1769,7 +1822,7 @@ module.exports = NoTrailingWhitespace = (function() {
 })();
 
 
-},{}],28:[function(require,module,exports){
+},{}],29:[function(_dereq_,module,exports){
 var NoUnnecessaryFatArrows, any, isCode, isFatArrowCode, isThis, needsFatArrow;
 
 isCode = function(node) {
@@ -1814,18 +1867,18 @@ module.exports = NoUnnecessaryFatArrows = (function() {
   };
 
   NoUnnecessaryFatArrows.prototype.lintNode = function(node, astApi) {
-    var error,
-      _this = this;
-
+    var error;
     if ((isFatArrowCode(node)) && (!needsFatArrow(node))) {
       error = astApi.createError({
         lineNumber: node.locationData.first_line + 1
       });
       this.errors.push(error);
     }
-    return node.eachChild(function(child) {
-      return _this.lintNode(child, astApi);
-    });
+    return node.eachChild((function(_this) {
+      return function(child) {
+        return _this.lintNode(child, astApi);
+      };
+    })(this));
   };
 
   return NoUnnecessaryFatArrows;
@@ -1833,19 +1886,18 @@ module.exports = NoUnnecessaryFatArrows = (function() {
 })();
 
 
-},{}],29:[function(require,module,exports){
-var NonEmptyConstructorNeedsParens, ParentClass, _ref,
+},{}],30:[function(_dereq_,module,exports){
+var NonEmptyConstructorNeedsParens, ParentClass,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-ParentClass = require('./empty_constructor_needs_parens.coffee');
+ParentClass = _dereq_('./empty_constructor_needs_parens.coffee');
 
 module.exports = NonEmptyConstructorNeedsParens = (function(_super) {
   __extends(NonEmptyConstructorNeedsParens, _super);
 
   function NonEmptyConstructorNeedsParens() {
-    _ref = NonEmptyConstructorNeedsParens.__super__.constructor.apply(this, arguments);
-    return _ref;
+    return NonEmptyConstructorNeedsParens.__super__.constructor.apply(this, arguments);
   }
 
   NonEmptyConstructorNeedsParens.prototype.rule = {
@@ -1866,7 +1918,7 @@ module.exports = NonEmptyConstructorNeedsParens = (function(_super) {
 })(ParentClass);
 
 
-},{"./empty_constructor_needs_parens.coffee":12}],30:[function(require,module,exports){
+},{"./empty_constructor_needs_parens.coffee":13}],31:[function(_dereq_,module,exports){
 var SpaceOperators,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -1878,7 +1930,7 @@ module.exports = SpaceOperators = (function() {
     description: "This rule enforces that operators have space around them."
   };
 
-  SpaceOperators.prototype.tokens = ["+", "-", "=", "MATH", "COMPARE", "LOGIC", "COMPOUND_ASSIGN", "(", ")", "CALL_START", "CALL_END"];
+  SpaceOperators.prototype.tokens = ["+", "-", "=", "**", "MATH", "COMPARE", "LOGIC", "COMPOUND_ASSIGN", "(", ")", "CALL_START", "CALL_END"];
 
   function SpaceOperators() {
     this.callTokens = [];
@@ -1887,7 +1939,6 @@ module.exports = SpaceOperators = (function() {
 
   SpaceOperators.prototype.lintToken = function(_arg, tokenApi) {
     var type;
-
     type = _arg[0];
     if (type === "CALL_START" || type === "CALL_END") {
       this.lintCall.apply(this, arguments);
@@ -1906,7 +1957,6 @@ module.exports = SpaceOperators = (function() {
 
   SpaceOperators.prototype.lintPlus = function(token, tokenApi) {
     var isUnary, p, unaries, _ref;
-
     if (this.isInInterpolation() || this.isInExtendedRegex()) {
       return null;
     }
@@ -1934,7 +1984,6 @@ module.exports = SpaceOperators = (function() {
 
   SpaceOperators.prototype.isInExtendedRegex = function() {
     var t, _i, _len, _ref;
-
     _ref = this.callTokens;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       t = _ref[_i];
@@ -1947,7 +1996,6 @@ module.exports = SpaceOperators = (function() {
 
   SpaceOperators.prototype.lintCall = function(token, tokenApi) {
     var p;
-
     if (token[0] === 'CALL_START') {
       p = tokenApi.peek(-1);
       token.isRegex = p && p[0] === 'IDENTIFIER' && p[1] === 'RegExp';
@@ -1960,7 +2008,6 @@ module.exports = SpaceOperators = (function() {
 
   SpaceOperators.prototype.isInInterpolation = function() {
     var t, _i, _len, _ref;
-
     _ref = this.parenTokens;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       t = _ref[_i];
@@ -1973,7 +2020,6 @@ module.exports = SpaceOperators = (function() {
 
   SpaceOperators.prototype.lintParens = function(token, tokenApi) {
     var i, n1, n2, p1;
-
     if (token[0] === '(') {
       p1 = tokenApi.peek(-1);
       n1 = tokenApi.peek(1);
@@ -1992,6 +2038,6 @@ module.exports = SpaceOperators = (function() {
 })();
 
 
-},{}]},{},[3])(3)
+},{}]},{},[4])
+(4)
 });
-;
