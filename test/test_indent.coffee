@@ -208,4 +208,19 @@ vows.describe('indent').addBatch({
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
 
+    'Indenting callbacks to multiple chained calls' :
+
+        topic: """
+            anArray
+              .filter (item) ->
+                item.status in ACTIVE_STATUSES
+              .map (item) ->
+                item.service
+            """
+
+        'is permitted' : (source) ->
+            errors = coffeelint.lint(source)
+            assert.isEmpty(errors)
+
+
 }).export(module)
