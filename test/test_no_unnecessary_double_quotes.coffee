@@ -38,7 +38,9 @@ vows.describe('no_unnecessary_fat_arrows').addBatch({
             assert.lengthOf(errors, 1)
             error = errors[0]
             assert.equal(error.lineNumber, 1)
-            assert.equal(error.message, 'Unnecessary double quotes are forbidden')
+            assert.equal(error.message,
+                'Unnecessary double quotes are forbidden'
+            )
             assert.equal(error.rule, 'no_unnecessary_double_quotes')
 
 
@@ -73,7 +75,9 @@ vows.describe('no_unnecessary_fat_arrows').addBatch({
             assert.lengthOf(errors, 1)
             error = errors[0]
             assert.equal(error.lineNumber, 1)
-            assert.equal(error.message, 'Unnecessary double quotes are forbidden')
+            assert.equal(error.message,
+                'Unnecessary double quotes are forbidden'
+            )
             assert.equal(error.rule, 'no_unnecessary_double_quotes')
 
 
@@ -122,7 +126,9 @@ vows.describe('no_unnecessary_fat_arrows').addBatch({
             assert.lengthOf(errors, 2)
             error = errors[0]
             assert.equal(error.lineNumber, 1)
-            assert.equal(error.message, 'Unnecessary double quotes are forbidden')
+            assert.equal(error.message,
+                'Unnecessary double quotes are forbidden'
+            )
             assert.equal(error.rule, 'no_unnecessary_double_quotes')
 
 
