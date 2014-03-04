@@ -3,7 +3,7 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
-vows.describe('no_unnecessary_fat_arrows').addBatch({
+vows.describe('no_unnecessary_double_quotes').addBatch({
 
     'Single quotes' :
 
