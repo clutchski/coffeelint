@@ -143,6 +143,7 @@ coffeelint.registerRule(
     require './rules/non_empty_constructor_needs_parens.coffee'
 )
 coffeelint.registerRule require './rules/no_unnecessary_double_quotes.coffee'
+coffeelint.registerRule require './rules/no_debugger.coffee'
 
 hasSyntaxError = (source) ->
     try
