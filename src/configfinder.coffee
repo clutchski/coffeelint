@@ -47,7 +47,8 @@ exports.getConfig = (filename = null) ->
         return npmConfig  if npmConfig
         projConfig = findFile("coffeelint.json", dir)
         return loadJSON(projConfig)  if projConfig
-    envs = process.env.HOME or process.env.HOMEPATH or process.env.USERPROFILE
+    envs = process.env.HOME or process.env.HOMEPATH or
+        process.env.USERPROFILE or ''
     home = path.normalize(path.join(envs, "coffeelint.json"))
     if fs.existsSync(home)
         console.log 'loaded', home
