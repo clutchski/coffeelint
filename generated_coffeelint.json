@@ -107,6 +107,11 @@
         "name": "missing_fat_arrows",
         "level": "ignore"
     },
+    "undefined_variables": {
+        "name": "undefined_variables",
+        "allowHoisting": false,
+        "level": "error"
+    },
     "non_empty_constructor_needs_parens": {
         "name": "non_empty_constructor_needs_parens",
         "level": "ignore"

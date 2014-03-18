@@ -16,10 +16,12 @@
         "value" : "unix",
         "level" : "error"
     },
-
     "space_operators" : {
         "level" : "error"
+    },
+    "undefined_variables": {
+        "environments": {
+            "node": true
+        }
     }
-
-
 }
