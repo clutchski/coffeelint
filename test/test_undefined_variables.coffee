@@ -43,7 +43,7 @@ errorSorter = (a, b) ->
         else
             0
 
-RULE = 'missing_fat_arrows'
+RULE = 'undefined_variables'
 
 runLint = (source) ->
     config = {}
