@@ -165,7 +165,7 @@ module.exports = class
         switch name
             when 'Assign' then @lintAssign node
             # when 'Block' then @lintBlock node
-            when 'Call' then @lintCall node
+            # when 'Call' then @lintCall node
             when 'Class' then @newVariable node.variable
             when 'Code' then @lintCode node
             when 'Comment' then @lintComment node
@@ -176,6 +176,7 @@ module.exports = class
             when 'Op' then @lintOp node
             when 'Splat' then @checkExists node.name.base
             when 'Switch' then @lintSwitch node
+            when 'Value' then @checkExists node.base
 
         @lintChildren(node)
 
@@ -194,30 +195,12 @@ module.exports = class
         undefined
 
     lintAssign: (node) ->
-        @checkExists node.value
-        if node.context isnt 'object'
-            # Once it's in the destructuring process this needs to dig
-            # through the values to find newly defined variables.
-            recurseValues = (n) =>
-                if n.value?
-                    recurseValues n.value
-                else
-                    if n.base.objects?
-                        for o in n.base.objects
-                            recurseValues o
-                    else
-                        @newVariable n
-                undefined
-
-            # This is a destructuring assignment
-            if node.variable.base.objects?
-                for o in node.variable.base.objects
-                    if o.value?
-                        recurseValues o.value
-                    else
-                        recurseValues o
-            else
+        if node.variable.properties.length is 0
+            if node.variable.constructor.name is 'Value'
                 @newVariable node.variable
+            else
+                @lintNode node.variable
+        @lintNode node.value
 
     lintBlock: (node) ->
         # IDK if I like this, it modifies the AST.

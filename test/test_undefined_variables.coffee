@@ -99,6 +99,7 @@ vows.describe(RULE).addBatch({
 
         'bad index in a function call': shouldError 'undefined', '''
             noop = -> undefined
+            param = {}
             noop param[badIndex]
         ''', [ 'badIndex' ]
 
