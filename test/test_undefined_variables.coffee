@@ -111,6 +111,14 @@ vows.describe(RULE).addBatch({
 
         '''
 
+        'variables in switch subject and cases are used': shouldPass '''
+            switchSubject = 2
+            switchCase = 3
+            switch 1 + switchSubject
+                when switchCase
+                    return
+        '''
+
         topic :
             """
             noop = -> undefined

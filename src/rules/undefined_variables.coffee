@@ -175,6 +175,7 @@ module.exports = class
             when 'In' then @lintIn node
             when 'Op' then @lintOp node
             when 'Splat' then @checkExists node.name.base
+            when 'Switch' then @lintSwitch node
 
         @lintChildren(node)
 
@@ -302,6 +303,12 @@ module.exports = class
         @checkExists node.first.base
         if node.second?
             @checkExists node.second.base
+
+    lintSwitch: (node) ->
+        @lintNode node.subject
+        for [condition, body] in node.cases
+            @lintNode condition
+            @lintNode body
 
 
     level: 0
