@@ -9,7 +9,7 @@ module.exports = class
         # This isn't REALLY configurable, I just want to be clear that hoisted
         # variables are considered an error.
         allowHoisting: false
-        level : 'ignore'
+        level : 'error'
         message : 'Undefinded variable'
         description : 'Detect undefined variables'
         environments: do ->
