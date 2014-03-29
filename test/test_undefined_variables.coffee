@@ -60,7 +60,6 @@ shouldError = (mode, source, variables) ->
     spec["errors for #{mode} variables"] = (source) ->
         numErrors = variables.length
         errors = runLint source
-        console.log source, errors
 
         assert.lengthOf errors, numErrors,
             "Expected #{numErrors} errors, got #{inspect errors}"
