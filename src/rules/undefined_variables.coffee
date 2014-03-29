@@ -169,6 +169,7 @@ module.exports = class
             when 'Class' then @newVariable node.variable
             when 'Code' then @lintCode node
             when 'Comment' then @lintComment node
+            when 'Existence' then @lintExistence node
             when 'For' then @lintFor node
             when 'If' then @lintIf node
             when 'In' then @lintIn node
@@ -278,6 +279,13 @@ module.exports = class
                 dependsOn: node.name?.value
 
         @checkExists node.source.base
+        @lintNode node.guard if node.guard?
+
+    lintExistence: (node) ->
+        if node.expression.constructor.name is 'Value'
+            @checkExists node.expression.base
+        else
+            @lintNode node.expression
 
     lintIf: (node) ->
         if node.condition.expression?

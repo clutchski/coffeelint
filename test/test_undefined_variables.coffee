@@ -79,11 +79,13 @@ vows.describe(RULE).addBatch({
     'Undefined Variables':
 
         'assigning with an undefined index':  shouldError 'undefined', '''
+            obj = {}
             obj.foo = 'foo'
-            obj2[missingIndex] = 'foo'
+            obj[missingIndex] = 'foo'
         ''', [ 'missingIndex' ]
 
         'call function with undefined param': shouldError 'undefined', '''
+            fn = ->
             fn(param)
         ''', [ 'param' ]
 
