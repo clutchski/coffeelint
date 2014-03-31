@@ -195,8 +195,8 @@ module.exports = class
 
         undefined
 
-    lintAssign: ( { variable, value } ) ->
 
+    lintAssign: ( { variable, value } ) ->
         # The isAssignable check will prevent processing strings:
         # { "key": "value" }
         # The above is an assignement, but `key` is not assignable.
@@ -205,6 +205,25 @@ module.exports = class
                 # to see if it's an instanceof Value in compileNode().
                 variable.constructor.name is 'Value'
             @newVariable variable
+
+        if variable.isObject()
+            @destructureObject variable
+
+
+    # {
+    #     a
+    #     b: { c }
+    # } = foo
+    destructureObject: (node) ->
+        node.base.properties.forEach (p) =>
+            # Handle `a`
+            if p.isAssignable()
+                @newVariable p
+            # b: { c }
+            # is an assignment. b is the `variable` and
+            # { c } is the `value`
+            else if p.constructor.name is 'Assign'
+                @destructureObject p.value
 
     lintBlock: (node) ->
         # IDK if I like this, it modifies the AST.
