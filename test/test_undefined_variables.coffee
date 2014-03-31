@@ -103,6 +103,22 @@ vows.describe(RULE).addBatch({
             noop param[badIndex]
         ''', [ 'badIndex' ]
 
+        'destructuring arrays': shouldPass '''
+            foo = []
+            ( [ a, b, [ c, d ]  ] ) ->
+                undefined
+
+            [ a, b, [ c, d ]  ] = foo
+        '''
+
+        'destructuring objects': shouldPass '''
+            foo = {}
+            ( { a, b: { c, d }  } ) ->
+                undefined
+
+            { a, b: { c, d }  } = foo
+        '''
+
     'Unused Variables' :
 
         'Loop with condition': shouldPass '''

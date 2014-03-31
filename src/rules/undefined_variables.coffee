@@ -208,7 +208,15 @@ module.exports = class
 
         if variable.isObject()
             @destructureObject variable
+        if variable.isArray()
+            @destructureArray variable
 
+
+    destructure: (node) ->
+        if node.base.constructor.name is 'Arr'
+            @destructureArray node
+        else
+            @destructureObject node
 
     # {
     #     a
@@ -224,6 +232,13 @@ module.exports = class
             # { c } is the `value`
             else if p.constructor.name is 'Assign'
                 @destructureObject p.value
+
+    destructureArray: (node) ->
+        node.base.objects.forEach (o) =>
+            if o.isAssignable()
+                @newVariable o
+            else if o.base.constructor.name is 'Arr'
+                @destructureArray o
 
     lintBlock: (node) ->
         # IDK if I like this, it modifies the AST.
@@ -255,10 +270,13 @@ module.exports = class
             # @newVariable calls everywhere else
 
             param.base = param.name
-            @newVariable param,
-                dependsOn: lastParam
+            if param.isComplex()
+                @destructure param
+            else
+                @newVariable param,
+                    dependsOn: lastParam
 
-            lastParam = param.name.value
+                lastParam = param.name.value
 
     lintComment: (node) ->
         # http://stackoverflow.com/a/3537914/35247
