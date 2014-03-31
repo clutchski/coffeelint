@@ -240,7 +240,14 @@ module.exports = class
     destructureArray: (node) ->
         node.base.objects.forEach (o) =>
             if o.isAssignable()
-                @newVariable o
+                if o.constructor.name is 'Splat'
+                    @newVariable o.name
+                else
+                    @newVariable o
+            else if o.constructor.name is 'Expansion'
+                # The `...` is an expansion. Nothing needs to be done.
+                # [ first, ..., last ]
+                undefined
             else
                 @destructure o
 

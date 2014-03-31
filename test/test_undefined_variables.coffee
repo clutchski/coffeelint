@@ -126,6 +126,9 @@ vows.describe(RULE).addBatch({
                 undefined
 
             [ a, b, [ c, d ]  ] = foo
+
+            [e..., f] = foo
+            [g, ..., h] = foo
         '''
 
         'object destructuring': shouldPass '''
