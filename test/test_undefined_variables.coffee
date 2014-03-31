@@ -53,15 +53,32 @@ runLint = (source) ->
     config[RULE].globals = [ 'noop' ]
     coffeelint.lint source, config
 
-shouldError = (mode, source, variables) ->
+shouldError = (mode, source, expectedVariables) ->
     spec =
         topic: source
 
     spec["errors for #{mode} variables"] = (source) ->
-        numErrors = variables.length
+        numErrors = expectedVariables.length
         errors = runLint source
 
-        assert.lengthOf errors, numErrors,
+        if mode is 'unused'
+            targetMessage = 'Unused variable'
+        else
+            targetMessage = 'Undefined variable'
+
+        variables = errors.filter (err) ->
+            err.message is targetMessage
+        .map (err) ->
+            err.context
+
+        variables.sort()
+        expectedVariables.sort()
+
+        for expected, index in expectedVariables
+            actual = variables[index]
+            assert.equal actual, expected
+
+        assert.lengthOf variables, numErrors,
             "Expected #{numErrors} errors, got #{inspect errors}"
 
         error = errors[0]
@@ -143,6 +160,30 @@ vows.describe(RULE).addBatch({
                 when switchCase
                     return
         '''
+
+        'constructing arrays': shouldPass '''
+            a = 1
+            b = 2
+
+            [ a, b ]
+        '''
+
+        'constructing objects': shouldPass '''
+            a = 1
+            b = 2
+
+            {
+                a: a
+                b
+            }
+        '''
+
+        'comment variables': shouldError 'unused', '''
+            ###
+            # global someGlobal
+            ###
+
+        ''', [ 'someGlobal' ]
 
         topic :
             """
