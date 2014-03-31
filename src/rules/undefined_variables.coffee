@@ -176,8 +176,7 @@ module.exports = class
             when 'In' then @lintIn node
             when 'Op' then @lintOp node
             when 'Splat' then @checkExists node.name.base
-            when 'Switch' then @lintSwitch node
-            when 'Value' then @checkExists node.base
+            when 'Value' then @lintValue node
 
         @lintChildren(node)
 
@@ -195,6 +194,8 @@ module.exports = class
 
         undefined
 
+    lintValue: (node) ->
+        @checkExists node.base
 
     lintAssign: ( { variable, value } ) ->
         # The isAssignable check will prevent processing strings:
@@ -324,13 +325,6 @@ module.exports = class
         @checkExists node.first.base
         if node.second?
             @checkExists node.second.base
-
-    lintSwitch: (node) ->
-        @lintNode node.subject
-        for [condition, body] in node.cases
-            @lintNode condition
-            @lintNode body
-
 
     level: 0
     lintChildren: (node) ->

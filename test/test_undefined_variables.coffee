@@ -159,6 +159,8 @@ vows.describe(RULE).addBatch({
             switch 1 + switchSubject
                 when switchCase
                     return
+                when 'a', 'b'
+                    return
         '''
 
         'constructing arrays': shouldPass '''
