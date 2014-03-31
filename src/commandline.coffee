@@ -253,7 +253,11 @@ lintFiles = (files, config) ->
             if data.module?
                 loadRules(data.module, ruleName)
 
-        errorReport.paths[file] = coffeelint.lint(source, fileConfig, literate)
+        try
+            errorReport.paths[file] = coffeelint.lint(source, fileConfig, literate)
+        catch e
+            console.error "Error processing #{file}"
+            throw e
     return errorReport
 
 # Return an error report from linting the given coffeescript source.
