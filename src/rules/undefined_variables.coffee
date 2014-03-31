@@ -176,6 +176,7 @@ module.exports = class
             when 'In' then @lintIn node
             when 'Op' then @lintOp node
             when 'Splat' then @checkExists node.name.base
+            when 'Try' then @lintTry node
             when 'Value' then @lintValue node
 
         @lintChildren(node)
@@ -250,6 +251,9 @@ module.exports = class
                 undefined
             else
                 @destructure o
+
+    lintTry: ->
+        # TODO: Figure out how to find out the varible name for the catch block
 
     lintBlock: (node) ->
         # IDK if I like this, it modifies the AST.
