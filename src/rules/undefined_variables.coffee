@@ -195,7 +195,11 @@ module.exports = class
         undefined
 
     lintAssign: (node) ->
-        if node.variable.properties.length is 0
+        base = node.variable.base
+        # The isAssignable check will prevent processing strings:
+        # { "key": "value" }
+        # The above is an assignement, but `key` is not assignable.
+        if base.isAssignable() and node.variable.properties.length is 0
             if node.variable.constructor.name is 'Value'
                 @newVariable node.variable
             else
