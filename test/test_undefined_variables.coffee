@@ -103,7 +103,7 @@ vows.describe(RULE).addBatch({
             noop param[badIndex]
         ''', [ 'badIndex' ]
 
-        'destructuring arrays': shouldPass '''
+        'array destructuring': shouldPass '''
             foo = []
             ( [ a, b, [ c, d ]  ] ) ->
                 undefined
@@ -111,12 +111,20 @@ vows.describe(RULE).addBatch({
             [ a, b, [ c, d ]  ] = foo
         '''
 
-        'destructuring objects': shouldPass '''
+        'object destructuring': shouldPass '''
             foo = {}
             ( { a, b: { c, d }  } ) ->
                 undefined
 
             { a, b: { c, d }  } = foo
+        '''
+
+        'hybrid destructuring': shouldPass '''
+            foo = {}
+            ( { a, b: [ c, { d } ]  } ) ->
+                undefined
+
+            { a, b: [ c, { d } ]  } = foo
         '''
 
     'Unused Variables' :

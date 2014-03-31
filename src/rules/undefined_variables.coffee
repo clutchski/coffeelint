@@ -231,14 +231,14 @@ module.exports = class
             # is an assignment. b is the `variable` and
             # { c } is the `value`
             else if p.constructor.name is 'Assign'
-                @destructureObject p.value
+                @destructure p.value
 
     destructureArray: (node) ->
         node.base.objects.forEach (o) =>
             if o.isAssignable()
                 @newVariable o
-            else if o.base.constructor.name is 'Arr'
-                @destructureArray o
+            else
+                @destructure o
 
     lintBlock: (node) ->
         # IDK if I like this, it modifies the AST.
