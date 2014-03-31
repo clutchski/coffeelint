@@ -157,6 +157,7 @@ module.exports = class
         true
 
 
+    # This only needs to be called from lintAST and lintChildren.
     lintNode: (node) =>
 
         # Get the complexity of the current node.
@@ -194,17 +195,16 @@ module.exports = class
 
         undefined
 
-    lintAssign: (node) ->
-        base = node.variable.base
+    lintAssign: ( { variable, value } ) ->
+
         # The isAssignable check will prevent processing strings:
         # { "key": "value" }
         # The above is an assignement, but `key` is not assignable.
-        if base.isAssignable() and node.variable.properties.length is 0
-            if node.variable.constructor.name is 'Value'
-                @newVariable node.variable
-            else
-                @lintNode node.variable
-        @lintNode node.value
+        if variable.base.isAssignable() and variable.properties.length is 0 and
+                # I don't know what else this could be, but CoffeeScript checks
+                # to see if it's an instanceof Value in compileNode().
+                variable.constructor.name is 'Value'
+            @newVariable variable
 
     lintBlock: (node) ->
         # IDK if I like this, it modifies the AST.
@@ -267,13 +267,10 @@ module.exports = class
                 dependsOn: node.name?.value
 
         @checkExists node.source.base
-        @lintNode node.guard if node.guard?
 
     lintExistence: (node) ->
         if node.expression.constructor.name is 'Value'
             @checkExists node.expression.base
-        else
-            @lintNode node.expression
 
     lintIf: (node) ->
         if node.condition.expression?
