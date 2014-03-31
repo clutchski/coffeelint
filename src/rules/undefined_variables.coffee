@@ -224,6 +224,9 @@ module.exports = class
     #     b: { c }
     # } = foo
     destructureObject: (node) ->
+        if node.base.isAssignable()
+            return @newVariable node
+
         node.base.properties.forEach (p) =>
             # Handle `a`
             if p.isAssignable()
