@@ -1,3 +1,4 @@
+isClass = (node) -> node.constructor.name is 'Class'
 isCode = (node) -> node.constructor.name is 'Code'
 isFatArrowCode = (node) -> isCode(node) and node.bound
 isThis = (node) ->
@@ -5,10 +6,20 @@ isThis = (node) ->
 
 any = (arr, test) -> arr.reduce ((res, elt) -> res or test elt), false
 
+containsButIsnt = (node, pred, butIsnt) ->
+    target = undefined
+    node.traverseChildren false, (n) ->
+        if butIsnt n
+            return false
+        if pred n
+            target = n
+            return false
+    target
+
 needsFatArrow = (node) ->
     isCode(node) and (
         any(node.params, (param) -> param.contains(isThis)?) or
-        node.body.contains(isThis)? or
+        containsButIsnt(node.body, isThis, isClass)? or
         node.body.contains((child) ->
             isFatArrowCode(child) and needsFatArrow(child))?
     )
