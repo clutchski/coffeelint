@@ -123,4 +123,16 @@ vows.describe(RULE).addBatch({
                 doNothing: () ->
         """
 
+    'function ouside class instance method':
+        'without this': shouldPass """
+            ->
+                class A
+                    m: ->
+                """
+        'with this': shouldPass """
+            ->
+                class A
+                    @m: ->
+                """
+
 }).export(module)
