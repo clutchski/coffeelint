@@ -40,4 +40,55 @@ vows.describe('parens').addBatch({
             assert.equal(error.message, 'Implicit parens are forbidden')
             assert.equal(error.rule, 'no_implicit_parens')
 
+    'No implicit parens strict' :
+        topic: """
+            blah = (a, b) ->
+            blah 'a'
+            , 'b'
+        """
+
+        "blocks all implicit parens by default": (source) ->
+            config = {no_implicit_parens : {level:'error'}}
+            errors = coffeelint.lint(source, config)
+            assert.isArray(errors)
+            assert.lengthOf(errors, 1)
+            assert.equal(rule, 'no_implicit_parens') for {rule} in errors
+
+        "allows parens at the end of lines when strict is false": (source) ->
+            config =
+                no_implicit_parens:
+                    level:'error'
+                    strict: false
+            errors = coffeelint.lint(source, config)
+            assert.isArray(errors)
+            assert.isEmpty(errors)
+
+    'Nested no implicit parens strict' :
+        topic: """
+            blah = (a, b) ->
+
+            blah 'a'
+            , blah('c', 'd')
+
+            blah 'a'
+            , (blah 'c'
+            , 'd')
+        """
+
+        "blocks all implicit parens by default": (source) ->
+            config = {no_implicit_parens : {level:'error'}}
+            errors = coffeelint.lint(source, config)
+            assert.isArray(errors)
+            assert.lengthOf(errors, 3)
+            assert.equal(rule, 'no_implicit_parens') for {rule} in errors
+
+        "allows parens at the end of lines when strict is false": (source) ->
+            config =
+                no_implicit_parens:
+                    level:'error'
+                    strict: false
+            errors = coffeelint.lint(source, config)
+            assert.isArray(errors)
+            assert.isEmpty(errors)
+
 }).export(module)
