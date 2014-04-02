@@ -25,7 +25,7 @@ module.exports = class NoImplicitParens
 
     lintToken : (token, tokenApi) ->
         if token.generated
-            if tokenApi.config[@rule.name].strict
+            unless tokenApi.config[@rule.name].strict == false
                 return true
             else
                 # If strict mode is turned off it allows implicit parens when the
