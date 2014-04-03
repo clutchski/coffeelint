@@ -24,7 +24,7 @@
     "optimist": ">=0.2.8",
     "coffee-script": "~1.7",
     "glob": ">=3.1.9",
-    "browserify": "~3.x",
+    "browserify": "~3.37",
     "coffeeify": "~0.6.0"
   },
   "devDependencies": {
