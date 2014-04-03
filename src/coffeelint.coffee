@@ -144,6 +144,9 @@ coffeelint.registerRule(
 )
 coffeelint.registerRule require './rules/no_unnecessary_double_quotes.coffee'
 coffeelint.registerRule require './rules/no_debugger.coffee'
+coffeelint.registerRule(
+    require './rules/no_interpolation_in_single_quotes.coffee'
+)
 
 hasSyntaxError = (source) ->
     try
