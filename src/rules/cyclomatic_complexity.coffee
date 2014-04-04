@@ -9,7 +9,7 @@ module.exports = class NoTabs
 
     # returns the "complexity" value of the current node.
     getComplexity : (node) ->
-        name = node.constructor.name
+        name = @astApi.getNodeName node
         complexity = if name in ['If', 'While', 'For', 'Try']
             1
         else if name == 'Op' and node.operator in ['&&', '||']
@@ -28,7 +28,7 @@ module.exports = class NoTabs
     lintNode : (node, line) ->
 
         # Get the complexity of the current node.
-        name = node.constructor.name
+        name = @astApi?.getNodeName node
         complexity = @getComplexity(node)
 
         # Add the complexity of all child's nodes to this one.

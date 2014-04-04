@@ -1,7 +1,32 @@
 BaseLinter = require './base_linter.coffee'
 
+node_children =
+  Class:    ['variable', 'parent', 'body']
+  Code:     ['params', 'body']
+  For:      ['body', 'source', 'guard', 'step']
+  If:       ['condition', 'body', 'elseBody']
+  Obj:      ['properties']
+  Op:       ['first', 'second']
+  Switch:   ['subject', 'cases', 'otherwise']
+  Try:      ['attempt', 'recovery', 'ensure']
+  Value:    ['base', 'properties']
+  While:    ['condition', 'guard', 'body']
+
+hasChildren = (node, children) ->
+    node?.children?.length is children.length and
+    node?.children.every (elem, i) -> elem is children[i]
+
 class ASTApi
     constructor: (@config) ->
+    getNodeName: (node) ->
+        name = node?.constructor?.name
+        if node_children[name]
+            return name
+        else
+            for own name, children of node_children
+                if hasChildren(node, children)
+                    return name
+
 
 # A class that performs static analysis of the abstract
 # syntax tree.

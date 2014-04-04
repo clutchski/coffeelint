@@ -1,17 +1,4 @@
-isCode = (node) -> node.constructor.name is 'Code'
-isFatArrowCode = (node) -> isCode(node) and node.bound
-isThis = (node) ->
-    node.constructor.name is 'Value' and node.base.value is 'this'
-
 any = (arr, test) -> arr.reduce ((res, elt) -> res or test elt), false
-
-needsFatArrow = (node) ->
-    isCode(node) and (
-        any(node.params, (param) -> param.contains(isThis)?) or
-        node.body.contains(isThis)? or
-        node.body.contains((child) ->
-            isFatArrowCode(child) and needsFatArrow(child))?
-    )
 
 module.exports = class NoUnnecessaryFatArrows
 
@@ -24,13 +11,29 @@ module.exports = class NoUnnecessaryFatArrows
             is not used within the function.
             """
 
-    lintAST: (node, astApi) ->
-        @lintNode node, astApi
+    lintAST: (node, @astApi) ->
+        @lintNode node
         undefined
 
-    lintNode: (node, astApi) ->
-        if (isFatArrowCode node) and (not needsFatArrow node)
-            error = astApi.createError
+    lintNode: (node) ->
+        if (@isFatArrowCode node) and (not @needsFatArrow node)
+            error = @astApi.createError
                 lineNumber: node.locationData.first_line + 1
             @errors.push error
-        node.eachChild (child) => @lintNode child, astApi
+        node.eachChild (child) => @lintNode child
+
+    isCode: (node) -> @astApi.getNodeName(node) is 'Code'
+    isFatArrowCode: (node) -> @isCode(node) and node.bound
+    isValue: (node) -> @astApi.getNodeName(node) is 'Value'
+
+    isThis: (node) =>
+        @isValue(node) and node.base.value is 'this'
+
+
+    needsFatArrow: (node) =>
+        @isCode(node) and (
+            any(node.params, (param) => param.contains(@isThis)?) or
+            node.body.contains(@isThis)? or
+            node.body.contains((child) =>
+                @isFatArrowCode(child) and @needsFatArrow(child))?
+        )
