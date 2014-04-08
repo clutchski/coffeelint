@@ -2,7 +2,7 @@
 module.exports={
   "name": "coffeelint",
   "description": "Lint your CoffeeScript",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "homepage": "http://www.coffeelint.org",
   "keywords": [
     "lint",
@@ -25,7 +25,7 @@ module.exports={
     "optimist": ">=0.2.8",
     "coffee-script": "~1.7",
     "glob": ">=3.1.9",
-    "browserify": "~3.x",
+    "browserify": "~3.37",
     "coffeeify": "~0.6.0"
   },
   "devDependencies": {
@@ -418,6 +418,12 @@ coffeelint.registerRule(_dereq_('./rules/missing_fat_arrows.coffee'));
 
 coffeelint.registerRule(_dereq_('./rules/non_empty_constructor_needs_parens.coffee'));
 
+coffeelint.registerRule(_dereq_('./rules/no_unnecessary_double_quotes.coffee'));
+
+coffeelint.registerRule(_dereq_('./rules/no_debugger.coffee'));
+
+coffeelint.registerRule(_dereq_('./rules/no_interpolation_in_single_quotes.coffee'));
+
 hasSyntaxError = function(source) {
   try {
     CoffeeScript.tokens(source);
@@ -514,7 +520,7 @@ coffeelint.lint = function(source, userConfig, literate) {
 };
 
 
-},{"./../package.json":1,"./ast_linter.coffee":2,"./lexical_linter.coffee":5,"./line_linter.coffee":6,"./rules.coffee":7,"./rules/arrow_spacing.coffee":8,"./rules/camel_case_classes.coffee":9,"./rules/colon_assignment_spacing.coffee":10,"./rules/cyclomatic_complexity.coffee":11,"./rules/duplicate_key.coffee":12,"./rules/empty_constructor_needs_parens.coffee":13,"./rules/indentation.coffee":14,"./rules/line_endings.coffee":15,"./rules/max_line_length.coffee":16,"./rules/missing_fat_arrows.coffee":17,"./rules/newlines_after_classes.coffee":18,"./rules/no_backticks.coffee":19,"./rules/no_empty_param_list.coffee":20,"./rules/no_implicit_braces.coffee":21,"./rules/no_implicit_parens.coffee":22,"./rules/no_plusplus.coffee":23,"./rules/no_stand_alone_at.coffee":24,"./rules/no_tabs.coffee":25,"./rules/no_throwing_strings.coffee":26,"./rules/no_trailing_semicolons.coffee":27,"./rules/no_trailing_whitespace.coffee":28,"./rules/no_unnecessary_fat_arrows.coffee":29,"./rules/non_empty_constructor_needs_parens.coffee":30,"./rules/space_operators.coffee":31}],5:[function(_dereq_,module,exports){
+},{"./../package.json":1,"./ast_linter.coffee":2,"./lexical_linter.coffee":5,"./line_linter.coffee":6,"./rules.coffee":7,"./rules/arrow_spacing.coffee":8,"./rules/camel_case_classes.coffee":9,"./rules/colon_assignment_spacing.coffee":10,"./rules/cyclomatic_complexity.coffee":11,"./rules/duplicate_key.coffee":12,"./rules/empty_constructor_needs_parens.coffee":13,"./rules/indentation.coffee":14,"./rules/line_endings.coffee":15,"./rules/max_line_length.coffee":16,"./rules/missing_fat_arrows.coffee":17,"./rules/newlines_after_classes.coffee":18,"./rules/no_backticks.coffee":19,"./rules/no_debugger.coffee":20,"./rules/no_empty_param_list.coffee":21,"./rules/no_implicit_braces.coffee":22,"./rules/no_implicit_parens.coffee":23,"./rules/no_interpolation_in_single_quotes.coffee":24,"./rules/no_plusplus.coffee":25,"./rules/no_stand_alone_at.coffee":26,"./rules/no_tabs.coffee":27,"./rules/no_throwing_strings.coffee":28,"./rules/no_trailing_semicolons.coffee":29,"./rules/no_trailing_whitespace.coffee":30,"./rules/no_unnecessary_double_quotes.coffee":31,"./rules/no_unnecessary_fat_arrows.coffee":32,"./rules/non_empty_constructor_needs_parens.coffee":33,"./rules/space_operators.coffee":34}],5:[function(_dereq_,module,exports){
 var BaseLinter, LexicalLinter, TokenApi,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -1492,6 +1498,32 @@ module.exports = NoBackticks = (function() {
 
 
 },{}],20:[function(_dereq_,module,exports){
+var NoDebugger;
+
+module.exports = NoDebugger = (function() {
+  function NoDebugger() {}
+
+  NoDebugger.prototype.rule = {
+    name: 'no_debugger',
+    level: 'warn',
+    message: 'Debugger statements will cause warnings',
+    description: "This rule detects the `debugger` statement.\nThis rule is `warn` by default."
+  };
+
+  NoDebugger.prototype.tokens = ["DEBUGGER"];
+
+  NoDebugger.prototype.lintToken = function(token, tokenApi) {
+    return {
+      context: "found '" + token[0] + "'"
+    };
+  };
+
+  return NoDebugger;
+
+})();
+
+
+},{}],21:[function(_dereq_,module,exports){
 var NoEmptyParamList;
 
 module.exports = NoEmptyParamList = (function() {
@@ -1517,7 +1549,7 @@ module.exports = NoEmptyParamList = (function() {
 })();
 
 
-},{}],21:[function(_dereq_,module,exports){
+},{}],22:[function(_dereq_,module,exports){
 var NoImplicitBraces;
 
 module.exports = NoImplicitBraces = (function() {
@@ -1566,7 +1598,7 @@ module.exports = NoImplicitBraces = (function() {
 })();
 
 
-},{}],22:[function(_dereq_,module,exports){
+},{}],23:[function(_dereq_,module,exports){
 var NoImplicitParens;
 
 module.exports = NoImplicitParens = (function() {
@@ -1574,15 +1606,33 @@ module.exports = NoImplicitParens = (function() {
 
   NoImplicitParens.prototype.rule = {
     name: 'no_implicit_parens',
+    strict: true,
     level: 'ignore',
     message: 'Implicit parens are forbidden',
     description: "This rule prohibits implicit parens on function calls.\n<pre>\n<code># Some folks don't like this style of coding.\nmyFunction a, b, c\n\n# And would rather it always be written like this:\nmyFunction(a, b, c)\n</code>\n</pre>\nImplicit parens are permitted by default, since their use is\nidiomatic CoffeeScript."
   };
 
-  NoImplicitParens.prototype.tokens = ["CALL_START"];
+  NoImplicitParens.prototype.tokens = ["CALL_END"];
 
   NoImplicitParens.prototype.lintToken = function(token, tokenApi) {
-    return token.generated;
+    var i, t;
+    if (token.generated) {
+      if (tokenApi.config[this.rule.name].strict !== false) {
+        return true;
+      } else {
+        i = -1;
+        while (true) {
+          t = tokenApi.peek(i);
+          if ((t == null) || t[0] === 'CALL_START') {
+            return true;
+          }
+          if (t.newLine) {
+            return null;
+          }
+          i -= 1;
+        }
+      }
+    }
   };
 
   return NoImplicitParens;
@@ -1590,7 +1640,34 @@ module.exports = NoImplicitParens = (function() {
 })();
 
 
-},{}],23:[function(_dereq_,module,exports){
+},{}],24:[function(_dereq_,module,exports){
+var NoInterpolationInSingleQuotes;
+
+module.exports = NoInterpolationInSingleQuotes = (function() {
+  function NoInterpolationInSingleQuotes() {}
+
+  NoInterpolationInSingleQuotes.prototype.rule = {
+    name: 'no_interpolation_in_single_quotes',
+    level: 'ignore',
+    message: 'Interpolation in single quoted strings is forbidden',
+    description: 'This rule prohibits string interpolation in a single quoted string.\n<pre>\n<code># String interpolation in single quotes is not allowed:\nfoo = \'#{bar}\'\n\n# Double quotes is OK of course\nfoo = "#{bar}"\n</code>\n</pre>\nString interpolation in single quoted strings is permitted by \ndefault.'
+  };
+
+  NoInterpolationInSingleQuotes.prototype.tokens = ['STRING'];
+
+  NoInterpolationInSingleQuotes.prototype.lintToken = function(token, tokenApi) {
+    var hasInterpolation, tokenValue;
+    tokenValue = token[1];
+    hasInterpolation = tokenValue.match(/#\{[^}]+\}/);
+    return hasInterpolation;
+  };
+
+  return NoInterpolationInSingleQuotes;
+
+})();
+
+
+},{}],25:[function(_dereq_,module,exports){
 var NoPlusPlus;
 
 module.exports = NoPlusPlus = (function() {
@@ -1616,7 +1693,7 @@ module.exports = NoPlusPlus = (function() {
 })();
 
 
-},{}],24:[function(_dereq_,module,exports){
+},{}],26:[function(_dereq_,module,exports){
 var NoStandAloneAt;
 
 module.exports = NoStandAloneAt = (function() {
@@ -1652,7 +1729,7 @@ module.exports = NoStandAloneAt = (function() {
 })();
 
 
-},{}],25:[function(_dereq_,module,exports){
+},{}],27:[function(_dereq_,module,exports){
 var NoTabs, indentationRegex,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -1683,7 +1760,7 @@ module.exports = NoTabs = (function() {
 })();
 
 
-},{}],26:[function(_dereq_,module,exports){
+},{}],28:[function(_dereq_,module,exports){
 var NoThrowingStrings;
 
 module.exports = NoThrowingStrings = (function() {
@@ -1710,7 +1787,7 @@ module.exports = NoThrowingStrings = (function() {
 })();
 
 
-},{}],27:[function(_dereq_,module,exports){
+},{}],29:[function(_dereq_,module,exports){
 var NoTrailingSemicolons, regexes,
   __slice = [].slice;
 
@@ -1759,7 +1836,7 @@ module.exports = NoTrailingSemicolons = (function() {
 })();
 
 
-},{}],28:[function(_dereq_,module,exports){
+},{}],30:[function(_dereq_,module,exports){
 var NoTrailingWhitespace, regexes;
 
 regexes = {
@@ -1822,7 +1899,60 @@ module.exports = NoTrailingWhitespace = (function() {
 })();
 
 
-},{}],29:[function(_dereq_,module,exports){
+},{}],31:[function(_dereq_,module,exports){
+var NoUnnecessaryDoubleQuotes;
+
+module.exports = NoUnnecessaryDoubleQuotes = (function() {
+  function NoUnnecessaryDoubleQuotes() {}
+
+  NoUnnecessaryDoubleQuotes.prototype.rule = {
+    name: 'no_unnecessary_double_quotes',
+    level: 'ignore',
+    message: 'Unnecessary double quotes are forbidden',
+    description: 'This rule prohibits double quotes unless string interpolation is \nused or the string contains single quotes.\n<pre>\n<code># Double quotes are discouraged:\nfoo = "bar"\n\n# Unless string interpolation is used:\nfoo = "#{bar}baz"\n\n# Or they prevent cumbersome escaping:\nfoo = "I\'m just following the \'rules\'"\n</code>\n</pre>\nDouble quotes are permitted by default.'
+  };
+
+  NoUnnecessaryDoubleQuotes.prototype.tokens = ['STRING'];
+
+  NoUnnecessaryDoubleQuotes.prototype.lintToken = function(token, tokenApi) {
+    var hasLegalConstructs, stringValue, tokenValue;
+    tokenValue = token[1];
+    stringValue = tokenValue.match(/^\"(.*)\"$/);
+    if (!stringValue) {
+      return false;
+    }
+    hasLegalConstructs = this.isInterpolated(tokenApi) || this.containsSingleQuote(tokenValue);
+    return !hasLegalConstructs;
+  };
+
+  NoUnnecessaryDoubleQuotes.prototype.isInterpolated = function(tokenApi) {
+    var currentIndex, i, isInterpolated, lineTokens, token, tokenName, _i, _ref;
+    currentIndex = tokenApi.i;
+    isInterpolated = false;
+    lineTokens = tokenApi.tokensByLine[tokenApi.lineNumber];
+    for (i = _i = 1; 1 <= currentIndex ? _i <= currentIndex : _i >= currentIndex; i = 1 <= currentIndex ? ++_i : --_i) {
+      token = tokenApi.peek(-i);
+      tokenName = token[0];
+      if (tokenName === ')' && token.stringEnd) {
+        break;
+      } else if (tokenName === '(' && ((_ref = token.origin) != null ? _ref[1] : void 0) === "string interpolation") {
+        isInterpolated = true;
+        break;
+      }
+    }
+    return isInterpolated;
+  };
+
+  NoUnnecessaryDoubleQuotes.prototype.containsSingleQuote = function(tokenValue) {
+    return tokenValue.indexOf("'") !== -1;
+  };
+
+  return NoUnnecessaryDoubleQuotes;
+
+})();
+
+
+},{}],32:[function(_dereq_,module,exports){
 var NoUnnecessaryFatArrows, any, isCode, isFatArrowCode, isThis, needsFatArrow;
 
 isCode = function(node) {
@@ -1886,7 +2016,7 @@ module.exports = NoUnnecessaryFatArrows = (function() {
 })();
 
 
-},{}],30:[function(_dereq_,module,exports){
+},{}],33:[function(_dereq_,module,exports){
 var NonEmptyConstructorNeedsParens, ParentClass,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -1918,7 +2048,7 @@ module.exports = NonEmptyConstructorNeedsParens = (function(_super) {
 })(ParentClass);
 
 
-},{"./empty_constructor_needs_parens.coffee":13}],31:[function(_dereq_,module,exports){
+},{"./empty_constructor_needs_parens.coffee":13}],34:[function(_dereq_,module,exports){
 var SpaceOperators,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 

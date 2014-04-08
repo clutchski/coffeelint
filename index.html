@@ -312,6 +312,14 @@ This rule is enabled by default.
 </td>
 </tr>
 <tr>
+<td class="rule">no_debugger</td>
+<td class="description">
+    This rule detects the `debugger` statement.
+This rule is `warn` by default.
+    <p><em>default level: warn</em></p>
+</td>
+</tr>
+<tr>
 <td class="rule">no_empty_param_list</td>
 <td class="description">
     This rule prohibits empty parameter lists in function definitions.
@@ -362,6 +370,23 @@ myFunction(a, b, c)
 </pre>
 Implicit parens are permitted by default, since their use is
 idiomatic CoffeeScript.
+    <p><em>default level: ignore</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">no_interpolation_in_single_quotes</td>
+<td class="description">
+    This rule prohibits string interpolation in a single quoted string.
+<pre>
+<code># String interpolation in single quotes is not allowed:
+foo = '#{bar}'
+
+# Double quotes is OK of course
+foo = "#{bar}"
+</code>
+</pre>
+String interpolation in single quoted strings is permitted by 
+default.
     <p><em>default level: ignore</em></p>
 </td>
 </tr>
@@ -441,6 +466,26 @@ Trailing semicolons are forbidden by default.
     This rule forbids trailing whitespace in your code, since it is
 needless cruft. It is enabled by default.
     <p><em>default level: error</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">no_unnecessary_double_quotes</td>
+<td class="description">
+    This rule prohibits double quotes unless string interpolation is 
+used or the string contains single quotes.
+<pre>
+<code># Double quotes are discouraged:
+foo = "bar"
+
+# Unless string interpolation is used:
+foo = "#{bar}baz"
+
+# Or they prevent cumbersome escaping:
+foo = "I'm just following the 'rules'"
+</code>
+</pre>
+Double quotes are permitted by default.
+    <p><em>default level: ignore</em></p>
 </td>
 </tr>
 <tr>
@@ -664,6 +709,19 @@ is not used within the function.
           </p>
 
           <h2 class="section_title" id="changelog">Change Log</h2>
+
+
+          <div>
+            <h3 class="changelog_header">1.1.0-1.2.0</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v1.1.0...v1.2.0">2014.03.07<a></a></small>
+          <ul class="changelog_history">
+            <li>New rule <tt>no_debugger</tt></li>
+            <li>New rule <tt>no_interpolation_in_single_quotes</tt></li>
+            <li>New rule <tt>no_unnecessary_double_quotes</tt></li>
+            <li>Strict mode for <tt>no_implicit_parens</tt>. Turning it off allows implicit parens when they span multiple lines.</li>
+          </ul>
+          </div>
 
           <div>
             <h3 class="changelog_header">1.0.8-1.1.0</h3>
