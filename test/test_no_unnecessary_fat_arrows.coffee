@@ -58,4 +58,16 @@ vows.describe('no unnecessary fat arrows').addBatch({
     'functions with parameter assignment'              : shouldPass '(@a) =>'
     'functions with destructuring parameter assignment': shouldPass '({@a}) =>'
 
+    'function ouside class instance method':
+        'without this': shouldError """
+            =>
+              class A
+                m: ->
+            """
+        'with this': shouldError """
+            =>
+              class A
+                @m: ->
+            """
+
 }).export(module)

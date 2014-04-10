@@ -7,10 +7,20 @@ isFatArrowCode = (node) -> isCode(node) and node.bound
 
 any = (arr, test) -> arr.reduce ((res, elt) -> res or test elt), false
 
+containsButIsnt = (node, pred, butIsnt) ->
+    target = undefined
+    node.traverseChildren false, (n) ->
+        if butIsnt n
+            return false
+        if pred n
+            target = n
+            return false
+    target
+
 needsFatArrow = (node) ->
     isCode(node) and (
         any(node.params, (param) -> param.contains(isThis)?) or
-        node.body.contains(isThis)?
+        containsButIsnt(node.body, isThis, isClass)
       )
 
 methodsOfClass = (classNode) ->
