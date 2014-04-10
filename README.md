@@ -26,9 +26,10 @@ To suggest a feature, report a bug, or general discussion, head over
    [http://asaayers.github.io/clfiddle/](http://asaayers.github.io/clfiddle/).
 4. Add your test file `my_test.coffee` to the `test` directory.
 5. Register your rule in `src/coffeelint.coffee`.
-6. Run the test using `coffee vowsrunner.coffee --spec test/your_test_here.coffee`.
-7. Squash all commits into a single commit when done.
-8. Submit a pull request.
+6. Run your test using `coffee vowsrunner.coffee --spec test/your_test_here.coffee`.
+7. Run the whole tests suite using `npm test`.
+8. Squash all commits into a single commit when done.
+9. Submit a pull request.
 
 [![Build Status](https://secure.travis-ci.org/clutchski/coffeelint.png)](http://travis-ci.org/clutchski/coffeelint)
 
