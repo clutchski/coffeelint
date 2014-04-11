@@ -67,6 +67,7 @@
     },
     "no_implicit_parens": {
         "name": "no_implicit_parens",
+        "strict": true,
         "level": "ignore"
     },
     "no_empty_param_list": {
@@ -113,6 +114,14 @@
     },
     "no_unnecessary_double_quotes": {
         "name": "no_unnecessary_double_quotes",
+        "level": "ignore"
+    },
+    "no_debugger": {
+        "name": "no_debugger",
+        "level": "warn"
+    },
+    "no_interpolation_in_single_quotes": {
+        "name": "no_interpolation_in_single_quotes",
         "level": "ignore"
     }
 }
