@@ -48,6 +48,12 @@ vows.describe('linelength').addBatch({
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 
+        'respects Windows line breaks': ->
+            source = new Array(81).join('X') + "\r\n"
+
+            errors = coffeelint.lint(source, {})
+            assert.isEmpty(errors)
+
     'Literate Line Length' :
         topic: ->
             # This creates a line with 80 Xs.
