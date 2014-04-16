@@ -31,7 +31,7 @@ module.exports = class MaxLineLength
         max = lineApi.config[@rule.name]?.value
         limitComments = lineApi.config[@rule.name]?.limitComments
 
-        lineLength = line.length
+        lineLength = line.trim().length
         if lineApi.isLiterate() and regexes.literateComment.test(line)
             lineLength -= 2
 
