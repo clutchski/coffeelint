@@ -2,7 +2,7 @@
 module.exports={
   "name": "coffeelint",
   "description": "Lint your CoffeeScript",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "homepage": "http://www.coffeelint.org",
   "keywords": [
     "lint",
@@ -53,16 +53,52 @@ module.exports={
 }
 
 },{}],2:[function(_dereq_,module,exports){
-var ASTApi, ASTLinter, BaseLinter,
+var ASTApi, ASTLinter, BaseLinter, hasChildren, node_children,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 BaseLinter = _dereq_('./base_linter.coffee');
 
+node_children = {
+  Class: ['variable', 'parent', 'body'],
+  Code: ['params', 'body'],
+  For: ['body', 'source', 'guard', 'step'],
+  If: ['condition', 'body', 'elseBody'],
+  Obj: ['properties'],
+  Op: ['first', 'second'],
+  Switch: ['subject', 'cases', 'otherwise'],
+  Try: ['attempt', 'recovery', 'ensure'],
+  Value: ['base', 'properties'],
+  While: ['condition', 'guard', 'body']
+};
+
+hasChildren = function(node, children) {
+  var _ref;
+  return (node != null ? (_ref = node.children) != null ? _ref.length : void 0 : void 0) === children.length && (node != null ? node.children.every(function(elem, i) {
+    return elem === children[i];
+  }) : void 0);
+};
+
 ASTApi = (function() {
   function ASTApi(config) {
     this.config = config;
   }
+
+  ASTApi.prototype.getNodeName = function(node) {
+    var children, name, _ref;
+    name = node != null ? (_ref = node.constructor) != null ? _ref.name : void 0 : void 0;
+    if (node_children[name]) {
+      return name;
+    } else {
+      for (name in node_children) {
+        if (!__hasProp.call(node_children, name)) continue;
+        children = node_children[name];
+        if (hasChildren(node, children)) {
+          return name;
+        }
+      }
+    }
+  };
 
   return ASTApi;
 
@@ -424,6 +460,8 @@ coffeelint.registerRule(_dereq_('./rules/no_debugger.coffee'));
 
 coffeelint.registerRule(_dereq_('./rules/no_interpolation_in_single_quotes.coffee'));
 
+coffeelint.registerRule(_dereq_('./rules/no_empty_functions.coffee'));
+
 hasSyntaxError = function(source) {
   try {
     CoffeeScript.tokens(source);
@@ -520,7 +558,7 @@ coffeelint.lint = function(source, userConfig, literate) {
 };
 
 
-},{"./../package.json":1,"./ast_linter.coffee":2,"./lexical_linter.coffee":5,"./line_linter.coffee":6,"./rules.coffee":7,"./rules/arrow_spacing.coffee":8,"./rules/camel_case_classes.coffee":9,"./rules/colon_assignment_spacing.coffee":10,"./rules/cyclomatic_complexity.coffee":11,"./rules/duplicate_key.coffee":12,"./rules/empty_constructor_needs_parens.coffee":13,"./rules/indentation.coffee":14,"./rules/line_endings.coffee":15,"./rules/max_line_length.coffee":16,"./rules/missing_fat_arrows.coffee":17,"./rules/newlines_after_classes.coffee":18,"./rules/no_backticks.coffee":19,"./rules/no_debugger.coffee":20,"./rules/no_empty_param_list.coffee":21,"./rules/no_implicit_braces.coffee":22,"./rules/no_implicit_parens.coffee":23,"./rules/no_interpolation_in_single_quotes.coffee":24,"./rules/no_plusplus.coffee":25,"./rules/no_stand_alone_at.coffee":26,"./rules/no_tabs.coffee":27,"./rules/no_throwing_strings.coffee":28,"./rules/no_trailing_semicolons.coffee":29,"./rules/no_trailing_whitespace.coffee":30,"./rules/no_unnecessary_double_quotes.coffee":31,"./rules/no_unnecessary_fat_arrows.coffee":32,"./rules/non_empty_constructor_needs_parens.coffee":33,"./rules/space_operators.coffee":34}],5:[function(_dereq_,module,exports){
+},{"./../package.json":1,"./ast_linter.coffee":2,"./lexical_linter.coffee":5,"./line_linter.coffee":6,"./rules.coffee":7,"./rules/arrow_spacing.coffee":8,"./rules/camel_case_classes.coffee":9,"./rules/colon_assignment_spacing.coffee":10,"./rules/cyclomatic_complexity.coffee":11,"./rules/duplicate_key.coffee":12,"./rules/empty_constructor_needs_parens.coffee":13,"./rules/indentation.coffee":14,"./rules/line_endings.coffee":15,"./rules/max_line_length.coffee":16,"./rules/missing_fat_arrows.coffee":17,"./rules/newlines_after_classes.coffee":18,"./rules/no_backticks.coffee":19,"./rules/no_debugger.coffee":20,"./rules/no_empty_functions.coffee":21,"./rules/no_empty_param_list.coffee":22,"./rules/no_implicit_braces.coffee":23,"./rules/no_implicit_parens.coffee":24,"./rules/no_interpolation_in_single_quotes.coffee":25,"./rules/no_plusplus.coffee":26,"./rules/no_stand_alone_at.coffee":27,"./rules/no_tabs.coffee":28,"./rules/no_throwing_strings.coffee":29,"./rules/no_trailing_semicolons.coffee":30,"./rules/no_trailing_whitespace.coffee":31,"./rules/no_unnecessary_double_quotes.coffee":32,"./rules/no_unnecessary_fat_arrows.coffee":33,"./rules/non_empty_constructor_needs_parens.coffee":34,"./rules/space_operators.coffee":35}],5:[function(_dereq_,module,exports){
 var BaseLinter, LexicalLinter, TokenApi,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -984,7 +1022,7 @@ module.exports = NoTabs = (function() {
 
   NoTabs.prototype.getComplexity = function(node) {
     var complexity, name, _ref;
-    name = node.constructor.name;
+    name = this.astApi.getNodeName(node);
     complexity = name === 'If' || name === 'While' || name === 'For' || name === 'Try' ? 1 : name === 'Op' && ((_ref = node.operator) === '&&' || _ref === '||') ? 1 : name === 'Switch' ? node.cases.length : 0;
     return complexity;
   };
@@ -996,8 +1034,8 @@ module.exports = NoTabs = (function() {
   };
 
   NoTabs.prototype.lintNode = function(node, line) {
-    var complexity, error, name, rule;
-    name = node.constructor.name;
+    var complexity, error, name, rule, _ref;
+    name = (_ref = this.astApi) != null ? _ref.getNodeName(node) : void 0;
     complexity = this.getComplexity(node);
     node.eachChild((function(_this) {
       return function(childNode) {
@@ -1317,7 +1355,7 @@ module.exports = MaxLineLength = (function() {
     var limitComments, lineLength, max, _ref, _ref1;
     max = (_ref = lineApi.config[this.rule.name]) != null ? _ref.value : void 0;
     limitComments = (_ref1 = lineApi.config[this.rule.name]) != null ? _ref1.limitComments : void 0;
-    lineLength = line.length;
+    lineLength = line.trimRight().length;
     if (lineApi.isLiterate() && regexes.literateComment.test(line)) {
       lineLength -= 2;
     }
@@ -1339,32 +1377,9 @@ module.exports = MaxLineLength = (function() {
 
 
 },{}],17:[function(_dereq_,module,exports){
-var MissingFatArrows, any, isClass, isCode, isFatArrowCode, isObject, isThis, isValue, methodsOfClass, needsFatArrow,
+var MissingFatArrows, any,
+  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
-
-isCode = function(node) {
-  return (node != null ? node.constructor.name : void 0) === 'Code';
-};
-
-isClass = function(node) {
-  return node.constructor.name === 'Class';
-};
-
-isValue = function(node) {
-  return node.constructor.name === 'Value';
-};
-
-isObject = function(node) {
-  return node.constructor.name === 'Obj';
-};
-
-isThis = function(node) {
-  return isValue(node) && node.base.value === 'this';
-};
-
-isFatArrowCode = function(node) {
-  return isCode(node) && node.bound;
-};
 
 any = function(arr, test) {
   return arr.reduce((function(res, elt) {
@@ -1372,27 +1387,15 @@ any = function(arr, test) {
   }), false);
 };
 
-needsFatArrow = function(node) {
-  return isCode(node) && (any(node.params, function(param) {
-    return param.contains(isThis) != null;
-  }) || (node.body.contains(isThis) != null));
-};
-
-methodsOfClass = function(classNode) {
-  var bodyNodes, returnNode;
-  bodyNodes = classNode.body.expressions;
-  returnNode = bodyNodes[bodyNodes.length - 1];
-  if ((returnNode != null) && isValue(returnNode) && isObject(returnNode.base)) {
-    return returnNode.base.properties.map(function(assignNode) {
-      return assignNode.value;
-    }).filter(isCode);
-  } else {
-    return [];
-  }
-};
-
 module.exports = MissingFatArrows = (function() {
-  function MissingFatArrows() {}
+  function MissingFatArrows() {
+    this.isFatArrowCode = __bind(this.isFatArrowCode, this);
+    this.isThis = __bind(this.isThis, this);
+    this.isObject = __bind(this.isObject, this);
+    this.isValue = __bind(this.isValue, this);
+    this.isClass = __bind(this.isClass, this);
+    this.isCode = __bind(this.isCode, this);
+  }
 
   MissingFatArrows.prototype.rule = {
     name: 'missing_fat_arrows',
@@ -1402,35 +1405,81 @@ module.exports = MissingFatArrows = (function() {
   };
 
   MissingFatArrows.prototype.lintAST = function(node, astApi) {
-    this.lintNode(node, astApi);
+    this.astApi = astApi;
+    this.lintNode(node);
     return void 0;
   };
 
-  MissingFatArrows.prototype.lintNode = function(node, astApi, methods) {
+  MissingFatArrows.prototype.lintNode = function(node, methods) {
     var error;
     if (methods == null) {
       methods = [];
     }
-    if ((!isFatArrowCode(node)) && (__indexOf.call(methods, node) < 0) && (needsFatArrow(node))) {
-      error = astApi.createError({
+    if ((!this.isFatArrowCode(node)) && (__indexOf.call(methods, node) < 0) && (this.needsFatArrow(node))) {
+      error = this.astApi.createError({
         lineNumber: node.locationData.first_line + 1
       });
       this.errors.push(error);
     }
     return node.eachChild((function(_this) {
       return function(child) {
-        return _this.lintNode(child, astApi, (function() {
+        return _this.lintNode(child, (function() {
           switch (false) {
-            case !isClass(node):
-              return methodsOfClass(node);
-            case !isCode(node):
+            case !this.isClass(node):
+              return this.methodsOfClass(node);
+            case !this.isCode(node):
               return [];
             default:
               return methods;
           }
-        })());
+        }).call(_this));
       };
     })(this));
+  };
+
+  MissingFatArrows.prototype.isCode = function(node) {
+    return this.astApi.getNodeName(node) === 'Code';
+  };
+
+  MissingFatArrows.prototype.isClass = function(node) {
+    return this.astApi.getNodeName(node) === 'Class';
+  };
+
+  MissingFatArrows.prototype.isValue = function(node) {
+    return this.astApi.getNodeName(node) === 'Value';
+  };
+
+  MissingFatArrows.prototype.isObject = function(node) {
+    return this.astApi.getNodeName(node) === 'Obj';
+  };
+
+  MissingFatArrows.prototype.isThis = function(node) {
+    return this.isValue(node) && node.base.value === 'this';
+  };
+
+  MissingFatArrows.prototype.isFatArrowCode = function(node) {
+    return this.isCode(node) && node.bound;
+  };
+
+  MissingFatArrows.prototype.needsFatArrow = function(node) {
+    return this.isCode(node) && (any(node.params, (function(_this) {
+      return function(param) {
+        return param.contains(_this.isThis) != null;
+      };
+    })(this)) || (node.body.contains(this.isThis) != null));
+  };
+
+  MissingFatArrows.prototype.methodsOfClass = function(classNode) {
+    var bodyNodes, returnNode;
+    bodyNodes = classNode.body.expressions;
+    returnNode = bodyNodes[bodyNodes.length - 1];
+    if ((returnNode != null) && this.isValue(returnNode) && this.isObject(returnNode.base)) {
+      return returnNode.base.properties.map(function(assignNode) {
+        return assignNode.value;
+      }).filter(this.isCode);
+    } else {
+      return [];
+    }
   };
 
   return MissingFatArrows;
@@ -1524,6 +1573,50 @@ module.exports = NoDebugger = (function() {
 
 
 },{}],21:[function(_dereq_,module,exports){
+var NoEmptyFunctions, isEmptyCode;
+
+isEmptyCode = function(node, astApi) {
+  var nodeName;
+  nodeName = astApi.getNodeName(node);
+  return nodeName === 'Code' && node.body.isEmpty();
+};
+
+module.exports = NoEmptyFunctions = (function() {
+  function NoEmptyFunctions() {}
+
+  NoEmptyFunctions.prototype.rule = {
+    name: 'no_empty_functions',
+    level: 'ignore',
+    message: 'Empty function',
+    description: "Disallows declaring empty functions. The goal of this rule is that\nunintentional empty callbacks can be detected:\n<pre>\n<code>someFunctionWithCallback ->\ndoSomethingSignificant()\n</code>\n</pre>\nThe problem is that the call to\n<tt>doSomethingSignificant</tt> will be made regardless\nof <tt>someFunctionWithCallback</tt>'s execution. It can\nbe because you did not indent the call to\n<tt>doSomethingSignificant</tt> properly.\n\nIf you really meant that <tt>someFunctionWithCallback</tt>\nshould call a callback that does nothing, you can write your code\nthis way:\n<pre>\n<code>someFunctionWithCallback ->\n    undefined\ndoSomethingSignificant()\n</code>\n</pre>"
+  };
+
+  NoEmptyFunctions.prototype.lintAST = function(node, astApi) {
+    this.lintNode(node, astApi);
+    return void 0;
+  };
+
+  NoEmptyFunctions.prototype.lintNode = function(node, astApi) {
+    var error;
+    if (isEmptyCode(node, astApi)) {
+      error = astApi.createError({
+        lineNumber: node.locationData.first_line + 1
+      });
+      this.errors.push(error);
+    }
+    return node.eachChild((function(_this) {
+      return function(child) {
+        return _this.lintNode(child, astApi);
+      };
+    })(this));
+  };
+
+  return NoEmptyFunctions;
+
+})();
+
+
+},{}],22:[function(_dereq_,module,exports){
 var NoEmptyParamList;
 
 module.exports = NoEmptyParamList = (function() {
@@ -1549,7 +1642,7 @@ module.exports = NoEmptyParamList = (function() {
 })();
 
 
-},{}],22:[function(_dereq_,module,exports){
+},{}],23:[function(_dereq_,module,exports){
 var NoImplicitBraces;
 
 module.exports = NoImplicitBraces = (function() {
@@ -1598,7 +1691,7 @@ module.exports = NoImplicitBraces = (function() {
 })();
 
 
-},{}],23:[function(_dereq_,module,exports){
+},{}],24:[function(_dereq_,module,exports){
 var NoImplicitParens;
 
 module.exports = NoImplicitParens = (function() {
@@ -1640,7 +1733,7 @@ module.exports = NoImplicitParens = (function() {
 })();
 
 
-},{}],24:[function(_dereq_,module,exports){
+},{}],25:[function(_dereq_,module,exports){
 var NoInterpolationInSingleQuotes;
 
 module.exports = NoInterpolationInSingleQuotes = (function() {
@@ -1667,7 +1760,7 @@ module.exports = NoInterpolationInSingleQuotes = (function() {
 })();
 
 
-},{}],25:[function(_dereq_,module,exports){
+},{}],26:[function(_dereq_,module,exports){
 var NoPlusPlus;
 
 module.exports = NoPlusPlus = (function() {
@@ -1693,7 +1786,7 @@ module.exports = NoPlusPlus = (function() {
 })();
 
 
-},{}],26:[function(_dereq_,module,exports){
+},{}],27:[function(_dereq_,module,exports){
 var NoStandAloneAt;
 
 module.exports = NoStandAloneAt = (function() {
@@ -1729,7 +1822,7 @@ module.exports = NoStandAloneAt = (function() {
 })();
 
 
-},{}],27:[function(_dereq_,module,exports){
+},{}],28:[function(_dereq_,module,exports){
 var NoTabs, indentationRegex,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -1760,7 +1853,7 @@ module.exports = NoTabs = (function() {
 })();
 
 
-},{}],28:[function(_dereq_,module,exports){
+},{}],29:[function(_dereq_,module,exports){
 var NoThrowingStrings;
 
 module.exports = NoThrowingStrings = (function() {
@@ -1787,7 +1880,7 @@ module.exports = NoThrowingStrings = (function() {
 })();
 
 
-},{}],29:[function(_dereq_,module,exports){
+},{}],30:[function(_dereq_,module,exports){
 var NoTrailingSemicolons, regexes,
   __slice = [].slice;
 
@@ -1836,7 +1929,7 @@ module.exports = NoTrailingSemicolons = (function() {
 })();
 
 
-},{}],30:[function(_dereq_,module,exports){
+},{}],31:[function(_dereq_,module,exports){
 var NoTrailingWhitespace, regexes;
 
 regexes = {
@@ -1899,7 +1992,7 @@ module.exports = NoTrailingWhitespace = (function() {
 })();
 
 
-},{}],31:[function(_dereq_,module,exports){
+},{}],32:[function(_dereq_,module,exports){
 var NoUnnecessaryDoubleQuotes;
 
 module.exports = NoUnnecessaryDoubleQuotes = (function() {
@@ -1952,20 +2045,9 @@ module.exports = NoUnnecessaryDoubleQuotes = (function() {
 })();
 
 
-},{}],32:[function(_dereq_,module,exports){
-var NoUnnecessaryFatArrows, any, isCode, isFatArrowCode, isThis, needsFatArrow;
-
-isCode = function(node) {
-  return node.constructor.name === 'Code';
-};
-
-isFatArrowCode = function(node) {
-  return isCode(node) && node.bound;
-};
-
-isThis = function(node) {
-  return node.constructor.name === 'Value' && node.base.value === 'this';
-};
+},{}],33:[function(_dereq_,module,exports){
+var NoUnnecessaryFatArrows, any,
+  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 any = function(arr, test) {
   return arr.reduce((function(res, elt) {
@@ -1973,16 +2055,11 @@ any = function(arr, test) {
   }), false);
 };
 
-needsFatArrow = function(node) {
-  return isCode(node) && (any(node.params, function(param) {
-    return param.contains(isThis) != null;
-  }) || (node.body.contains(isThis) != null) || (node.body.contains(function(child) {
-    return isFatArrowCode(child) && needsFatArrow(child);
-  }) != null));
-};
-
 module.exports = NoUnnecessaryFatArrows = (function() {
-  function NoUnnecessaryFatArrows() {}
+  function NoUnnecessaryFatArrows() {
+    this.needsFatArrow = __bind(this.needsFatArrow, this);
+    this.isThis = __bind(this.isThis, this);
+  }
 
   NoUnnecessaryFatArrows.prototype.rule = {
     name: 'no_unnecessary_fat_arrows',
@@ -1992,23 +2069,52 @@ module.exports = NoUnnecessaryFatArrows = (function() {
   };
 
   NoUnnecessaryFatArrows.prototype.lintAST = function(node, astApi) {
-    this.lintNode(node, astApi);
+    this.astApi = astApi;
+    this.lintNode(node);
     return void 0;
   };
 
-  NoUnnecessaryFatArrows.prototype.lintNode = function(node, astApi) {
+  NoUnnecessaryFatArrows.prototype.lintNode = function(node) {
     var error;
-    if ((isFatArrowCode(node)) && (!needsFatArrow(node))) {
-      error = astApi.createError({
+    if ((this.isFatArrowCode(node)) && (!this.needsFatArrow(node))) {
+      error = this.astApi.createError({
         lineNumber: node.locationData.first_line + 1
       });
       this.errors.push(error);
     }
     return node.eachChild((function(_this) {
       return function(child) {
-        return _this.lintNode(child, astApi);
+        return _this.lintNode(child);
       };
     })(this));
+  };
+
+  NoUnnecessaryFatArrows.prototype.isCode = function(node) {
+    return this.astApi.getNodeName(node) === 'Code';
+  };
+
+  NoUnnecessaryFatArrows.prototype.isFatArrowCode = function(node) {
+    return this.isCode(node) && node.bound;
+  };
+
+  NoUnnecessaryFatArrows.prototype.isValue = function(node) {
+    return this.astApi.getNodeName(node) === 'Value';
+  };
+
+  NoUnnecessaryFatArrows.prototype.isThis = function(node) {
+    return this.isValue(node) && node.base.value === 'this';
+  };
+
+  NoUnnecessaryFatArrows.prototype.needsFatArrow = function(node) {
+    return this.isCode(node) && (any(node.params, (function(_this) {
+      return function(param) {
+        return param.contains(_this.isThis) != null;
+      };
+    })(this)) || (node.body.contains(this.isThis) != null) || (node.body.contains((function(_this) {
+      return function(child) {
+        return _this.isFatArrowCode(child) && _this.needsFatArrow(child);
+      };
+    })(this)) != null));
   };
 
   return NoUnnecessaryFatArrows;
@@ -2016,7 +2122,7 @@ module.exports = NoUnnecessaryFatArrows = (function() {
 })();
 
 
-},{}],33:[function(_dereq_,module,exports){
+},{}],34:[function(_dereq_,module,exports){
 var NonEmptyConstructorNeedsParens, ParentClass,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2048,7 +2154,7 @@ module.exports = NonEmptyConstructorNeedsParens = (function(_super) {
 })(ParentClass);
 
 
-},{"./empty_constructor_needs_parens.coffee":13}],34:[function(_dereq_,module,exports){
+},{"./empty_constructor_needs_parens.coffee":13}],35:[function(_dereq_,module,exports){
 var SpaceOperators,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 

@@ -320,6 +320,34 @@ This rule is `warn` by default.
 </td>
 </tr>
 <tr>
+<td class="rule">no_empty_functions</td>
+<td class="description">
+    Disallows declaring empty functions. The goal of this rule is that
+unintentional empty callbacks can be detected:
+<pre>
+<code>someFunctionWithCallback ->
+doSomethingSignificant()
+</code>
+</pre>
+The problem is that the call to
+<tt>doSomethingSignificant</tt> will be made regardless
+of <tt>someFunctionWithCallback</tt>'s execution. It can
+be because you did not indent the call to
+<tt>doSomethingSignificant</tt> properly.
+
+If you really meant that <tt>someFunctionWithCallback</tt>
+should call a callback that does nothing, you can write your code
+this way:
+<pre>
+<code>someFunctionWithCallback ->
+    undefined
+doSomethingSignificant()
+</code>
+</pre>
+    <p><em>default level: ignore</em></p>
+</td>
+</tr>
+<tr>
 <td class="rule">no_empty_param_list</td>
 <td class="description">
     This rule prohibits empty parameter lists in function definitions.
@@ -710,6 +738,17 @@ is not used within the function.
 
           <h2 class="section_title" id="changelog">Change Log</h2>
 
+          <div>
+            <h3 class="changelog_header">1.2.0-1.3.0</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v1.2.0...v1.3.0">2014.04.17<a></a></small>
+          <ul class="changelog_history">
+            <li>New rule <tt>no_empty_functions</tt></li>
+            <li>Improved documentation on how to contribute in README.md</li>
+            <li>Rules using the AST work with a minified version of CoffeeScript</li>
+            <li>Fixed line length check to account for windows line endings</li>
+          </ul>
+          </div>
 
           <div>
             <h3 class="changelog_header">1.1.0-1.2.0</h3>
