@@ -18,7 +18,7 @@ Current:
 
 Past:
 
-- [Matt Perpick)(https://github.com/clutchski)
+- [Matt Perpick](https://github.com/clutchski)
 
 ## Contributing
 
