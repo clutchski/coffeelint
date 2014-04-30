@@ -10,6 +10,16 @@ For guides on installing, using and configuring CoffeeLint, head over
 To suggest a feature, report a bug, or general discussion, head over
 [here](http://github.com/clutchski/coffeelint/issues/).
 
+## Team
+
+Current:
+
+- [Asa Ayars](https://github.com/AsaAyers)
+
+Past:
+
+- [Matt Perpick)(https://github.com/clutchski)
+
 ## Contributing
 
 * New rules should be set to a `warn` level. Developers will expect new changes to NOT break their existing workflow, so unless your change is extremely usefull, default to `warn`. Expect discussion if you choose to use `error`.
