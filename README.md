@@ -14,7 +14,7 @@ To suggest a feature, report a bug, or general discussion, head over
 
 Current:
 
-- [Asa Ayars](https://github.com/AsaAyers)
+- [Asa Ayers](https://github.com/AsaAyers)
 
 Past:
 
