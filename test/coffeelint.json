@@ -1,3 +1,3 @@
 {
-    "": "Force all tests under test/ to use this default config unless explicitly requested"
+    "_comment": "Force all tests under test/ to use this default config unless explicitly requested"
 }

@@ -172,6 +172,17 @@ hasSyntaxError = (source) ->
 coffeelint.lint = (source, userConfig = {}, literate = false) ->
     source = @invertLiterate source if literate
 
+    # coffeescript_error is unique because it's embedded in the ASTLinter. It
+    # indicates a syntax error and would not work well as a stand alone rule.
+    #
+    # Why can't JSON just support comments?
+    for name of userConfig when name not in [ 'coffeescript_error', '_comment' ]
+        unless _rules[name]?
+            console.log 'userConfig', userConfig
+            # If you have a typo in your coffeelint.json you may not notice
+            # until you spot a mistake you inteded CoffeeLint to catch.
+            throw new Error "Rule #{name} was not found."
+
     config = mergeDefaultConfig(userConfig)
 
     # Check ahead for inline enabled rules

@@ -123,5 +123,9 @@
     "no_interpolation_in_single_quotes": {
         "name": "no_interpolation_in_single_quotes",
         "level": "ignore"
+    },
+    "no_empty_functions": {
+        "name": "no_empty_functions",
+        "level": "ignore"
     }
 }
