@@ -1,4 +1,6 @@
 fs = require 'fs'
+glob = require 'glob'
+path = require 'path'
 browserify = require 'browserify'
 CoffeeScript = require 'coffee-script'
 
@@ -20,6 +22,11 @@ task 'compile', 'Compile Coffeelint', ->
 task 'compile:commandline', 'Compiles commandline.js', ->
     coffeeSync 'src/commandline.coffee', 'lib/commandline.js'
     coffeeSync 'src/configfinder.coffee', 'lib/configfinder.js'
+    fs.mkdirSync 'lib/reporters' unless fs.existsSync 'lib/reporters'
+    for src in glob.sync('reporters/*.coffee', { cwd: 'src' })
+        # Slice the "coffee" extension of the end and replace with js
+        dest = src[...-6]+'js'
+        coffeeSync "src/#{src}", "lib/#{dest}"
 
 task 'compile:browserify', 'Uses browserify to compile coffeelint', ->
     b = browserify [ './src/coffeelint.coffee' ]

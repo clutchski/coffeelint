@@ -252,7 +252,7 @@ vows.describe('commandline').addBatch({
                 '-f'
                 'coffeelint.json'
                 'test/fixtures/cyclo_fail.coffee'
-                '--jslint'
+                '--reporter jslint'
             ]
             commandline args, this.callback
             return undefined

@@ -74,172 +74,6 @@ class ErrorReport
         return false
 
 
-# Reports errors to the command line.
-class Reporter
-
-    constructor : (errorReport, colorize = true) ->
-        @errorReport = errorReport
-        @colorize = colorize and process.stdout.isTTY
-        @ok = '✓'
-        @warn = '⚡'
-        @err = '✗'
-
-    stylize : (message, styles...) ->
-        return message if not @colorize
-        map = {
-            bold  : [1,  22],
-            yellow: [33, 39],
-            green: [32, 39],
-            red: [31, 39]
-        }
-        return styles.reduce (m, s)  ->
-            return "\u001b[" + map[s][0] + "m" + m + "\u001b[" + map[s][1] + "m"
-        , message
-
-    publish : () ->
-        paths = @errorReport.paths
-
-        report  = ""
-        report += @reportPath(path, errors) for path, errors of paths
-        report += @reportSummary(@errorReport.getSummary())
-        report += ""
-
-        @print report if not options.argv.q or @errorReport.hasError()
-        return this
-
-    reportSummary : (s) ->
-        start = if s.errorCount > 0
-            "#{@err} #{@stylize("Lint!", 'red', 'bold')}"
-        else if s.warningCount > 0
-            "#{@warn} #{@stylize("Warning!", 'yellow', 'bold')}"
-        else
-            "#{@ok} #{@stylize("Ok!", 'green', 'bold')}"
-        e = s.errorCount
-        w = s.warningCount
-        p = s.pathCount
-        err = @plural('error', e)
-        warn = @plural('warning', w)
-        file = @plural('file', p)
-        msg = "#{start} » #{e} #{err} and #{w} #{warn} in #{p} #{file}"
-        return "\n" + @stylize(msg) + "\n"
-
-    reportPath : (path, errors) ->
-        [overall, color] = if hasError = @errorReport.pathHasError(path)
-            [@err, 'red']
-        else if hasWarning = @errorReport.pathHasWarning(path)
-            [@warn, 'yellow']
-        else
-            [@ok, 'green']
-
-        pathReport = ""
-        if not options.argv.q or hasError
-            pathReport += "  #{overall} #{@stylize(path, color, 'bold')}\n"
-
-        for e in errors
-            continue if options.argv.q and e.level != 'error'
-            o = if e.level == 'error' then @err else @warn
-            lineEnd = ""
-            lineEnd = "-#{e.lineNumberEnd}" if e.lineNumberEnd?
-            output = "#" + e.lineNumber + lineEnd
-
-            pathReport += "     " +
-                "#{o} #{@stylize(output, color)}: #{e.message}."
-            pathReport += " #{e.context}." if e.context
-            pathReport += "\n"
-
-        pathReport
-
-    print : (message) ->
-        console.log message
-
-    plural : (str, count) ->
-        if count == 1 then str else "#{str}s"
-
-class CSVReporter extends Reporter
-
-    publish : () ->
-        header = ["path","lineNumber", "lineNumberEnd", "level", "message"]
-        @print header.join(",")
-        for path, errors of @errorReport.paths
-            for e in errors
-                # Having the context is useful for the cyclomatic_complexity
-                # rule and critical for the undefined_variables rule.
-                e.message += " #{e.context}." if e.context
-                f = [
-                    path
-                    e.lineNumber
-                    e.lineNumberEnd ? e.lineNumberEnd
-                    e.level
-                    e.message
-                ]
-                @print f.join(",")
-
-class JSLintReporter extends Reporter
-
-    publish : () ->
-        @print "<?xml version=\"1.0\" encoding=\"utf-8\"?><jslint>"
-
-        for path, errors of @errorReport.paths
-            if errors.length
-                @print "<file name=\"#{path}\">"
-
-                for e in errors
-                    @print """
-                    <issue line="#{e.lineNumber}"
-                            lineEnd="#{e.lineNumberEnd ? e.lineNumber}"
-                            reason="[#{@escape(e.level)}] #{@escape(e.message)}"
-                            evidence="#{@escape(e.context)}"/>
-                    """
-                @print "</file>"
-
-        @print "</jslint>"
-
-    escape : (msg) ->
-        # Force msg to be a String
-        msg = "" + msg
-        unless msg
-            return
-        # Perhaps some other HTML Special Chars should be added here
-        # But this are the XML Special Chars listed in Wikipedia
-        replacements = [
-            [/&/g, "&amp;"]
-            [/"/g, "&quot;"]
-            [/</g, "&lt;"]
-            [/>/g, "&gt;"]
-            [/'/g, "&apos;"]
-            ]
-
-        for r in replacements
-            msg = msg.replace r[0], r[1]
-
-        msg
-
-class CheckstyleReporter extends JSLintReporter
-
-    publish : () ->
-        @print "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
-        @print "<checkstyle version=\"4.3\">"
-
-        for path, errors of @errorReport.paths
-            if errors.length
-                @print "<file name=\"#{path}\">"
-
-                for e in errors
-                    level = e.level
-                    level = 'warning' if level is 'warn'
-
-                    # context is optional, this avoids generating the string
-                    # "context: undefined"
-                    context = e.context ? ""
-                    @print """
-                    <error line="#{e.lineNumber}"
-                        severity="#{@escape(level)}"
-                        message="#{@escape(e.message+'; context: '+context)}"
-                        source="coffeelint"/>
-                    """
-                @print "</file>"
-
-        @print "</checkstyle>"
 
 # Return an error report from linting the given paths.
 lintFiles = (files, config) ->
@@ -311,17 +145,55 @@ loadRules = (moduleName, ruleName = undefined) ->
         console.error "Error loading #{moduleName}"
         throw e
 
+# These reporters are usually parsed by other software, so I can't just echo a
+# warning.  Creating a fake file is my best attempt.
+deprecatedReporter = (errorReport, reporter) ->
+    errorReport.paths['coffeelint_fake_file.coffee'] ?= []
+    errorReport.paths['coffeelint_fake_file.coffee'].push {
+        "level": "warn"
+        "rule": "commandline"
+        "message": "parameter --#{reporter} is deprecated.
+            Use --reporter #{reporter} instead"
+        "lineNumber": 0
+    }
+    return reporter
+
 # Publish the error report and exit with the appropriate status.
 reportAndExit = (errorReport, options) ->
-    reporter = if options.argv.jslint
-        new JSLintReporter(errorReport)
+    strReporter = if options.argv.jslint
+        deprecatedReporter(errorReport, 'jslint')
     else if options.argv.csv
-        new CSVReporter(errorReport)
+        deprecatedReporter(errorReport, 'csv')
     else if options.argv.checkstyle
-        new CheckstyleReporter(errorReport)
+        deprecatedReporter(errorReport, 'checkstyle')
     else
-        colorize = not options.argv.nocolor
-        new Reporter(errorReport, colorize)
+        options.argv.reporter
+
+    DefaultReporter = require(path.join(thisdir, 'reporters', 'default'))
+    CSVReporter = require(path.join(thisdir, 'reporters', 'csv'))
+    JSLintReporter = require(path.join(thisdir, 'reporters', 'jslint'))
+    CheckstyleReporter = require(path.join(thisdir, 'reporters', 'checkstyle'))
+    RawReporter = require(path.join(thisdir, 'reporters', 'raw'))
+
+    SelectedReporter = switch strReporter
+        when undefined, 'default' then DefaultReporter
+        when 'jslint' then JSLintReporter
+        when 'csv' then CSVReporter
+        when 'checkstyle' then CheckstyleReporter
+        when 'raw' then RawReporter
+        else
+            try
+                reporterPath = resolve strReporter, {
+                    basedir: process.cwd()
+                }
+            catch
+                reporterPath = strReporter
+            require reporterPath
+
+    reporter = new SelectedReporter errorReport, {
+        colorize: not options.argv.nocolor
+        quiet: options.argv.q
+    }
     reporter.publish()
 
     process.on 'exit', () ->
@@ -343,9 +215,11 @@ options = optimist
             .describe("h", "Print help information.")
             .describe("v", "Print current version number.")
             .describe("r", "(not used, but left for backward compatibility)")
-            .describe("csv", "Use the csv reporter.")
-            .describe("jslint", "Use the JSLint XML reporter.")
-            .describe("checkstyle", "Use the checkstyle XML reporter.")
+            .describe('reporter', 'built in reporter (default, csv, jslint,
+                checkstyle, raw), or module, or path to reporter file.')
+            .describe("csv", "[deprecated] use --reporter csv")
+            .describe("jslint", "[deprecated] use --reporter jslint")
+            .describe("checkstyle", "[deprecated] use --reporter checkstyle")
             .describe("nocolor", "Don't colorize the output")
             .describe("s", "Lint the source from stdin")
             .describe("q", "Only print errors.")
