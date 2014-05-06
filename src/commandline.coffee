@@ -6,6 +6,7 @@ CoffeeLint is freely distributable under the MIT license.
 ###
 
 
+resolve = require('resolve').sync
 path = require("path")
 fs   = require("fs")
 glob = require("glob")
@@ -279,12 +280,25 @@ getFallbackConfig = (filename = null) ->
 loadRules = (moduleName, ruleName = undefined) ->
     try
         try
-            ruleModule = require moduleName
-        catch e
-            # Maybe the user used a relative path from the command line. This
-            # doesn't make much sense from a config file, but seems natural
-            # with the --rules option.
-            ruleModule = require path.resolve(process.cwd(), moduleName)
+            # Try to find the project-level rule first.
+            rulePath = resolve moduleName, {
+                basedir: process.cwd()
+            }
+            ruleModule = require rulePath
+        try
+            # This seems awkward, but the ?= will prevent it from trying to
+            # require if the previous step succeeded without an exception.
+            #
+            # Globally installed rule
+            ruleModule ?= require moduleName
+
+        # Maybe the user used a relative path from the command line. This
+        # doesn't make much sense from a config file, but seems natural
+        # with the --rules option.
+        #
+        # No try around this one, an exception here should abort the rest of
+        # this function.
+        ruleModule ?= require path.resolve(process.cwd(), moduleName)
 
         # Most rules can export as a single constructor function
         if typeof ruleModule is 'function'
