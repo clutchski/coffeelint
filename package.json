@@ -21,11 +21,12 @@
     "coffeelint": "./bin/coffeelint"
   },
   "dependencies": {
-    "optimist": ">=0.2.8",
-    "coffee-script": "~1.7",
-    "glob": ">=3.1.9",
     "browserify": "~3.37",
-    "coffeeify": "~0.6.0"
+    "coffee-script": "~1.7",
+    "coffeeify": "~0.6.0",
+    "glob": ">=3.1.9",
+    "optimist": ">=0.2.8",
+    "resolve": "^0.6.3"
   },
   "devDependencies": {
     "vows": ">=0.6.0",
