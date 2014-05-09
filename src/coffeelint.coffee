@@ -178,10 +178,11 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
     # Why can't JSON just support comments?
     for name of userConfig when name not in [ 'coffeescript_error', '_comment' ]
         unless _rules[name]?
-            console.log 'userConfig', userConfig
-            # If you have a typo in your coffeelint.json you may not notice
-            # until you spot a mistake you inteded CoffeeLint to catch.
-            throw new Error "Rule #{name} was not found."
+            # TODO: Figure out a good way to notify the user that they have
+            # configured a rule that doesn't exist. throwing an Error was
+            # definitely a mistake. I probably need a good way to generate lint
+            # warnings for configuration.
+            undefined
 
     config = mergeDefaultConfig(userConfig)
 
