@@ -1,0 +1,75 @@
+How do I configure CoffeeLint?
+==============================
+
+There are two main options. In the root of your project create a
+`coffeelint.json`, or add a `coffeelintConfig` section to your `package.json`.
+Either way, the configuration is exactly the same.
+
+`package.json`
+--------------
+```json
+{
+  "name": "your-project",
+  "version": "0.0.0",
+  "coffeelintConfig": {
+    "indentation" : {
+        "level" : "error",
+        "value" : 4
+    },
+    "line_endings" : {
+        "value" : "unix",
+        "level" : "error"
+    }
+  }
+}
+```
+
+`coffeelint.json`
+-----------------
+```json
+{
+  "indentation" : {
+    "level" : "error",
+    "value" : 4
+  },
+  "line_endings" : {
+    "value" : "unix",
+    "level" : "error"
+  }
+}
+```
+
+What are the rules?
+===================
+
+See [coffeelint.org][options] for all of the built in rules. Every rule has a
+`level` of `ignore`, `error`, or `warn`. Most rules have a single behavior and
+`level` is the only thing to configure. `indentation` is one of the exceptions,
+it has a `value` that defaults to 2.
+
+How do I temporarily disable a rule?
+====================================
+
+```CoffeeScript
+ # coffeelint: disable=max_line_length
+ object:
+   attr: "some/huge/line/string/with/embed/#{values}.that/surpasses/the/max/column/width"
+ # coffeelint: enable=max_line_length
+ ```
+
+What about 3rd party rules?
+===========================
+
+CoffeeLint 0.6 to 1.3 required 3rd party rules to be installed globally (`[sudo]
+npm install -g <coffeelint-rule>`).
+
+Starting with CoffeeLint 1.4 rules can (and should) be installed per project.
+Consult the `README.md` or npmjs.org page for exact configuration instructions.
+It's generally the same as built in rules but with the addition of a `module`
+attribute to specify the correct module name. It may not exactly match the rule
+name.
+
+All rules should have a `coffeelintrule` tag on [npmjs.org][rules].
+ 
+[options]: http://www.coffeelint.org/#options
+[rules]: https://www.npmjs.org/search?q=coffeelintrule
