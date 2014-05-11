@@ -3,7 +3,9 @@ How do I configure CoffeeLint?
 
 There are two main options. In the root of your project create a
 `coffeelint.json`, or add a `coffeelintConfig` section to your `package.json`.
-Either way, the configuration is exactly the same.
+Either way, the configuration is exactly the same. If CoffeeLint doesn't find
+any configuration for the current project, it will check for a
+`$HOME/coffeelint.json` to use.
 
 `package.json`
 --------------

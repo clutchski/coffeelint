@@ -3,9 +3,9 @@ This file is for anyone working on integrating CoffeeLint with another project.
 What kinds of things can I build?
 =================================
 
-CoffeeLint is exposed as a library that you could use in build tools, or in the
-browser. Anywhere you can run Javascript. You can also build your own rules, or
-custom reporter.
+CoffeeLint is [exposed as a library][API] that you could use in build tools, or
+in the browser. Anywhere you can run Javascript. You can also build [your own
+rules][CustomRules], or custom reporter.
 
 CoffeeLint is also a command line tool, so most non-javascript integrations run
 that and parse the output. There are built in reporters for `csv`, `jslint`,
@@ -44,3 +44,5 @@ rule.
 
 [semver]: semver.org
 [rules]: https://www.npmjs.org/search?q=coffeelintrule
+[API]: http://www.coffeelint.org/#api
+[CustomRules]: http://www.coffeelint.org/#api
