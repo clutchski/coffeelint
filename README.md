@@ -79,7 +79,7 @@ description: """
 	</pre>
 	"""
 ```
-[Coffeelint's website](http://http://www.coffeelint.org/) generates each
+[Coffeelint's website](http://www.coffeelint.org/) generates each
 rule's documentation based on this `description` property.
 
 When adding a new rule, it is suggested that you check that the documentation
