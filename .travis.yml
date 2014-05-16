@@ -2,6 +2,12 @@ language: node_js
 node_js:
   - "0.8"
   - "0.10"
+# https://twitter.com/_munter_/status/465621408396365824
+# When using `npm install --save` in node 0.8 tested projects on @travisci, do
+# before_install: "npm install -g npm" in .travis.yml #outdated
+#
+# Retweeted by @travisci
+before_install: "npm install -g npm"
 
 branches:
   only:
