@@ -14,6 +14,7 @@ optimist = require("optimist")
 thisdir = path.dirname(fs.realpathSync(__filename))
 coffeelint = require(path.join(thisdir, "coffeelint"))
 configfinder = require(path.join(thisdir, "configfinder"))
+Cache = require(path.join(thisdir, "cache"))
 CoffeeScript = require 'coffee-script'
 CoffeeScript.register()
 
@@ -77,9 +78,16 @@ class ErrorReport
 
 # Return an error report from linting the given paths.
 lintFiles = (files, config) ->
+    if options.argv.cache
+        cache = new Cache path.join(process.env.HOME, '.coffeelint'), fileConfig
+
     errorReport = new ErrorReport()
     for file in files
         source = read(file)
+        if cache?.has source
+            errorReport.paths[file] = cache.get source
+            continue
+
         literate = CoffeeScript.helpers.isLiterate file
 
         fileConfig = if config then config else getFallbackConfig(file)
@@ -89,6 +97,7 @@ lintFiles = (files, config) ->
                 loadRules(data.module, ruleName)
 
         errorReport.paths[file] = coffeelint.lint(source, fileConfig, literate)
+        cache?.set source, errorReport.paths[file]
     return errorReport
 
 # Return an error report from linting the given coffeescript source.
@@ -207,6 +216,7 @@ options = optimist
             .alias("v", "version")
             .alias("s", "stdin")
             .alias("q", "quiet")
+            .alias("c", "cache")
             .describe("f", "Specify a custom configuration file.")
             .describe("rules", "Specify a custom rule or directory of rules.")
             .describe("makeconfig", "Prints a default config file")
@@ -225,6 +235,7 @@ options = optimist
             .describe("q", "Only print errors.")
             .describe("literate",
                 "Used with --stdin to process as Literate CoffeeScript")
+            .describe("c", "Cache linting results")
             .boolean("csv")
             .boolean("jslint")
             .boolean("checkstyle")
@@ -235,6 +246,7 @@ options = optimist
             .boolean("r")
             .boolean("s")
             .boolean("q", "Print errors only.")
+            .boolean("c")
 
 if options.argv.v
     console.log coffeelint.VERSION
