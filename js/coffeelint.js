@@ -2,7 +2,7 @@
 module.exports={
   "name": "coffeelint",
   "description": "Lint your CoffeeScript",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "homepage": "http://www.coffeelint.org",
   "keywords": [
     "lint",
@@ -22,11 +22,12 @@ module.exports={
     "coffeelint": "./bin/coffeelint"
   },
   "dependencies": {
-    "optimist": ">=0.2.8",
-    "coffee-script": "~1.7",
-    "glob": ">=3.1.9",
     "browserify": "~3.37",
-    "coffeeify": "~0.6.0"
+    "coffee-script": "~1.7",
+    "coffeeify": "~0.6.0",
+    "glob": ">=3.1.9",
+    "optimist": ">=0.2.8",
+    "resolve": "^0.6.3"
   },
   "devDependencies": {
     "vows": ">=0.6.0",
@@ -471,7 +472,7 @@ hasSyntaxError = function(source) {
 };
 
 coffeelint.lint = function(source, userConfig, literate) {
-  var all_errors, astErrors, block_config, cmd, config, disabled, disabled_initially, e, errors, i, l, lexErrors, lexicalLinter, lineErrors, lineLinter, next_line, r, rules, s, tokensByLine, _i, _j, _k, _len, _len1, _ref, _ref1, _ref2, _ref3, _ref4;
+  var all_errors, astErrors, block_config, cmd, config, disabled, disabled_initially, e, errors, i, l, lexErrors, lexicalLinter, lineErrors, lineLinter, name, next_line, r, rules, s, tokensByLine, _i, _j, _k, _len, _len1, _ref, _ref1, _ref2, _ref3, _ref4;
   if (userConfig == null) {
     userConfig = {};
   }
@@ -480,6 +481,13 @@ coffeelint.lint = function(source, userConfig, literate) {
   }
   if (literate) {
     source = this.invertLiterate(source);
+  }
+  for (name in userConfig) {
+    if (name !== 'coffeescript_error' && name !== '_comment') {
+      if (_rules[name] == null) {
+        void 0;
+      }
+    }
   }
   config = mergeDefaultConfig(userConfig);
   disabled_initially = [];
