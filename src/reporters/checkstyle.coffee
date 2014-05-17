@@ -1,9 +1,14 @@
+
+JsLintReporter = require './jslint'
+
 module.exports = class CheckstyleReporter
 
     constructor : (@errorReport, options = {}) ->
 
     print : (message) ->
         console.log message
+
+    escape : JsLintReporter::escape
 
     publish : () ->
         @print "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
