@@ -9,6 +9,7 @@ CoffeeLint is freely distributable under the MIT license.
 resolve = require('resolve').sync
 path = require("path")
 fs   = require("fs")
+os   = require("os")
 glob = require("glob")
 optimist = require("optimist")
 thisdir = path.dirname(fs.realpathSync(__filename))
@@ -78,16 +79,9 @@ class ErrorReport
 
 # Return an error report from linting the given paths.
 lintFiles = (files, config) ->
-    if options.argv.cache
-        cache = new Cache path.join(process.env.HOME, '.coffeelint'), fileConfig
-
     errorReport = new ErrorReport()
     for file in files
         source = read(file)
-        if cache?.has source
-            errorReport.paths[file] = cache.get source
-            continue
-
         literate = CoffeeScript.helpers.isLiterate file
 
         fileConfig = if config then config else getFallbackConfig(file)
@@ -97,7 +91,6 @@ lintFiles = (files, config) ->
                 loadRules(data.module, ruleName)
 
         errorReport.paths[file] = coffeelint.lint(source, fileConfig, literate)
-        cache?.set source, errorReport.paths[file]
     return errorReport
 
 # Return an error report from linting the given coffeescript source.
@@ -262,6 +255,14 @@ else if options.argv._.length < 1 and not options.argv.s
     process.exit(1)
 
 else
+    # Initialize cache, if enabled
+    cacheDir = options.argv.cache
+    if cacheDir
+        coffeelint.setCache new Cache if typeof cacheDir is 'string'
+            path.resolve(cacheDir)
+        else
+            path.join(os.tmpdir(), 'coffeelint')
+
     # Load configuration.
     config = null
     unless options.argv.noconfig
