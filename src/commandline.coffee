@@ -256,12 +256,8 @@ else if options.argv._.length < 1 and not options.argv.s
 
 else
     # Initialize cache, if enabled
-    cacheDir = options.argv.cache
-    if cacheDir
-        coffeelint.setCache new Cache if typeof cacheDir is 'string'
-            path.resolve(cacheDir)
-        else
-            path.join(os.tmpdir(), 'coffeelint')
+    if options.argv.cache
+        coffeelint.setCache new Cache(path.join(os.tmpdir(), 'coffeelint'))
 
     # Load configuration.
     config = null
