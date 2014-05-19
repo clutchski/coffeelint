@@ -60,6 +60,10 @@ LineLinter = require './line_linter.coffee'
 LexicalLinter = require './lexical_linter.coffee'
 ASTLinter = require './ast_linter.coffee'
 
+# Cache instance, disabled by default
+cache = null
+
+
 # Merge default and user configuration.
 mergeDefaultConfig = (userConfig) ->
     config = {}
@@ -170,6 +174,10 @@ hasSyntaxError = (source) ->
 #   }
 #
 coffeelint.lint = (source, userConfig = {}, literate = false) ->
+
+    cache?.setConfig userConfig
+    if cache?.has source then return cache?.get source
+
     source = @invertLiterate source if literate
 
     # coffeescript_error is unique because it's embedded in the ASTLinter. It
@@ -248,4 +256,9 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
                 e = all_errors.shift()
                 errors.push e unless e.rule in disabled
 
+    cache?.set source, errors
+
     errors
+
+
+coffeelint.setCache = (obj) -> cache = obj
