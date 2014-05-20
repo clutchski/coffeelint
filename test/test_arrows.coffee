@@ -194,6 +194,14 @@ vows.describe('arrows').addBatch({
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors, 0)
 
+    'Handles empty functions':
+        topic: "console ?= log: (->), error: (->)"
+
+        'when spacing is required around arrow operator' : (source) ->
+            config = { "arrow_spacing": { "level": "error" } }
+            errors = coffeelint.lint(source, config)
+            assert.equal(errors.length, 0)
+
     'Handle an arrow at end of file' :
         topic : ->
             '{f: ->}'

@@ -42,7 +42,15 @@ module.exports = class ArrowSpacing
         # we will accept either having a space or not having a space there.
 
         pp = tokenApi.peek(-1)
-        unless (token.spaced? or token.newLine? or @atEof(tokenApi)) and
+
+
+
+        if not token.spaced and
+                (pp[1] is "(" and not pp.generated?) and
+                tokenApi.peek(1)[0] is 'INDENT' and
+                tokenApi.peek(2)[0] is 'OUTDENT'
+            null
+        else unless (token.spaced? or token.newLine? or @atEof(tokenApi)) and
                # Throw error unless the previous token...
                ((pp.spaced? or pp[0] is 'TERMINATOR') or #1
                 pp.generated? or #2
