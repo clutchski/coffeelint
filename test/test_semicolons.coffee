@@ -34,10 +34,16 @@ vows.describe('semicolons').addBatch({
             x = "asdf;
             asdf"
 
-            y = """
+            y1 = """
             #{asdf1};
             _#{asdf2}_;
             asdf;
+            """
+
+            y2 = """
+                #{asdf1};
+                _#{asdf2}_;
+                asdf;
             """
 
             z = ///

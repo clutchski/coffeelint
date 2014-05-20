@@ -51,9 +51,8 @@ module.exports = class NoTrailingSemicolons
         hasSemicolon = regexes.trailingSemicolon.test(newLine)
         [first..., last] = lineTokens
         hasNewLine = last and last.newLine?
-
         # Don't throw errors when the contents of  multiline strings,
         # regexes and the like end in ";"
         if hasSemicolon and not hasNewLine and lineApi.lineHasToken() and
-                last[0] isnt 'STRING'
+                not (last[0] in ['STRING', 'IDENTIFIER'])
             return true
