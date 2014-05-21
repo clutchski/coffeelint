@@ -24,8 +24,8 @@
     "browserify": "~3.37",
     "coffee-script": "~1.7",
     "coffeeify": "~0.6.0",
-    "glob": ">=3.1.9",
-    "optimist": ">=0.2.8",
+    "glob": "^4.0.0",
+    "optimist": "^0.6.1",
     "resolve": "^0.6.3"
   },
   "devDependencies": {
