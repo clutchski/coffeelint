@@ -127,5 +127,9 @@
     "no_empty_functions": {
         "name": "no_empty_functions",
         "level": "ignore"
+    },
+    "no_for_overwrite": {
+        "name": "no_for_overwrite",
+        "level": "ignore"
     }
 }
