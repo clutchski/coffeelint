@@ -29,6 +29,7 @@ vows.describe('no unnecessary fat arrows').addBatch({
     'function with this.a'  : shouldPass '=> this.a'
     'function with @'       : shouldPass '=> @'
     'function with @a'      : shouldPass '=> @a'
+    'function with super'   : shouldPass '=> super'
 
     'nested simple functions':
         'with inner fat arrow': shouldError '-> => 1'
