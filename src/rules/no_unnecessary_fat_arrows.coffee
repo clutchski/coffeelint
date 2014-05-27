@@ -35,5 +35,8 @@ module.exports = class NoUnnecessaryFatArrows
             any(node.params, (param) => param.contains(@isThis)?) or
             node.body.contains(@isThis)? or
             node.body.contains((child) =>
-                @isFatArrowCode(child) and @needsFatArrow(child))?
+                unless @astApi.getNodeName(child)
+                    child.isSuper? and child.isSuper
+                else
+                    @isFatArrowCode(child) and @needsFatArrow(child))?
         )
