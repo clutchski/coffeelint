@@ -119,6 +119,12 @@ coffeelint.registerRule = (RuleConstructor, ruleName = undefined) ->
     RULES[p.rule.name] = p.rule
     _rules[p.rule.name] = RuleConstructor
 
+coffeelint.getRules = ->
+    output = {}
+    for key in Object.keys(RULES).sort()
+        output[key] = RULES[key]
+    output
+
 # These all need to be explicitly listed so they get picked up by browserify.
 coffeelint.registerRule require './rules/arrow_spacing.coffee'
 coffeelint.registerRule require './rules/no_tabs.coffee'

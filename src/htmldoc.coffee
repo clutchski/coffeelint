@@ -4,7 +4,7 @@ rules = (require "./coffeelint").RULES
 render = () ->
     rulesHTML = ""
 
-    for ruleName in _.sortBy (_.keys rules), ((s) -> s)
+    for ruleName in Object.keys(rules).sort()
         rule = rules[ruleName]
         rule.name = ruleName
         rule.description = "[no description provided]" unless rule.description
