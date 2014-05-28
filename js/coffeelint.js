@@ -2,7 +2,7 @@
 module.exports={
   "name": "coffeelint",
   "description": "Lint your CoffeeScript",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "homepage": "http://www.coffeelint.org",
   "keywords": [
     "lint",
@@ -25,8 +25,8 @@ module.exports={
     "browserify": "~3.37",
     "coffee-script": "~1.7",
     "coffeeify": "~0.6.0",
-    "glob": ">=3.1.9",
-    "optimist": ">=0.2.8",
+    "glob": "^4.0.0",
+    "optimist": "^0.6.1",
     "resolve": "^0.6.3"
   },
   "devDependencies": {
@@ -278,17 +278,18 @@ CoffeeLint
 Copyright (c) 2011 Matthew Perpick.
 CoffeeLint is freely distributable under the MIT license.
  */
-var ASTLinter, CoffeeScript, ERROR, IGNORE, LexicalLinter, LineLinter, RULES, WARN, coffeelint, cs, defaults, difference, extend, hasSyntaxError, mergeDefaultConfig, packageJSON, _rules,
+var ASTLinter, CoffeeScript, ERROR, IGNORE, LexicalLinter, LineLinter, RULES, WARN, cache, coffeelint, defaults, difference, extend, hasSyntaxError, mergeDefaultConfig, nodeRequire, packageJSON, _rules,
   __slice = [].slice,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 coffeelint = exports;
 
+nodeRequire = _dereq_;
+
 if (typeof window !== "undefined" && window !== null) {
   CoffeeScript = window.CoffeeScript;
 } else {
-  cs = 'coffee-script';
-  CoffeeScript = _dereq_(cs);
+  CoffeeScript = nodeRequire('coffee-script');
 }
 
 packageJSON = _dereq_('./../package.json');
@@ -339,6 +340,8 @@ LineLinter = _dereq_('./line_linter.coffee');
 LexicalLinter = _dereq_('./lexical_linter.coffee');
 
 ASTLinter = _dereq_('./ast_linter.coffee');
+
+cache = null;
 
 mergeDefaultConfig = function(userConfig) {
   var config, rule, ruleConfig;
@@ -407,6 +410,17 @@ coffeelint.registerRule = function(RuleConstructor, ruleName) {
   return _rules[p.rule.name] = RuleConstructor;
 };
 
+coffeelint.getRules = function() {
+  var key, output, _i, _len, _ref;
+  output = {};
+  _ref = Object.keys(RULES).sort();
+  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+    key = _ref[_i];
+    output[key] = RULES[key];
+  }
+  return output;
+};
+
 coffeelint.registerRule(_dereq_('./rules/arrow_spacing.coffee'));
 
 coffeelint.registerRule(_dereq_('./rules/no_tabs.coffee'));
@@ -472,12 +486,22 @@ hasSyntaxError = function(source) {
 };
 
 coffeelint.lint = function(source, userConfig, literate) {
-  var all_errors, astErrors, block_config, cmd, config, disabled, disabled_initially, e, errors, i, l, lexErrors, lexicalLinter, lineErrors, lineLinter, name, next_line, r, rules, s, tokensByLine, _i, _j, _k, _len, _len1, _ref, _ref1, _ref2, _ref3, _ref4;
+  var all_errors, astErrors, block_config, cmd, config, disabled, disabled_initially, e, errors, i, l, lexErrors, lexicalLinter, lineErrors, lineLinter, name, next_line, r, ruleLoader, rules, s, tokensByLine, _i, _j, _k, _len, _len1, _ref, _ref1, _ref2, _ref3, _ref4;
   if (userConfig == null) {
     userConfig = {};
   }
   if (literate == null) {
     literate = false;
+  }
+  try {
+    ruleLoader = nodeRequire('./ruleLoader');
+    ruleLoader.loadFromConfig(this, userConfig);
+  } catch (_error) {}
+  if (cache != null) {
+    cache.setConfig(userConfig);
+  }
+  if (cache != null ? cache.has(source) : void 0) {
+    return cache != null ? cache.get(source) : void 0;
   }
   if (literate) {
     source = this.invertLiterate(source);
@@ -562,7 +586,14 @@ coffeelint.lint = function(source, userConfig, literate) {
       }
     }
   }
+  if (cache != null) {
+    cache.set(source, errors);
+  }
   return errors;
+};
+
+coffeelint.setCache = function(obj) {
+  return cache = obj;
 };
 
 
@@ -888,7 +919,9 @@ module.exports = ArrowSpacing = (function() {
   ArrowSpacing.prototype.lintToken = function(token, tokenApi) {
     var pp;
     pp = tokenApi.peek(-1);
-    if (!(((token.spaced != null) || (token.newLine != null) || this.atEof(tokenApi)) && (((pp.spaced != null) || pp[0] === 'TERMINATOR') || (pp.generated != null) || pp[0] === "INDENT" || (pp[1] === "(" && (pp.generated == null))))) {
+    if (!token.spaced && (pp[1] === "(" && (pp.generated == null)) && tokenApi.peek(1)[0] === 'INDENT' && tokenApi.peek(2)[0] === 'OUTDENT') {
+      return null;
+    } else if (!(((token.spaced != null) || (token.newLine != null) || this.atEof(tokenApi)) && (((pp.spaced != null) || pp[0] === 'TERMINATOR') || (pp.generated != null) || pp[0] === "INDENT" || (pp[1] === "(" && (pp.generated == null))))) {
       return true;
     } else {
       return null;
@@ -1907,7 +1940,7 @@ module.exports = NoTrailingSemicolons = (function() {
   };
 
   NoTrailingSemicolons.prototype.lintLine = function(line, lineApi) {
-    var endPos, first, hasNewLine, hasSemicolon, last, lineTokens, newLine, startCounter, startPos, _i, _ref;
+    var endPos, first, hasNewLine, hasSemicolon, last, lineTokens, newLine, startCounter, startPos, _i, _ref, _ref1;
     lineTokens = lineApi.getLineTokens();
     if (lineTokens.length === 1 && ((_ref = lineTokens[0][0]) === 'TERMINATOR' || _ref === 'HERECOMMENT')) {
       return;
@@ -1927,7 +1960,7 @@ module.exports = NoTrailingSemicolons = (function() {
     hasSemicolon = regexes.trailingSemicolon.test(newLine);
     first = 2 <= lineTokens.length ? __slice.call(lineTokens, 0, _i = lineTokens.length - 1) : (_i = 0, []), last = lineTokens[_i++];
     hasNewLine = last && (last.newLine != null);
-    if (hasSemicolon && !hasNewLine && lineApi.lineHasToken() && last[0] !== 'STRING') {
+    if (hasSemicolon && !hasNewLine && lineApi.lineHasToken() && !((_ref1 = last[0]) === 'STRING' || _ref1 === 'IDENTIFIER')) {
       return true;
     }
   };
@@ -2120,7 +2153,11 @@ module.exports = NoUnnecessaryFatArrows = (function() {
       };
     })(this)) || (node.body.contains(this.isThis) != null) || (node.body.contains((function(_this) {
       return function(child) {
-        return _this.isFatArrowCode(child) && _this.needsFatArrow(child);
+        if (!_this.astApi.getNodeName(child)) {
+          return (child.isSuper != null) && child.isSuper;
+        } else {
+          return _this.isFatArrowCode(child) && _this.needsFatArrow(child);
+        }
       };
     })(this)) != null));
   };
