@@ -23,10 +23,11 @@ task 'compile:commandline', 'Compiles commandline.js', ->
     coffeeSync 'src/commandline.coffee', 'lib/commandline.js'
     coffeeSync 'src/configfinder.coffee', 'lib/configfinder.js'
     coffeeSync 'src/cache.coffee', 'lib/cache.js'
+    coffeeSync 'src/ruleLoader.coffee', 'lib/ruleLoader.js'
     fs.mkdirSync 'lib/reporters' unless fs.existsSync 'lib/reporters'
     for src in glob.sync('reporters/*.coffee', { cwd: 'src' })
         # Slice the "coffee" extension of the end and replace with js
-        dest = src[...-6]+'js'
+        dest = src[...-6] + 'js'
         coffeeSync "src/#{src}", "lib/#{dest}"
 
 task 'compile:browserify', 'Uses browserify to compile coffeelint', ->

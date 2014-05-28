@@ -11,17 +11,19 @@ CoffeeLint is freely distributable under the MIT license.
 # exports
 coffeelint = exports
 
+# Hide from browserify
+nodeRequire = require
+
 if window?
     # If we're in the browser assume CoffeeScript is already loaded.
     CoffeeScript = window.CoffeeScript
 else
-    # By storing this in a variable it prevents browserify from finding this
-    # dependency. If it isn't hidden there is an error attempting to inline
-    # CoffeeScript.  if browserify uses `-i` to ignore the dependency it
-    # creates an empty shim which breaks NodeJS
+    # By using nodeRequire it prevents browserify from finding this dependency.
+    # If it isn't hidden there is an error attempting to inline CoffeeScript.
+    # if browserify uses `-i` to ignore the dependency it creates an empty shim
+    # which breaks NodeJS
     # https://github.com/substack/node-browserify/issues/471
-    cs = 'coffee-script'
-    CoffeeScript = require cs
+    CoffeeScript = nodeRequire 'coffee-script'
 
 # Browserify will inline the file at compile time.
 packageJSON = require('./../package.json')
@@ -180,6 +182,11 @@ hasSyntaxError = (source) ->
 #   }
 #
 coffeelint.lint = (source, userConfig = {}, literate = false) ->
+
+    # When run from the browser it may not be able to find the ruleLoader.
+    try
+        ruleLoader = nodeRequire './ruleLoader'
+        ruleLoader.loadFromConfig this, userConfig
 
     cache?.setConfig userConfig
     if cache?.has source then return cache?.get source
