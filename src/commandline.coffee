@@ -249,7 +249,7 @@ else if options.argv.h
     process.exit(0)
 else if options.argv.makeconfig
     console.log JSON.stringify coffeelint.getRules(),
-        ((k,v) -> v unless k in ['message', 'description']), 4
+        ((k,v) -> v unless k in ['message', 'description', 'name']), 4
 else if options.argv._.length < 1 and not options.argv.s
     options.showHelp()
     process.exit(1)
