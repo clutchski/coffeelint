@@ -15,10 +15,10 @@ optimist = require("optimist")
 thisdir = path.dirname(fs.realpathSync(__filename))
 coffeelint = require(path.join(thisdir, "coffeelint"))
 configfinder = require(path.join(thisdir, "configfinder"))
+ruleLoader = require(path.join(thisdir, 'ruleLoader'))
 Cache = require(path.join(thisdir, "cache"))
 CoffeeScript = require 'coffee-script'
 CoffeeScript.register()
-
 
 # Return the contents of the given file synchronously.
 read = (path) ->
@@ -86,10 +86,6 @@ lintFiles = (files, config) ->
 
         fileConfig = if config then config else getFallbackConfig(file)
 
-        for ruleName, data of fileConfig
-            if data.module?
-                loadRules(data.module, ruleName)
-
         errorReport.paths[file] = coffeelint.lint(source, fileConfig, literate)
     return errorReport
 
@@ -97,10 +93,6 @@ lintFiles = (files, config) ->
 lintSource = (source, config, literate = false) ->
     errorReport = new ErrorReport()
     config or= getFallbackConfig()
-
-    for ruleName, data of config
-        if data.module?
-            loadRules(data.module, ruleName)
 
     errorReport.paths["stdin"] = coffeelint.lint(source, config, literate)
     return errorReport
@@ -268,7 +260,7 @@ else
         fs.existsSync(process.env.COFFEELINT_CONFIG))
             config = JSON.parse(read(process.env.COFFEELINT_CONFIG))
 
-    loadRules(options.argv.rules) if options.argv.rules
+    ruleLoader.loadRule(coffeelint, options.argv.rules) if options.argv.rules
 
     if options.argv.s
         # Lint from stdin
