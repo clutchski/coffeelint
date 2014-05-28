@@ -26,7 +26,8 @@
     "coffeeify": "~0.6.0",
     "glob": "^4.0.0",
     "optimist": "^0.6.1",
-    "resolve": "^0.6.3"
+    "resolve": "^0.6.3",
+    "sorted-object": "^1.0.0"
   },
   "devDependencies": {
     "vows": ">=0.6.0",
