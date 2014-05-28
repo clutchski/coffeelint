@@ -11,6 +11,7 @@
   "author": "Matthew Perpick <clutchski@gmail.com>",
   "main": "./lib/coffeelint.js",
   "engines": {
+    "npm": ">=1.3.7",
     "node": ">=0.8.0"
   },
   "repository": {
