@@ -1,5 +1,15 @@
 any = (arr, test) -> arr.reduce ((res, elt) -> res or test elt), false
 
+containsButIsnt = (node, nIsThis, nIsClass) ->
+    target = undefined
+    node.traverseChildren false, (n) ->
+        if nIsClass n
+            return false
+        if nIsThis n
+            target = n
+            return false
+    target
+
 module.exports = class MissingFatArrows
 
     rule:
@@ -47,10 +57,13 @@ module.exports = class MissingFatArrows
     isThis: (node) => @isValue(node) and node.base.value is 'this'
     isFatArrowCode: (node) => @isCode(node) and node.bound
 
+
+
+
     needsFatArrow: (node) ->
         @isCode(node) and (
             any(node.params, (param) => param.contains(@isThis)?) or
-            node.body.contains(@isThis)?
+            containsButIsnt(node.body, @isThis, @isClass)
           )
 
     methodsOfClass: (classNode) ->
