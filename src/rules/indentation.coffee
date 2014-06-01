@@ -31,7 +31,7 @@ module.exports = class Indentation
 
     # Return an error if the given indentation token is not correct.
     lintToken: (token, tokenApi) ->
-        [type, numIndents, lineNumber] = token
+        [type, numIndents, { first_line: lineNumber }] = token
 
         if type in [ "[", "]" ]
             @lintArray(token)
@@ -44,7 +44,7 @@ module.exports = class Indentation
         # so ignore such cases. Are there other times an indentation
         # could possibly follow a '+'?
         previous = tokenApi.peek(-2)
-        isInterpIndent = previous and previous[0] == '+'
+        isInterpIndent = previous and previous[0] is '+'
 
         # Ignore the indentation inside of an array, so that
         # we can allow things like:
@@ -84,13 +84,11 @@ module.exports = class Indentation
             numIndents = currentLine.match(/^(\s*)/)[1].length
             numIndents -= previousIndentation
 
-
         # Now check the indentation.
         expected = tokenApi.config[@rule.name].value
-        if not ignoreIndent and numIndents != expected
-            return {
-                context: "Expected #{expected} got #{numIndents}"
-            }
+        if not ignoreIndent and numIndents isnt expected
+            return { context: "Expected #{expected} got #{numIndents}" }
+
     # Return true if the current token is inside of an array.
     inArray : () ->
         return @arrayTokens.length > 0
@@ -98,9 +96,9 @@ module.exports = class Indentation
     # Lint the given array token.
     lintArray : (token) ->
         # Track the array token pairs
-        if token[0] == '['
+        if token[0] is '['
             @arrayTokens.push(token)
-        else if token[0] == ']'
+        else if token[0] is ']'
             @arrayTokens.pop()
         # Return null, since we're not really linting
         # anything here.
