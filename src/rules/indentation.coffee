@@ -112,16 +112,10 @@ module.exports = class Indentation
     isChainedCall: (tokenApi) ->
         { tokens, i } = tokenApi
         # Get the index of the second most recent new line.
-        lines = (i for token, i in tokens[..i] when token.newLine?)
-
-        lastNewLineIndex = if lines then lines[lines.length - 2] else null
-
-        # Bail out if there is no such token.
-        return false if not lastNewLineIndex?
+        newLineTokens = (i for token, i in tokens[..i] when token.newLine?)
 
         # Otherwise, figure out if that token or the next is an attribute
         # look-up.
-        tokens = [tokens[lastNewLineIndex], tokens[lastNewLineIndex + 1]]
-
-        return !!(t for t in tokens when t and t[0] == '.').length
-
+        for l in newLineTokens when (tokens[l][0] is '.' or tokens[l + 1][0] is '.')
+            return true
+        return false
