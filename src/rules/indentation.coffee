@@ -111,11 +111,20 @@ module.exports = class Indentation
     #       .removeClass('bar')
     isChainedCall: (tokenApi) ->
         { tokens, i } = tokenApi
-        # Get the index of the second most recent new line.
-        newLineTokens = (i for token, i in tokens[..i] when token.newLine?)
 
-        # Otherwise, figure out if that token or the next is an attribute
-        # look-up.
-        for l in newLineTokens when (tokens[l][0] is '.' or tokens[l + 1][0] is '.')
-            return true
+        # What we're going to do is find all tokens with the newLine property
+        # and then see if that token is an accessor ('.') or if its next non-
+        # generated token is a '.'.
+
+        # Grab all tokens with newLine properties
+        newLineTokens = (j for token, j in tokens[..i] when token.newLine?)
+
+        # Try to see if next ungenerated token after a token with newLine
+        # property is an '.' token
+        for l in newLineTokens
+            return true if tokens[l][0] is '.'
+            ll = 1
+            ll += 1 while tokens[l + ll].generated?
+            return true if tokens[l + ll][0] is '.'
+
         return false

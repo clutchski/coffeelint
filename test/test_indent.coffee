@@ -278,4 +278,36 @@ vows.describe('indent').addBatch({
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
 
+    'Handle chains where there are tokens with generated property' :
+        topic : """
+            anObject 'bar'
+              .firstChain ->
+                doStepOne()
+                doStepTwo()
+              .secondChain ->
+                a = b
+                secondObject
+                  .then ->
+                    e ->
+                  .finally x
+            """
+        'is permitted': (source) ->
+            errors = coffeelint.lint(source)
+            assert.isEmpty(errors)
+
+    'Handle nested chain calls' :
+        topic : """
+            anObject
+              .firstChain (f) ->
+                doStepOne()
+                  .doAnotherStep()
+                  .prepSomethingElse()
+              .secondChain (s) ->
+                moreStuff()
+                return s
+            """
+        'is permitted': (source) ->
+            errors = coffeelint.lint(source)
+            assert.isEmpty(errors)
+
 }).export(module)
