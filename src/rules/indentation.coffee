@@ -31,7 +31,7 @@ module.exports = class Indentation
 
     # Return an error if the given indentation token is not correct.
     lintToken: (token, tokenApi) ->
-        [type, numIndents, lineNumber] = token
+        [type, numIndents, { first_line: lineNumber }] = token
 
         if type in [ "[", "]" ]
             @lintArray(token)
@@ -44,7 +44,7 @@ module.exports = class Indentation
         # so ignore such cases. Are there other times an indentation
         # could possibly follow a '+'?
         previous = tokenApi.peek(-2)
-        isInterpIndent = previous and previous[0] == '+'
+        isInterpIndent = previous and previous[0] is '+'
 
         # Ignore the indentation inside of an array, so that
         # we can allow things like:
@@ -84,13 +84,11 @@ module.exports = class Indentation
             numIndents = currentLine.match(/^(\s*)/)[1].length
             numIndents -= previousIndentation
 
-
         # Now check the indentation.
         expected = tokenApi.config[@rule.name].value
-        if not ignoreIndent and numIndents != expected
-            return {
-                context: "Expected #{expected} got #{numIndents}"
-            }
+        if not ignoreIndent and numIndents isnt expected
+            return { context: "Expected #{expected} got #{numIndents}" }
+
     # Return true if the current token is inside of an array.
     inArray : () ->
         return @arrayTokens.length > 0
@@ -98,9 +96,9 @@ module.exports = class Indentation
     # Lint the given array token.
     lintArray : (token) ->
         # Track the array token pairs
-        if token[0] == '['
+        if token[0] is '['
             @arrayTokens.push(token)
-        else if token[0] == ']'
+        else if token[0] is ']'
             @arrayTokens.pop()
         # Return null, since we're not really linting
         # anything here.
@@ -113,17 +111,20 @@ module.exports = class Indentation
     #       .removeClass('bar')
     isChainedCall: (tokenApi) ->
         { tokens, i } = tokenApi
-        # Get the index of the second most recent new line.
-        lines = (i for token, i in tokens[..i] when token.newLine?)
 
-        lastNewLineIndex = if lines then lines[lines.length - 2] else null
+        # What we're going to do is find all tokens with the newLine property
+        # and then see if that token is an accessor ('.') or if its next non-
+        # generated token is a '.'.
 
-        # Bail out if there is no such token.
-        return false if not lastNewLineIndex?
+        # Grab all tokens with newLine properties
+        newLineTokens = (j for token, j in tokens[..i] when token.newLine?)
 
-        # Otherwise, figure out if that token or the next is an attribute
-        # look-up.
-        tokens = [tokens[lastNewLineIndex], tokens[lastNewLineIndex + 1]]
+        # Try to see if next ungenerated token after a token with newLine
+        # property is an '.' token
+        for l in newLineTokens
+            return true if tokens[l][0] is '.'
+            ll = 1
+            ll += 1 while tokens[l + ll].generated?
+            return true if tokens[l + ll][0] is '.'
 
-        return !!(t for t in tokens when t and t[0] == '.').length
-
+        return false

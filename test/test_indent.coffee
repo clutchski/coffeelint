@@ -196,15 +196,117 @@ vows.describe('indent').addBatch({
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
 
-    'Indenting a callback in a chained call inside a function':
-
-        topic: """
+    'Indenting a callback in a chained call inside a function' :
+        topic : """
             someFunction = ->
               $.when(somePromise)
                 .done (result) ->
                   foo = result.bar
             """
         'is permitted. See issue #88': (source) ->
+            errors = coffeelint.lint(source)
+            assert.isEmpty(errors)
+
+    'Handle multiple chained calls' :
+        topic : """
+            anObject
+              .firstChain (f) ->
+                doStepOne()
+                doAnotherStep()
+                prepSomethingElse()
+              .secondChain (s) ->
+                moreStuff()
+                return s
+            """
+        'is permitted': (source) ->
+            errors = coffeelint.lint(source)
+            assert.isEmpty(errors)
+
+    'Handle multiple chained calls (4 spaces)' :
+        topic : """
+            anObject
+                .firstChain (f) ->
+                    doStepOne()
+                    doAnotherStep()
+                    prepSomethingElse()
+                .secondChain (s) ->
+                    moreStuff()
+                    return s
+            """
+        'fails when using 2 space indentation default': (source) ->
+            msg = 'Line contains inconsistent indentation'
+
+            errors = coffeelint.lint(source)
+            assert.equal(errors.length, 2)
+            error = errors[0]
+
+            assert.equal(error.message, msg)
+            assert.equal(error.rule, 'indentation')
+            assert.equal(error.lineNumber, 3)
+            assert.equal(error.context, "Expected 2 got 4")
+
+            error = errors[1]
+
+            assert.equal(error.message, msg)
+            assert.equal(error.rule, 'indentation')
+            assert.equal(error.lineNumber, 7)
+            assert.equal(error.context, "Expected 2 got 4")
+
+        'is permitted when changing configuration to use 4 spaces': (source) ->
+            config =
+                indentation:
+                    value: 4
+            errors = coffeelint.lint(source, config)
+            assert.isEmpty(errors)
+
+    'Handle multiple chained calls inside more indentation' :
+        topic : """
+            someLongFunction = (a, b, c, d) ->
+              retValue = anObject
+                .firstChain (f) ->
+                  doStepOne()
+                  doAnotherStep()
+                  prepSomethingElse()
+                .secondChain (s) ->
+                  moreStuff()
+                  return s
+
+              retValue + [1]
+
+            """
+        'is permitted': (source) ->
+            errors = coffeelint.lint(source)
+            assert.isEmpty(errors)
+
+    'Handle chains where there are tokens with generated property' :
+        topic : """
+            anObject 'bar'
+              .firstChain ->
+                doStepOne()
+                doStepTwo()
+              .secondChain ->
+                a = b
+                secondObject
+                  .then ->
+                    e ->
+                  .finally x
+            """
+        'is permitted': (source) ->
+            errors = coffeelint.lint(source)
+            assert.isEmpty(errors)
+
+    'Handle nested chain calls' :
+        topic : """
+            anObject
+              .firstChain (f) ->
+                doStepOne()
+                  .doAnotherStep()
+                  .prepSomethingElse()
+              .secondChain (s) ->
+                moreStuff()
+                return s
+            """
+        'is permitted': (source) ->
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
 
