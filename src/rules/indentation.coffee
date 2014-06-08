@@ -23,8 +23,7 @@ module.exports = class Indentation
             Two space indentation is enabled by default.
             """
 
-
-    tokens: [ 'INDENT', "[", "]" ]
+    tokens: ['INDENT', "[", "]", "."]
 
     constructor: ->
         @arrayTokens = []   # A stack tracking the array token pairs.
@@ -33,7 +32,57 @@ module.exports = class Indentation
     lintToken: (token, tokenApi) ->
         [type, numIndents, { first_line: lineNumber }] = token
 
-        if type in [ "[", "]" ]
+        lines = tokenApi.lines
+        lineNumber = tokenApi.lineNumber
+        currentLine = lines[lineNumber]
+        expected = tokenApi.config[@rule.name].value
+
+        # See: 'Indented chained invocations with bad indents'
+        # This actually checks the chained call to see if its properly indented
+        if type is '.'
+            # Keep this if statement separately, since we still need to let
+            # the linting pass if the '.' token is not at the beginning of
+            # the line
+            if currentLine.match(/\S/i)[0] is '.'
+                lastCheck = 1
+                callStart = 1
+                prevNum = 1
+
+                # Traverse up the token list until we see a CALL_START token.
+                # Don't scan above this line
+                while (tokenApi.peek(-callStart) and tokenApi.peek(-callStart)[0] isnt 'CALL_START')
+                    { first_line: lastCheck } = tokenApi.peek(-callStart)[2]
+                    callStart += 1
+
+                # Keep going back until we are not at a comment or a blank line
+                # and set a new "previousLine"
+                while (lineNumber - prevNum > lastCheck) and not /^\s*\./.test(lines[lineNumber - prevNum])
+                    prevNum += 1
+
+                checkNum = lineNumber - prevNum
+                if checkNum >= 0
+                    prevLine = lines[checkNum]
+
+                    # If this is just a one-chain function, or the "corrected"
+                    # previous line begins with a '.', check for correct
+                    # indentation
+                    if prevLine.match(/\S/i)[0] is '.' or checkNum is lastCheck
+                        currentSpaces = currentLine.match(/\S/i)?.index
+                        prevSpaces = prevLine.match(/\S/i)?.index
+                        numIndents = currentSpaces - prevSpaces
+
+                        # If both prev and current lines have uneven spacing,
+                        # assume the current line could be lined by default
+                        # indent spacing, and set numIndents to current
+                        # number of spaces
+                        if prevSpaces % expected isnt 0 and currentSpaces % expected isnt 0
+                            numIndents = currentSpaces
+
+                        if numIndents % expected isnt 0
+                            return { context: "Expected #{expected} got #{numIndents}" }
+            return undefined
+
+        if type in ["[", "]"]
             @lintArray(token)
             return undefined
 
@@ -66,26 +115,28 @@ module.exports = class Indentation
         # Compensate for indentation in function invocations that span multiple
         # lines, which can be ignored.
         if @isChainedCall tokenApi
-            { lines, lineNumber } = tokenApi
-            currentLine = lines[lineNumber]
             prevNum = 1
 
-            # keep going back until we are not at a comment or a blank line
+            # Keep going back until we are not at a comment or a blank line
+            # and set a new "previousLine"
             prevNum += 1 while (/^\s*(#|$)/.test(lines[lineNumber - prevNum]))
             previousLine = lines[lineNumber - prevNum]
 
-            previousIndentation = previousLine.match(/^(\s*)/)[1].length
-            # I don't know why, but when inside a function, you make a chained
-            # call and define an inline callback as a parameter, the body of
-            # that callback gets the indentation reported higher than it really
-            # is. See issue #88
+            previousIndentation = previousLine.match(/\S/).index
+
+            # Original issue was #4, Updated again with #88 and discovered why
+            # this was happening in #128. There is a lot of discussion on the
+            # GitHub repo so please read those.
+
+            # Basic summary: CoffeeScript sucks chained calls to the previous
+            # line, leaving you with an indent one size bigger than desired.
+
             # NOTE: Adding this line moved the cyclomatic complexity over the
             # limit, I'm not sure why
-            numIndents = currentLine.match(/^(\s*)/)[1].length
+            numIndents = currentLine.match(/\S/).index
             numIndents -= previousIndentation
 
         # Now check the indentation.
-        expected = tokenApi.config[@rule.name].value
         if not ignoreIndent and numIndents isnt expected
             return { context: "Expected #{expected} got #{numIndents}" }
 
@@ -122,7 +173,6 @@ module.exports = class Indentation
         # Try to see if next ungenerated token after a token with newLine
         # property is an '.' token
         for l in newLineTokens
-            return true if tokens[l][0] is '.'
             ll = 1
             ll += 1 while tokens[l + ll].generated?
             return true if tokens[l + ll][0] is '.'
