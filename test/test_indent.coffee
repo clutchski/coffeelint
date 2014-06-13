@@ -130,7 +130,7 @@ vows.describe('indent').addBatch({
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
 
-    'Indented chained invocations' :
+    'Consecutive indented chained invocations' :
 
         topic : """
             $('body')
@@ -142,6 +142,83 @@ vows.describe('indent').addBatch({
 
         'is permitted' : (source) ->
             assert.isEmpty(coffeelint.lint(source))
+
+    'Consecutive indented chained invocations and multi-line expression' :
+
+        topic : """
+            $('body')
+              .addClass ->
+                return $(this).name + $(this).that +
+                  $(this).this
+              .removeClass 'k'
+            """
+
+        'is permitted' : (source) ->
+            assert.isEmpty(coffeelint.lint(source))
+
+    'Consecutive indented chained invocations with bad indents' :
+        topic : """
+            $('body')
+              .addClass('k')
+                 # bad indented comments are ignored
+              .removeClass 'k'
+              # comments are ignored in checking, so are blank lines
+
+              .animate()
+                # comments are ignored
+                 .hide() # this will check with '.animated()' and complain
+
+            """
+        'fails with indent error': (source) ->
+            errors = coffeelint.lint(source)
+            assert.equal(errors.length, 1)
+            error = errors[0]
+
+            assert.equal(error.rule, 'indentation')
+            assert.equal(error.lineNumber, 9)
+            assert.equal(error.context, "Expected 2 got 3")
+
+    'One chain invocations with bad indents' :
+        topic : """
+            $('body')
+               .addClass('k')
+            """
+        'fails with indent error': (source) ->
+            errors = coffeelint.lint(source)
+            assert.equal(errors.length, 1)
+            error = errors[0]
+
+            assert.equal(error.rule, 'indentation')
+            assert.equal(error.lineNumber, 2)
+            assert.equal(error.context, "Expected 2 got 3")
+
+    'Separate chained invocations with bad indents' :
+        topic : """
+            $('body')
+              .addClass ->
+                return name + that +
+                  there
+               .removeClass 'k'
+
+            $('html')
+               .hello()
+            """
+
+        'correctly identifies two errors': (source) ->
+            errors = coffeelint.lint(source)
+            assert.equal(errors.length, 2)
+            error = errors[0]
+
+            assert.equal(error.rule, 'indentation')
+            assert.equal(error.lineNumber, 5)
+            assert.equal(error.context, "Expected 2 got 1")
+
+            error = errors[1]
+
+            assert.equal(error.rule, 'indentation')
+            assert.equal(error.lineNumber, 8)
+            assert.equal(error.context, "Expected 2 got 3")
+
 
     'Ignore comment in indented chained invocations' :
         topic : () ->
