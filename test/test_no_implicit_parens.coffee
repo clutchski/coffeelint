@@ -42,6 +42,10 @@ vows.describe('parens').addBatch({
 
     'No implicit parens strict' :
         topic: """
+            blah = (a) ->
+            blah
+              foo: 'bar'
+
             blah = (a, b) ->
             blah 'a'
             , 'b'
@@ -51,7 +55,7 @@ vows.describe('parens').addBatch({
             config = {no_implicit_parens : {level:'error'}}
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
-            assert.lengthOf(errors, 1)
+            assert.lengthOf(errors, 2)
             assert.equal(rule, 'no_implicit_parens') for {rule} in errors
 
         "allows parens at the end of lines when strict is false": (source) ->
@@ -65,6 +69,10 @@ vows.describe('parens').addBatch({
 
     'Nested no implicit parens strict' :
         topic: """
+            blah = (a) ->
+            blah
+              foo: blah('a')
+
             blah = (a, b) ->
 
             blah 'a'
@@ -79,7 +87,7 @@ vows.describe('parens').addBatch({
             config = {no_implicit_parens : {level:'error'}}
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
-            assert.lengthOf(errors, 3)
+            assert.lengthOf(errors, 4)
             assert.equal(rule, 'no_implicit_parens') for {rule} in errors
 
         "allows parens at the end of lines when strict is false": (source) ->

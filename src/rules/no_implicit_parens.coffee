@@ -30,11 +30,17 @@ module.exports = class NoImplicitParens
             else
                 # If strict mode is turned off it allows implicit parens when the
                 # expression is spread over multiple lines.
+                functionNesting = 1
+                last_line = token[2].last_line
                 i = -1
                 loop
                     t = tokenApi.peek(i)
-                    if not t? or t[0] == 'CALL_START'
+                    if t?[0] == 'CALL_END'
+                        functionNesting += 1
+                    if functionNesting == 1 and (not t? or t[0] == 'CALL_START')
                         return true
-                    if t.newLine
+                    if t[2].first_line < last_line || t[0] == 'INDENT'
                         return null
+                    if t?[0] == 'CALL_START'
+                        functionNesting -= 1
                     i -= 1
