@@ -1,4 +1,3 @@
-
 module.exports = class NoImplicitParens
 
     rule:
@@ -25,7 +24,7 @@ module.exports = class NoImplicitParens
 
     lintToken : (token, tokenApi) ->
         if token.generated
-            unless tokenApi.config[@rule.name].strict == false
+            unless tokenApi.config[@rule.name].strict is false
                 return true
             else
                 # If strict mode is turned off it allows implicit parens when the
@@ -33,8 +32,14 @@ module.exports = class NoImplicitParens
                 i = -1
                 loop
                     t = tokenApi.peek(i)
-                    if not t? or t[0] == 'CALL_START'
+
+                    if not t? or (t[0] is 'CALL_START' and t.generated)
                         return true
-                    if t.newLine
+
+                    # If we have not found a CALL_START token that is generated,
+                    # and we've moved into a new line, this is fine and should
+                    # just return.
+                    if t[2].first_line isnt token[2].first_line
                         return null
+
                     i -= 1

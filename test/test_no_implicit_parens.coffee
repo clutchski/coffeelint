@@ -47,17 +47,17 @@ vows.describe('parens').addBatch({
             , 'b'
         """
 
-        "blocks all implicit parens by default": (source) ->
+        'blocks all implicit parens by default' : (source) ->
             config = {no_implicit_parens : {level:'error'}}
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 1)
             assert.equal(rule, 'no_implicit_parens') for {rule} in errors
 
-        "allows parens at the end of lines when strict is false": (source) ->
+        'allows parens at the end of lines when strict is false' : (source) ->
             config =
                 no_implicit_parens:
-                    level:'error'
+                    level: 'error'
                     strict: false
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
@@ -75,20 +75,59 @@ vows.describe('parens').addBatch({
             , 'd')
         """
 
-        "blocks all implicit parens by default": (source) ->
+        'blocks all implicit parens by default' : (source) ->
             config = {no_implicit_parens : {level:'error'}}
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 3)
-            assert.equal(rule, 'no_implicit_parens') for {rule} in errors
+            assert.equal(rule, 'no_implicit_parens') for { rule } in errors
 
-        "allows parens at the end of lines when strict is false": (source) ->
+        'allows parens at the end of lines when strict is false' : (source) ->
             config =
                 no_implicit_parens:
-                    level:'error'
+                    level: 'error'
                     strict: false
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.isEmpty(errors)
+
+    'Test for when implicit parens are on the last line' :
+        topic: """
+            class Something
+              constructor: ->
+                return $ '#something'
+
+              yo: ->
+
+            class AnotherSomething
+              constructor: ->
+                return $ '#something'
+
+            blah 'a'
+            , blah('c', 'd')
+
+        """
+
+        'throws three errors when strict is true' : (source) ->
+            config =
+                no_implicit_parens:
+                    level: 'error'
+                    strict: true
+
+            errors = coffeelint.lint(source, config)
+            assert.isArray(errors)
+            assert.lengthOf(errors, 3)
+
+        # When implicit parens are separated out on multiple lines
+        # and strict is set to false, do not return an error.
+        'throws two errors when strict is false' : (source) ->
+            config =
+                no_implicit_parens:
+                    level: 'error'
+                    strict: false
+
+            errors = coffeelint.lint(source, config)
+            assert.isArray(errors)
+            assert.lengthOf(errors, 2)
 
 }).export(module)
