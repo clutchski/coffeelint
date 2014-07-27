@@ -112,40 +112,21 @@ module.exports = class Indentation
         # Summarize the indentation conditions we'd like to ignore
         ignoreIndent = isInterpIndent or isArrayIndent or isMultiline
 
-        # Compensate for indentation in function invocations that span multiple
-        # lines, which can be ignored.
-        if @isChainedCall tokenApi
-            prevNum = 1
-
-            # Keep going back until we are not at a comment or a blank line
-            # and set a new "previousLine"
-            prevNum += 1 while (/^\s*(#|$)/.test(lines[lineNumber - prevNum]))
-            previousLine = lines[lineNumber - prevNum]
-
-            previousIndentation = previousLine.match(/\S/).index
-
-            # Original issue was #4, Updated again with #88 and discovered why
-            # this was happening in #128. There is a lot of discussion on the
-            # GitHub repo so please read those.
-
-            # Basic summary: CoffeeScript sucks chained calls to the previous
-            # line, leaving you with an indent one size bigger than desired.
-
-            # NOTE: Adding this line moved the cyclomatic complexity over the
-            # limit, I'm not sure why
-            numIndents = currentLine.match(/\S/).index
-            numIndents -= previousIndentation
+        # Correct CoffeeScript's incorrect INDENT token value when functions
+        # get chained. See: https://github.com/jashkenas/coffeescript/issues/3137
+        # Also see CoffeeLint Issues: #4, #88, #128, and many more.
+        numIndents = @getCorrectIndent(tokenApi)
 
         # Now check the indentation.
         if not ignoreIndent and numIndents isnt expected
             return { context: "Expected #{expected} got #{numIndents}" }
 
     # Return true if the current token is inside of an array.
-    inArray : () ->
+    inArray: () ->
         return @arrayTokens.length > 0
 
     # Lint the given array token.
-    lintArray : (token) ->
+    lintArray: (token) ->
         # Track the array token pairs
         if token[0] is '['
             @arrayTokens.push(token)
@@ -155,26 +136,23 @@ module.exports = class Indentation
         # anything here.
         null
 
-    # Return true if the current token is part of a property access
-    # that is split across lines, for example:
-    #   $('body')
-    #       .addClass('foo')
-    #       .removeClass('bar')
-    isChainedCall: (tokenApi) ->
-        { tokens, i } = tokenApi
+    # Returns a corrected INDENT value if the current line is part of
+    # a chained call. Otherwise returns original INDENT value.
+    getCorrectIndent: (tokenApi) ->
+        { lineNumber, lines, tokens, i } = tokenApi
 
-        # What we're going to do is find all tokens with the newLine property
-        # and then see if that token is an accessor ('.') or if its next non-
-        # generated token is a '.'.
+        curIndent = lines[lineNumber].match(/\S/)?.index
 
-        # Grab all tokens with newLine properties
-        newLineTokens = (j for token, j in tokens[..i] when token.newLine?)
+        prevNum = 1
+        prevNum += 1 while (/^\s*(#|$)/.test(lines[lineNumber - prevNum]))
 
-        # Try to see if next ungenerated token after a token with newLine
-        # property is an '.' token
-        for l in newLineTokens
-            ll = 1
-            ll += 1 while tokens[l + ll].generated?
-            return true if tokens[l + ll][0] is '.'
+        prevLine = lines[lineNumber - prevNum]
+        prevIndent = prevLine.match(/^(\s*)\./)?[1].length
 
-        return false
+        # Make sure the previous line starts with a '.' and then also catch
+        # an edge case where the line two lines above the current line ends
+        # with an '.'
+        if prevIndent > 0 or lines[lineNumber - prevNum - 1]?.match(/\.$/)?
+            return curIndent - prevLine.match(/\S/)?.index
+        else
+            return tokens[i][1]
