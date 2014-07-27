@@ -386,5 +386,22 @@ vows.describe('indent').addBatch({
         'is permitted': (source) ->
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
+    'Make sure indentation check is not affected outside proper scope' :
+        topic : """
+            a
+              .b
+
+            c = ->
+              return d + e
+
+            ->
+              if a is c and
+                (false or
+                  long.expression.that.necessitates(linebreak))
+                @foo()
+            """
+        'returns no errors outside scope': (source) ->
+            errors = coffeelint.lint(source)
+            assert.isEmpty(errors)
 
 }).export(module)
