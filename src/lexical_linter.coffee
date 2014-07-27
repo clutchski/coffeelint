@@ -44,8 +44,8 @@ module.exports = class LexicalLinter extends BaseLinter
     lintToken : (token) ->
         [type, value, lineNumber] = token
 
-        if typeof lineNumber == "object"
-            if type == 'OUTDENT' or type == 'INDENT'
+        if typeof lineNumber is "object"
+            if type is 'OUTDENT' or type is 'INDENT'
                 lineNumber = lineNumber.last_line
             else
                 lineNumber = lineNumber.first_line

@@ -20,15 +20,15 @@ module.exports = class NoImplicitParens
             """
 
 
-    tokens: [ "CALL_END" ]
+    tokens: [ 'CALL_END' ]
 
     lintToken : (token, tokenApi) ->
         if token.generated
             unless tokenApi.config[@rule.name].strict is false
                 return true
             else
-                # If strict mode is turned off it allows implicit parens when the
-                # expression is spread over multiple lines.
+                # If strict mode is turned off it allows implicit parens when
+                # the expression is spread over multiple lines.
                 i = -1
                 loop
                     t = tokenApi.peek(i)

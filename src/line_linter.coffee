@@ -47,7 +47,7 @@ class LineApi
         null
 
     isLastLine : () ->
-        return @lineNumber == @lineCount - 1
+        return @lineNumber is @lineCount - 1
 
     # Return true if the given line actually has tokens.
     # Optional parameter to check for a specific token type and line number.
@@ -59,7 +59,7 @@ class LineApi
             tokens = @tokensByLine[lineNumber]
             return null unless tokens?
             for token in tokens
-                return true if token[0] == tokenType
+                return true if token[0] is tokenType
             return false
 
     # Return tokens for the given line number.

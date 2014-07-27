@@ -37,7 +37,7 @@ module.exports = class NoTrailingWhitespace
 
             # To avoid confusion when a string might contain a "#", every string
             # on this line will be removed. before checking for a comment
-            for str in (token[1] for token in tokens when token[0] == 'STRING')
+            for str in (token[1] for token in tokens when token[0] is 'STRING')
                 line = line.replace(str, 'STRING')
 
             if !regexes.lineHasComment.test(line)

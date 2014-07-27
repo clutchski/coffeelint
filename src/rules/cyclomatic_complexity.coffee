@@ -12,9 +12,9 @@ module.exports = class NoTabs
         name = @astApi.getNodeName node
         complexity = if name in ['If', 'While', 'For', 'Try']
             1
-        else if name == 'Op' and node.operator in ['&&', '||']
+        else if name is 'Op' and node.operator in ['&&', '||']
             1
-        else if name == 'Switch'
+        else if name is 'Switch'
             node.cases.length
         else
             0
@@ -40,7 +40,7 @@ module.exports = class NoTabs
 
         # If the current node is a function, and it's over our limit, add an
         # error to the list.
-        if name == 'Code' and complexity >= rule.value
+        if name is 'Code' and complexity >= rule.value
             error = @astApi.createError {
                 context: complexity + 1
                 lineNumber: line + 1

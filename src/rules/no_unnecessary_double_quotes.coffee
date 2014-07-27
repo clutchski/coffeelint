@@ -7,7 +7,7 @@ module.exports = class NoUnnecessaryDoubleQuotes
         level : 'ignore'
         message : 'Unnecessary double quotes are forbidden'
         description: '''
-            This rule prohibits double quotes unless string interpolation is 
+            This rule prohibits double quotes unless string interpolation is
             used or the string contains single quotes.
             <pre>
             <code># Double quotes are discouraged:

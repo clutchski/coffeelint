@@ -26,11 +26,11 @@ module.exports = class NoThrowingStrings
             This rule is enabled by default.
             """
 
-    tokens: [ "THROW" ]
+    tokens: [ 'THROW' ]
 
     lintToken : (token, tokenApi) ->
         [n1, n2] = [tokenApi.peek(), tokenApi.peek(2)]
         # Catch literals and string interpolations, which are wrapped in
         # parens.
-        nextIsString = n1[0] == 'STRING' or (n1[0] == '(' and n2[0] == 'STRING')
+        nextIsString = n1[0] is 'STRING' or (n1[0] is '(' and n2[0] is 'STRING')
         return nextIsString

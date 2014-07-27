@@ -34,7 +34,7 @@ module.exports = class ColonAssignmentSpacing
     tokens : [':']
 
     lintToken : (token, tokenApi) ->
-        spacingAllowances = tokenApi.config[@rule.name].spacing
+        spaceRules = tokenApi.config[@rule.name].spacing
         previousToken = tokenApi.peek -1
         nextToken = tokenApi.peek 1
 
@@ -48,7 +48,11 @@ module.exports = class ColonAssignmentSpacing
         checkSpacing = (direction) ->
             spacing = getSpaceFromToken direction
             # when spacing is negative, the neighboring token is a newline
-            isSpaced = if spacing < 0 then true else spacing is parseInt spacingAllowances[direction]
+            isSpaced = if spacing < 0
+                true
+            else
+                spacing is parseInt spaceRules[direction]
+
             [isSpaced, spacing]
 
         [isLeftSpaced, leftSpacing] = checkSpacing 'left'
@@ -60,6 +64,6 @@ module.exports = class ColonAssignmentSpacing
             context :
                 """
                 Incorrect spacing around column #{token[2].first_column}.
-                Expected left: #{spacingAllowances.left}, right: #{spacingAllowances.right}.
+                Expected left: #{spaceRules.left}, right: #{spaceRules.right}.
                 Got left: #{leftSpacing}, right: #{rightSpacing}.
                 """
