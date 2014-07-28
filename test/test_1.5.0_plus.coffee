@@ -7,8 +7,8 @@ CoffeeScript.tokens = (text) ->
     CoffeeScript.updated_tokens_called = true
     tokens = CoffeeScript.old_tokens(text)
     for token in tokens
-        if typeof token[2] == "number"
-            if token[0] == 'INDENT' or token[1] == 'OUTDENT'
+        if typeof token[2] is "number"
+            if token[0] is 'INDENT' or token[1] is 'OUTDENT'
                 token[2] = {first_line: token[2] - 1, last_line: token[2]}
             else
                 token[2] = {first_line: token[2], last_line: token[2]}
@@ -38,7 +38,7 @@ vows.describe("CoffeeScript 1.5.0+").addBatch({
             assert.equal(error.rule, 'no_trailing_semicolons')
 
     "for indentation last_line is the correct value for lineNumber" :
-        
+
         topic : () ->
             """
             x = () ->

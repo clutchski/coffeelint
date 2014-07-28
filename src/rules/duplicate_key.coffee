@@ -12,18 +12,18 @@ module.exports = class DuplicateKey
         description:
             "Prevents defining duplicate keys in object literals and classes"
 
-    tokens: [ 'IDENTIFIER', "{","}" ]
+    tokens: [ 'IDENTIFIER', '{', '}' ]
 
     constructor: ->
         @braceScopes = []   # A stack tracking keys defined in nexted scopes.
 
     lintToken : ([type], tokenApi) ->
 
-        if type in [ "{","}" ]
+        if type in [ '{', '}' ]
             @lintBrace arguments...
             return undefined
 
-        if type is "IDENTIFIER"
+        if type is 'IDENTIFIER'
             @lintIdentifier arguments...
 
     lintIdentifier : (token, tokenApi) ->
@@ -40,7 +40,7 @@ module.exports = class DuplicateKey
         previousToken = tokenApi.peek(-1)
 
         # Assigning "@something" and "something" are not the same thing
-        key = "@#{key}" if previousToken[0] == '@'
+        key = "@#{key}" if previousToken[0] is '@'
 
         # Added a prefix to not interfere with things like "constructor".
         key = "identifier-#{key}"
@@ -51,7 +51,7 @@ module.exports = class DuplicateKey
             null
 
     lintBrace : (token) ->
-        if token[0] == '{'
+        if token[0] is '{'
             @braceScopes.push @currentScope if @currentScope?
             @currentScope = {}
         else

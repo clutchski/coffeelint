@@ -13,22 +13,22 @@ module.exports = class NoStandAloneAt
             """
 
 
-    tokens: [ "@" ]
+    tokens: [ '@' ]
 
     lintToken : (token, tokenApi) ->
         nextToken = tokenApi.peek()
         spaced = token.spaced
-        isIdentifier = nextToken[0] == 'IDENTIFIER'
-        isIndexStart = nextToken[0] == 'INDEX_START'
-        isDot = nextToken[0] == '.'
+        isIdentifier = nextToken[0] is 'IDENTIFIER'
+        isIndexStart = nextToken[0] is 'INDEX_START'
+        isDot = nextToken[0] is '.'
 
         # https://github.com/jashkenas/coffee-script/issues/1601
         # @::foo is valid, but @:: behaves inconsistently and is planned for
         # removal. Technically @:: is a stand alone ::, but I think it makes
         # sense to group it into no_stand_alone_at
-        if nextToken[0] == '::'
+        if nextToken[0] is '::'
             protoProperty = tokenApi.peek(2)
-            isValidProtoProperty = protoProperty[0] == 'IDENTIFIER'
+            isValidProtoProperty = protoProperty[0] is 'IDENTIFIER'
 
         if spaced or (not isIdentifier and not isIndexStart and
         not isDot and not isValidProtoProperty)

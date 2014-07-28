@@ -43,8 +43,6 @@ module.exports = class ArrowSpacing
 
         pp = tokenApi.peek(-1)
 
-
-
         if not token.spaced and
                 (pp[1] is "(" and not pp.generated?) and
                 tokenApi.peek(1)[0] is 'INDENT' and

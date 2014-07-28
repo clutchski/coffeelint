@@ -40,9 +40,9 @@ module.exports = class CamelCaseClasses
         className = null
         offset = 1
         until className
-            if tokenApi.peek(offset + 1)?[0] == '.'
+            if tokenApi.peek(offset + 1)?[0] is '.'
                 offset += 2
-            else if tokenApi.peek(offset)?[0] == '@'
+            else if tokenApi.peek(offset)?[0] is '@'
                 offset += 1
             else
                 className = tokenApi.peek(offset)[1]

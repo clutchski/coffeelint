@@ -66,7 +66,7 @@ module.exports = class Reporter
 
         for e in errors
             continue if @quiet and e.level != 'error'
-            o = if e.level == 'error' then @err else @warn
+            o = if e.level is 'error' then @err else @warn
             lineEnd = ""
             lineEnd = "-#{e.lineNumberEnd}" if e.lineNumberEnd?
             output = "#" + e.lineNumber + lineEnd
@@ -82,5 +82,5 @@ module.exports = class Reporter
         console.log message
 
     plural : (str, count) ->
-        if count == 1 then str else "#{str}s"
+        if count is 1 then str else "#{str}s"
 

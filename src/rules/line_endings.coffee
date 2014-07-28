@@ -18,9 +18,9 @@ module.exports = class LineEndings
         return null if not ending or lineApi.isLastLine() or not line
 
         lastChar = line[line.length - 1]
-        valid = if ending == 'windows'
-            lastChar == '\r'
-        else if ending == 'unix'
+        valid = if ending is 'windows'
+            lastChar is '\r'
+        else if ending is 'unix'
             lastChar != '\r'
         else
             throw new Error("unknown line ending type: #{ending}")

@@ -23,7 +23,7 @@ module.exports = class Indentation
             Two space indentation is enabled by default.
             """
 
-    tokens: ['INDENT', "[", "]", "."]
+    tokens: ['INDENT', '[', ']', '.']
 
     constructor: ->
         @arrayTokens = []   # A stack tracking the array token pairs.
@@ -32,9 +32,6 @@ module.exports = class Indentation
     lintToken: (token, tokenApi) ->
         [type, numIndents, { first_line: lineNumber }] = token
 
-        lines = tokenApi.lines
-        lineNumber = tokenApi.lineNumber
-        currentLine = lines[lineNumber]
         expected = tokenApi.config[@rule.name].value
 
         # See: 'Indented chained invocations with bad indents'
@@ -43,46 +40,15 @@ module.exports = class Indentation
             # Keep this if statement separately, since we still need to let
             # the linting pass if the '.' token is not at the beginning of
             # the line
+
+            { lines, lineNumber } = tokenApi
+            currentLine = lines[lineNumber]
+
             if currentLine.match(/\S/i)[0] is '.'
-                lastCheck = 1
-                callStart = 1
-                prevNum = 1
-
-                # Traverse up the token list until we see a CALL_START token.
-                # Don't scan above this line
-                while (tokenApi.peek(-callStart) and tokenApi.peek(-callStart)[0] isnt 'CALL_START')
-                    { first_line: lastCheck } = tokenApi.peek(-callStart)[2]
-                    callStart += 1
-
-                # Keep going back until we are not at a comment or a blank line
-                # and set a new "previousLine"
-                while (lineNumber - prevNum > lastCheck) and not /^\s*\./.test(lines[lineNumber - prevNum])
-                    prevNum += 1
-
-                checkNum = lineNumber - prevNum
-                if checkNum >= 0
-                    prevLine = lines[checkNum]
-
-                    # If this is just a one-chain function, or the "corrected"
-                    # previous line begins with a '.', check for correct
-                    # indentation
-                    if prevLine.match(/\S/i)[0] is '.' or checkNum is lastCheck
-                        currentSpaces = currentLine.match(/\S/i)?.index
-                        prevSpaces = prevLine.match(/\S/i)?.index
-                        numIndents = currentSpaces - prevSpaces
-
-                        # If both prev and current lines have uneven spacing,
-                        # assume the current line could be lined by default
-                        # indent spacing, and set numIndents to current
-                        # number of spaces
-                        if prevSpaces % expected isnt 0 and currentSpaces % expected isnt 0
-                            numIndents = currentSpaces
-
-                        if numIndents % expected isnt 0
-                            return { context: "Expected #{expected} got #{numIndents}" }
+                return @handleChain(tokenApi, expected)
             return undefined
 
-        if type in ["[", "]"]
+        if type in ['[', ']']
             @lintArray(token)
             return undefined
 
@@ -113,7 +79,7 @@ module.exports = class Indentation
         ignoreIndent = isInterpIndent or isArrayIndent or isMultiline
 
         # Correct CoffeeScript's incorrect INDENT token value when functions
-        # get chained. See: https://github.com/jashkenas/coffeescript/issues/3137
+        # get chained. See https://github.com/jashkenas/coffeescript/issues/3137
         # Also see CoffeeLint Issues: #4, #88, #128, and many more.
         numIndents = @getCorrectIndent(tokenApi)
 
@@ -135,6 +101,53 @@ module.exports = class Indentation
         # Return null, since we're not really linting
         # anything here.
         null
+
+    handleChain: (tokenApi, expected) ->
+        lastCheck = 1
+        callStart = 1
+        prevNum = 1
+
+        { lineNumber, lines } = tokenApi
+        currentLine = lines[lineNumber]
+
+        # Traverse up the token list until we see a CALL_START token.
+        # Don't scan above this line
+        findCallStart = tokenApi.peek(-callStart)
+        while (findCallStart and findCallStart[0] isnt 'CALL_START')
+            { first_line: lastCheck } = findCallStart[2]
+            callStart += 1
+            findCallStart = tokenApi.peek(-callStart)
+
+        # Keep going back until we are not at a comment or a blank line
+        # and set a new "previousLine"
+        while (lineNumber - prevNum > lastCheck) and
+                not /^\s*\./.test(lines[lineNumber - prevNum])
+            prevNum += 1
+
+        checkNum = lineNumber - prevNum
+        if checkNum >= 0
+            prevLine = lines[checkNum]
+
+            # If this is just a one-chain function, or the "corrected"
+            # previous line begins with a '.', check for correct
+            # indentation
+            if prevLine.match(/\S/i)[0] is '.' or checkNum is lastCheck
+                currentSpaces = currentLine.match(/\S/i)?.index
+                prevSpaces = prevLine.match(/\S/i)?.index
+                numIndents = currentSpaces - prevSpaces
+
+                # If both prev and current lines have uneven spacing,
+                # assume the current line could be lined by default
+                # indent spacing, and set numIndents to current
+                # number of spaces
+                prevIsIndent = prevSpaces % expected isnt 0
+                currIsIndent = currentSpaces % expected isnt 0
+
+                if prevIsIndent and currIsIndent
+                    numIndents = currentSpaces
+
+                if numIndents % expected isnt 0
+                    return { context: "Expected #{expected} got #{numIndents}" }
 
     # Returns a corrected INDENT value if the current line is part of
     # a chained call. Otherwise returns original INDENT value.

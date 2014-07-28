@@ -52,8 +52,8 @@ class ErrorReport
         for path, errors of @paths
             pathCount++
             for error in errors
-                errorCount++ if error.level == 'error'
-                warningCount++ if error.level == 'warn'
+                errorCount++ if error.level is 'error'
+                warningCount++ if error.level is 'warn'
         return {errorCount, warningCount, pathCount}
 
     getErrors : (path) ->
@@ -72,7 +72,7 @@ class ErrorReport
 
     _hasLevel : (path, level) ->
         for error in @paths[path]
-            return true if error.level == level
+            return true if error.level is level
         return false
 
 
