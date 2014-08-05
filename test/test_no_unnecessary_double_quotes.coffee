@@ -131,5 +131,20 @@ vows.describe('no_unnecessary_double_quotes').addBatch({
             )
             assert.equal(error.rule, 'no_unnecessary_double_quotes')
 
+    'use strict':
+        topic:
+            """
+            "use strict"
+            foo = 'foo'
+            """
+
+        'should not error at the start of the file #306' : (source) ->
+            config = {no_unnecessary_double_quotes : {level:'error'}}
+            # Without the fix for 306 this throws an Error.
+            errors = coffeelint.lint(source, config)
+            assert.lengthOf(errors, 1)
+            error = errors[0]
+            assert.equal(error.lineNumber, 1)
+            assert.equal(error.rule, 'no_unnecessary_double_quotes')
 
 }).export(module)
