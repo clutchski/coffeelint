@@ -2,7 +2,7 @@
 module.exports={
   "name": "coffeelint",
   "description": "Lint your CoffeeScript",
-  "version": "1.5.0",
+  "version": "1.5.3",
   "homepage": "http://www.coffeelint.org",
   "keywords": [
     "lint",
@@ -12,6 +12,7 @@ module.exports={
   "author": "Matthew Perpick <clutchski@gmail.com>",
   "main": "./lib/coffeelint.js",
   "engines": {
+    "npm": ">=1.3.7",
     "node": ">=0.8.0"
   },
   "repository": {
@@ -46,7 +47,7 @@ module.exports={
     "prepublish": "cake prepublish",
     "publish": "cake publish",
     "install": "cake install",
-    "lint": "cake compile && ./bin/coffeelint -f coffeelint.json src/*.coffee test/*.coffee test/*.litcoffee",
+    "lint": "cake compile && ./bin/coffeelint -f coffeelint.json src/*.coffee src/rules/*.coffee test/*.coffee test/*.litcoffee",
     "lint-csv": "cake compile && ./bin/coffeelint --csv -f coffeelint.json src/*.coffee test/*.coffee",
     "lint-jslint": "cake compile && ./bin/coffeelint --jslint -f coffeelint.json src/*.coffee test/*.coffee",
     "compile": "cake compile"
@@ -1013,8 +1014,8 @@ module.exports = ColonAssignmentSpacing = (function() {
   ColonAssignmentSpacing.prototype.tokens = [':'];
 
   ColonAssignmentSpacing.prototype.lintToken = function(token, tokenApi) {
-    var checkSpacing, getSpaceFromToken, isLeftSpaced, isRightSpaced, leftSpacing, nextToken, previousToken, rightSpacing, spacingAllowances, _ref, _ref1;
-    spacingAllowances = tokenApi.config[this.rule.name].spacing;
+    var checkSpacing, getSpaceFromToken, isLeftSpaced, isRightSpaced, leftSpacing, nextToken, previousToken, rightSpacing, spaceRules, _ref, _ref1;
+    spaceRules = tokenApi.config[this.rule.name].spacing;
     previousToken = tokenApi.peek(-1);
     nextToken = tokenApi.peek(1);
     getSpaceFromToken = function(direction) {
@@ -1028,7 +1029,7 @@ module.exports = ColonAssignmentSpacing = (function() {
     checkSpacing = function(direction) {
       var isSpaced, spacing;
       spacing = getSpaceFromToken(direction);
-      isSpaced = spacing < 0 ? true : spacing === parseInt(spacingAllowances[direction]);
+      isSpaced = spacing < 0 ? true : spacing === parseInt(spaceRules[direction]);
       return [isSpaced, spacing];
     };
     _ref = checkSpacing('left'), isLeftSpaced = _ref[0], leftSpacing = _ref[1];
@@ -1037,7 +1038,7 @@ module.exports = ColonAssignmentSpacing = (function() {
       return null;
     } else {
       return {
-        context: "Incorrect spacing around column " + token[2].first_column + ".\nExpected left: " + spacingAllowances.left + ", right: " + spacingAllowances.right + ".\nGot left: " + leftSpacing + ", right: " + rightSpacing + "."
+        context: "Incorrect spacing around column " + token[2].first_column + ".\nExpected left: " + spaceRules.left + ", right: " + spaceRules.right + ".\nGot left: " + leftSpacing + ", right: " + rightSpacing + "."
       };
     }
   };
@@ -1117,7 +1118,7 @@ module.exports = DuplicateKey = (function() {
     description: "Prevents defining duplicate keys in object literals and classes"
   };
 
-  DuplicateKey.prototype.tokens = ['IDENTIFIER', "{", "}"];
+  DuplicateKey.prototype.tokens = ['IDENTIFIER', '{', '}'];
 
   function DuplicateKey() {
     this.braceScopes = [];
@@ -1126,11 +1127,11 @@ module.exports = DuplicateKey = (function() {
   DuplicateKey.prototype.lintToken = function(_arg, tokenApi) {
     var type;
     type = _arg[0];
-    if (type === "{" || type === "}") {
+    if (type === '{' || type === '}') {
       this.lintBrace.apply(this, arguments);
       return void 0;
     }
-    if (type === "IDENTIFIER") {
+    if (type === 'IDENTIFIER') {
       return this.lintIdentifier.apply(this, arguments);
     }
   };
@@ -1234,16 +1235,25 @@ module.exports = Indentation = (function() {
     description: "This rule imposes a standard number of spaces to be used for\nindentation. Since whitespace is significant in CoffeeScript, it's\ncritical that a project chooses a standard indentation format and\nstays consistent. Other roads lead to darkness. <pre> <code>#\nEnabling this option will prevent this ugly\n# but otherwise valid CoffeeScript.\ntwoSpaces = () ->\n  fourSpaces = () ->\n      eightSpaces = () ->\n            'this is valid CoffeeScript'\n\n</code>\n</pre>\nTwo space indentation is enabled by default."
   };
 
-  Indentation.prototype.tokens = ['INDENT', "[", "]"];
+  Indentation.prototype.tokens = ['INDENT', '[', ']', '.'];
 
   function Indentation() {
     this.arrayTokens = [];
   }
 
   Indentation.prototype.lintToken = function(token, tokenApi) {
-    var currentLine, expected, ignoreIndent, isArrayIndent, isInterpIndent, isMultiline, lineNumber, lines, numIndents, prevNum, previous, previousIndentation, previousLine, previousSymbol, type, _ref;
-    type = token[0], numIndents = token[1], lineNumber = token[2];
-    if (type === "[" || type === "]") {
+    var currentLine, expected, ignoreIndent, isArrayIndent, isInterpIndent, isMultiline, lineNumber, lines, numIndents, previous, previousSymbol, type, _ref, _ref1;
+    type = token[0], numIndents = token[1], (_ref = token[2], lineNumber = _ref.first_line);
+    expected = tokenApi.config[this.rule.name].value;
+    if (type === '.') {
+      lines = tokenApi.lines, lineNumber = tokenApi.lineNumber;
+      currentLine = lines[lineNumber];
+      if (currentLine.match(/\S/i)[0] === '.') {
+        return this.handleChain(tokenApi, expected);
+      }
+      return void 0;
+    }
+    if (type === '[' || type === ']') {
       this.lintArray(token);
       return void 0;
     }
@@ -1254,22 +1264,10 @@ module.exports = Indentation = (function() {
     isInterpIndent = previous && previous[0] === '+';
     previous = tokenApi.peek(-1);
     isArrayIndent = this.inArray() && (previous != null ? previous.newLine : void 0);
-    previousSymbol = (_ref = tokenApi.peek(-1)) != null ? _ref[0] : void 0;
+    previousSymbol = (_ref1 = tokenApi.peek(-1)) != null ? _ref1[0] : void 0;
     isMultiline = previousSymbol === '=' || previousSymbol === ',';
     ignoreIndent = isInterpIndent || isArrayIndent || isMultiline;
-    if (this.isChainedCall(tokenApi)) {
-      lines = tokenApi.lines, lineNumber = tokenApi.lineNumber;
-      currentLine = lines[lineNumber];
-      prevNum = 1;
-      while (/^\s*(#|$)/.test(lines[lineNumber - prevNum])) {
-        prevNum += 1;
-      }
-      previousLine = lines[lineNumber - prevNum];
-      previousIndentation = previousLine.match(/^(\s*)/)[1].length;
-      numIndents = currentLine.match(/^(\s*)/)[1].length;
-      numIndents -= previousIndentation;
-    }
-    expected = tokenApi.config[this.rule.name].value;
+    numIndents = this.getCorrectIndent(tokenApi);
     if (!ignoreIndent && numIndents !== expected) {
       return {
         context: "Expected " + expected + " got " + numIndents
@@ -1290,37 +1288,58 @@ module.exports = Indentation = (function() {
     return null;
   };
 
-  Indentation.prototype.isChainedCall = function(tokenApi) {
-    var i, lastNewLineIndex, lines, t, token, tokens;
-    tokens = tokenApi.tokens, i = tokenApi.i;
-    lines = (function() {
-      var _i, _len, _ref, _results;
-      _ref = tokens.slice(0, +i + 1 || 9e9);
-      _results = [];
-      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
-        token = _ref[i];
-        if (token.newLine != null) {
-          _results.push(i);
-        }
-      }
-      return _results;
-    })();
-    lastNewLineIndex = lines ? lines[lines.length - 2] : null;
-    if (lastNewLineIndex == null) {
-      return false;
+  Indentation.prototype.handleChain = function(tokenApi, expected) {
+    var callStart, checkNum, currIsIndent, currentLine, currentSpaces, findCallStart, lastCheck, lineNumber, lines, numIndents, prevIsIndent, prevLine, prevNum, prevSpaces, _ref, _ref1;
+    lastCheck = 1;
+    callStart = 1;
+    prevNum = 1;
+    lineNumber = tokenApi.lineNumber, lines = tokenApi.lines;
+    currentLine = lines[lineNumber];
+    findCallStart = tokenApi.peek(-callStart);
+    while (findCallStart && findCallStart[0] !== 'CALL_START') {
+      lastCheck = findCallStart[2].first_line;
+      callStart += 1;
+      findCallStart = tokenApi.peek(-callStart);
     }
-    tokens = [tokens[lastNewLineIndex], tokens[lastNewLineIndex + 1]];
-    return !!((function() {
-      var _i, _len, _results;
-      _results = [];
-      for (_i = 0, _len = tokens.length; _i < _len; _i++) {
-        t = tokens[_i];
-        if (t && t[0] === '.') {
-          _results.push(t);
+    while ((lineNumber - prevNum > lastCheck) && !/^\s*\./.test(lines[lineNumber - prevNum])) {
+      prevNum += 1;
+    }
+    checkNum = lineNumber - prevNum;
+    if (checkNum >= 0) {
+      prevLine = lines[checkNum];
+      if (prevLine.match(/\S/i)[0] === '.' || checkNum === lastCheck) {
+        currentSpaces = (_ref = currentLine.match(/\S/i)) != null ? _ref.index : void 0;
+        prevSpaces = (_ref1 = prevLine.match(/\S/i)) != null ? _ref1.index : void 0;
+        numIndents = currentSpaces - prevSpaces;
+        prevIsIndent = prevSpaces % expected !== 0;
+        currIsIndent = currentSpaces % expected !== 0;
+        if (prevIsIndent && currIsIndent) {
+          numIndents = currentSpaces;
+        }
+        if (numIndents % expected !== 0) {
+          return {
+            context: "Expected " + expected + " got " + numIndents
+          };
         }
       }
-      return _results;
-    })()).length;
+    }
+  };
+
+  Indentation.prototype.getCorrectIndent = function(tokenApi) {
+    var curIndent, i, lineNumber, lines, prevIndent, prevLine, prevNum, tokens, _ref, _ref1, _ref2, _ref3;
+    lineNumber = tokenApi.lineNumber, lines = tokenApi.lines, tokens = tokenApi.tokens, i = tokenApi.i;
+    curIndent = (_ref = lines[lineNumber].match(/\S/)) != null ? _ref.index : void 0;
+    prevNum = 1;
+    while (/^\s*(#|$)/.test(lines[lineNumber - prevNum])) {
+      prevNum += 1;
+    }
+    prevLine = lines[lineNumber - prevNum];
+    prevIndent = (_ref1 = prevLine.match(/^(\s*)\./)) != null ? _ref1[1].length : void 0;
+    if (prevIndent > 0 || (((_ref2 = lines[lineNumber - prevNum - 1]) != null ? _ref2.match(/\.$/) : void 0) != null)) {
+      return curIndent - ((_ref3 = prevLine.match(/\S/)) != null ? _ref3.index : void 0);
+    } else {
+      return tokens[i][1];
+    }
   };
 
   return Indentation;
@@ -1418,7 +1437,7 @@ module.exports = MaxLineLength = (function() {
 
 
 },{}],17:[function(_dereq_,module,exports){
-var MissingFatArrows, any,
+var MissingFatArrows, any, containsButIsnt,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -1426,6 +1445,21 @@ any = function(arr, test) {
   return arr.reduce((function(res, elt) {
     return res || test(elt);
   }), false);
+};
+
+containsButIsnt = function(node, nIsThis, nIsClass) {
+  var target;
+  target = void 0;
+  node.traverseChildren(false, function(n) {
+    if (nIsClass(n)) {
+      return false;
+    }
+    if (nIsThis(n)) {
+      target = n;
+      return false;
+    }
+  });
+  return target;
 };
 
 module.exports = MissingFatArrows = (function() {
@@ -1507,7 +1541,7 @@ module.exports = MissingFatArrows = (function() {
       return function(param) {
         return param.contains(_this.isThis) != null;
       };
-    })(this)) || (node.body.contains(this.isThis) != null));
+    })(this)) || containsButIsnt(node.body, this.isThis, this.isClass));
   };
 
   MissingFatArrows.prototype.methodsOfClass = function(classNode) {
@@ -1746,7 +1780,7 @@ module.exports = NoImplicitParens = (function() {
     description: "This rule prohibits implicit parens on function calls.\n<pre>\n<code># Some folks don't like this style of coding.\nmyFunction a, b, c\n\n# And would rather it always be written like this:\nmyFunction(a, b, c)\n</code>\n</pre>\nImplicit parens are permitted by default, since their use is\nidiomatic CoffeeScript."
   };
 
-  NoImplicitParens.prototype.tokens = ["CALL_END"];
+  NoImplicitParens.prototype.tokens = ['CALL_END'];
 
   NoImplicitParens.prototype.lintToken = function(token, tokenApi) {
     var i, t;
@@ -1757,10 +1791,10 @@ module.exports = NoImplicitParens = (function() {
         i = -1;
         while (true) {
           t = tokenApi.peek(i);
-          if ((t == null) || t[0] === 'CALL_START') {
+          if ((t == null) || (t[0] === 'CALL_START' && t.generated)) {
             return true;
           }
-          if (t.newLine) {
+          if (t[2].first_line !== token[2].first_line) {
             return null;
           }
           i -= 1;
@@ -1784,7 +1818,7 @@ module.exports = NoInterpolationInSingleQuotes = (function() {
     name: 'no_interpolation_in_single_quotes',
     level: 'ignore',
     message: 'Interpolation in single quoted strings is forbidden',
-    description: 'This rule prohibits string interpolation in a single quoted string.\n<pre>\n<code># String interpolation in single quotes is not allowed:\nfoo = \'#{bar}\'\n\n# Double quotes is OK of course\nfoo = "#{bar}"\n</code>\n</pre>\nString interpolation in single quoted strings is permitted by \ndefault.'
+    description: 'This rule prohibits string interpolation in a single quoted string.\n<pre>\n<code># String interpolation in single quotes is not allowed:\nfoo = \'#{bar}\'\n\n# Double quotes is OK of course\nfoo = "#{bar}"\n</code>\n</pre>\nString interpolation in single quoted strings is permitted by\ndefault.'
   };
 
   NoInterpolationInSingleQuotes.prototype.tokens = ['STRING'];
@@ -1840,7 +1874,7 @@ module.exports = NoStandAloneAt = (function() {
     description: "This rule checks that no stand alone @ are in use, they are\ndiscouraged. Further information in CoffeScript issue <a\nhref=\"https://github.com/jashkenas/coffee-script/issues/1601\">\n#1601</a>"
   };
 
-  NoStandAloneAt.prototype.tokens = ["@"];
+  NoStandAloneAt.prototype.tokens = ['@'];
 
   NoStandAloneAt.prototype.lintToken = function(token, tokenApi) {
     var isDot, isIdentifier, isIndexStart, isValidProtoProperty, nextToken, protoProperty, spaced;
@@ -1907,7 +1941,7 @@ module.exports = NoThrowingStrings = (function() {
     description: "This rule forbids throwing string literals or interpolations. While\nJavaScript (and CoffeeScript by extension) allow any expression to\nbe thrown, it is best to only throw <a\nhref=\"https://developer.mozilla.org\n/en/JavaScript/Reference/Global_Objects/Error\"> Error</a> objects,\nbecause they contain valuable debugging information like the stack\ntrace. Because of JavaScript's dynamic nature, CoffeeLint cannot\nensure you are always throwing instances of <tt>Error</tt>. It will\nonly catch the simple but real case of throwing literal strings.\n<pre>\n<code># CoffeeLint will catch this:\nthrow \"i made a boo boo\"\n\n# ... but not this:\nthrow getSomeString()\n</code>\n</pre>\nThis rule is enabled by default."
   };
 
-  NoThrowingStrings.prototype.tokens = ["THROW"];
+  NoThrowingStrings.prototype.tokens = ['THROW'];
 
   NoThrowingStrings.prototype.lintToken = function(token, tokenApi) {
     var n1, n2, nextIsString, _ref;
@@ -1923,6 +1957,7 @@ module.exports = NoThrowingStrings = (function() {
 
 },{}],30:[function(_dereq_,module,exports){
 var NoTrailingSemicolons, regexes,
+  __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   __slice = [].slice;
 
 regexes = {
@@ -1940,18 +1975,20 @@ module.exports = NoTrailingSemicolons = (function() {
   };
 
   NoTrailingSemicolons.prototype.lintLine = function(line, lineApi) {
-    var endPos, first, hasNewLine, hasSemicolon, last, lineTokens, newLine, startCounter, startPos, _i, _ref, _ref1;
+    var endPos, first, hasNewLine, hasSemicolon, last, lineTokens, newLine, startCounter, startPos, stopTokens, tokenLen, _i, _ref, _ref1;
     lineTokens = lineApi.getLineTokens();
-    if (lineTokens.length === 1 && ((_ref = lineTokens[0][0]) === 'TERMINATOR' || _ref === 'HERECOMMENT')) {
+    tokenLen = lineTokens.length;
+    stopTokens = ['TERMINATOR', 'HERECOMMENT'];
+    if (tokenLen === 1 && (_ref = lineTokens[0][0], __indexOf.call(stopTokens, _ref) >= 0)) {
       return;
     }
     newLine = line;
-    if (lineTokens.length > 1 && lineTokens[lineTokens.length - 1][0] === 'TERMINATOR') {
-      startPos = lineTokens[lineTokens.length - 2][2].last_column + 1;
-      endPos = lineTokens[lineTokens.length - 1][2].first_column;
+    if (tokenLen > 1 && lineTokens[tokenLen - 1][0] === 'TERMINATOR') {
+      startPos = lineTokens[tokenLen - 2][2].last_column + 1;
+      endPos = lineTokens[tokenLen - 1][2].first_column;
       if (startPos !== endPos) {
         startCounter = startPos;
-        while (line[startCounter] !== "#" && startCounter < line.length) {
+        while (line[startCounter] !== '#' && startCounter < line.length) {
           startCounter++;
         }
         newLine = line.substring(0, startCounter).replace(/\s*$/, '');
@@ -1960,7 +1997,7 @@ module.exports = NoTrailingSemicolons = (function() {
     hasSemicolon = regexes.trailingSemicolon.test(newLine);
     first = 2 <= lineTokens.length ? __slice.call(lineTokens, 0, _i = lineTokens.length - 1) : (_i = 0, []), last = lineTokens[_i++];
     hasNewLine = last && (last.newLine != null);
-    if (hasSemicolon && !hasNewLine && lineApi.lineHasToken() && !((_ref1 = last[0]) === 'STRING' || _ref1 === 'IDENTIFIER')) {
+    if (hasSemicolon && !hasNewLine && lineApi.lineHasToken() && !((_ref1 = last[0]) === 'STRING' || _ref1 === 'IDENTIFIER' || _ref1 === 'CALL_END')) {
       return true;
     }
   };
@@ -2043,7 +2080,7 @@ module.exports = NoUnnecessaryDoubleQuotes = (function() {
     name: 'no_unnecessary_double_quotes',
     level: 'ignore',
     message: 'Unnecessary double quotes are forbidden',
-    description: 'This rule prohibits double quotes unless string interpolation is \nused or the string contains single quotes.\n<pre>\n<code># Double quotes are discouraged:\nfoo = "bar"\n\n# Unless string interpolation is used:\nfoo = "#{bar}baz"\n\n# Or they prevent cumbersome escaping:\nfoo = "I\'m just following the \'rules\'"\n</code>\n</pre>\nDouble quotes are permitted by default.'
+    description: 'This rule prohibits double quotes unless string interpolation is\nused or the string contains single quotes.\n<pre>\n<code># Double quotes are discouraged:\nfoo = "bar"\n\n# Unless string interpolation is used:\nfoo = "#{bar}baz"\n\n# Or they prevent cumbersome escaping:\nfoo = "I\'m just following the \'rules\'"\n</code>\n</pre>\nDouble quotes are permitted by default.'
   };
 
   NoUnnecessaryDoubleQuotes.prototype.tokens = ['STRING'];
@@ -2066,6 +2103,9 @@ module.exports = NoUnnecessaryDoubleQuotes = (function() {
     lineTokens = tokenApi.tokensByLine[tokenApi.lineNumber];
     for (i = _i = 1; 1 <= currentIndex ? _i <= currentIndex : _i >= currentIndex; i = 1 <= currentIndex ? ++_i : --_i) {
       token = tokenApi.peek(-i);
+      if (token == null) {
+        break;
+      }
       tokenName = token[0];
       if (tokenName === ')' && token.stringEnd) {
         break;
@@ -2211,7 +2251,7 @@ module.exports = SpaceOperators = (function() {
     description: "This rule enforces that operators have space around them."
   };
 
-  SpaceOperators.prototype.tokens = ["+", "-", "=", "**", "MATH", "COMPARE", "LOGIC", "COMPOUND_ASSIGN", "(", ")", "CALL_START", "CALL_END"];
+  SpaceOperators.prototype.tokens = ['+', '-', '=', '**', 'MATH', 'COMPARE', 'LOGIC', 'COMPOUND_ASSIGN', '(', ')', 'CALL_START', 'CALL_END'];
 
   function SpaceOperators() {
     this.callTokens = [];
@@ -2221,15 +2261,15 @@ module.exports = SpaceOperators = (function() {
   SpaceOperators.prototype.lintToken = function(_arg, tokenApi) {
     var type;
     type = _arg[0];
-    if (type === "CALL_START" || type === "CALL_END") {
+    if (type === 'CALL_START' || type === 'CALL_END') {
       this.lintCall.apply(this, arguments);
       return void 0;
     }
-    if (type === "(" || type === ")") {
+    if (type === '(' || type === ')') {
       this.lintParens.apply(this, arguments);
       return void 0;
     }
-    if (type === "+" || type === "-") {
+    if (type === '+' || type === '-') {
       return this.lintPlus.apply(this, arguments);
     } else {
       return this.lintMath.apply(this, arguments);
@@ -2244,7 +2284,7 @@ module.exports = SpaceOperators = (function() {
     p = tokenApi.peek(-1);
     unaries = ['TERMINATOR', '(', '=', '-', '+', ',', 'CALL_START', 'INDEX_START', '..', '...', 'COMPARE', 'IF', 'THROW', 'LOGIC', 'POST_IF', ':', '[', 'INDENT', 'COMPOUND_ASSIGN', 'RETURN', 'MATH', 'BY', 'LEADING_WHEN'];
     isUnary = !p ? false : (_ref = p[0], __indexOf.call(unaries, _ref) >= 0);
-    if ((isUnary && token.spaced) || (!isUnary && !token.spaced && !token.newLine)) {
+    if ((isUnary && token.spaced) || (!isUnary && !token.newLine && (!token.spaced || (p && !p.spaced)))) {
       return {
         context: token[1]
       };
@@ -2254,7 +2294,9 @@ module.exports = SpaceOperators = (function() {
   };
 
   SpaceOperators.prototype.lintMath = function(token, tokenApi) {
-    if (!token.spaced && !token.newLine) {
+    var p;
+    p = tokenApi.peek(-1);
+    if (!token.newLine && (!token.spaced || (p && !p.spaced))) {
       return {
         context: token[1]
       };
