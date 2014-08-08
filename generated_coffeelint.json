@@ -97,6 +97,9 @@
     "non_empty_constructor_needs_parens": {
         "level": "ignore"
     },
+    "prefer_english_operator": {
+        "level": "ignore"
+    },
     "space_operators": {
         "level": "ignore"
     }
