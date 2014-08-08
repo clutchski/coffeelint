@@ -1,6 +1,5 @@
-
 regexes =
-    trailingSemicolon : /;\r?$/
+    trailingSemicolon: /;\r?$/
 
 module.exports = class NoTrailingSemicolons
 
@@ -55,8 +54,10 @@ module.exports = class NoTrailingSemicolons
         hasSemicolon = regexes.trailingSemicolon.test(newLine)
         [first..., last] = lineTokens
         hasNewLine = last and last.newLine?
-        # Don't throw errors when the contents of  multiline strings,
+        # Don't throw errors when the contents of multiline strings,
         # regexes and the like end in ";"
+        #
+        # `CALL_END` Added because of #314
         if hasSemicolon and not hasNewLine and lineApi.lineHasToken() and
-                not (last[0] in ['STRING', 'IDENTIFIER'])
+                not (last[0] in ['STRING', 'IDENTIFIER', 'CALL_END'])
             return true
