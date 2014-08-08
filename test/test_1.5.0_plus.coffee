@@ -2,21 +2,27 @@ path = require 'path'
 vows = require 'vows'
 assert = require 'assert'
 CoffeeScript = require 'coffee-script'
-CoffeeScript.old_tokens = CoffeeScript.tokens
-CoffeeScript.tokens = (text) ->
-    CoffeeScript.updated_tokens_called = true
-    tokens = CoffeeScript.old_tokens(text)
-    for token in tokens
-        if typeof token[2] is "number"
-            if token[0] is 'INDENT' or token[1] is 'OUTDENT'
-                token[2] = {first_line: token[2] - 1, last_line: token[2]}
-            else
-                token[2] = {first_line: token[2], last_line: token[2]}
-        token
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
-
-vows.describe("CoffeeScript 1.5.0+").addBatch({
+vows.describe("CoffeeScript 1.5.0+")
+.addBatch({
+    "Setup": ->
+        CoffeeScript.old_tokens = CoffeeScript.tokens
+        CoffeeScript.tokens = (text) ->
+            CoffeeScript.updated_tokens_called = true
+            tokens = CoffeeScript.old_tokens(text)
+            for token in tokens
+                if typeof token[2] is "number"
+                    if token[0] is 'INDENT' or token[1] is 'OUTDENT'
+                        token[2] =
+                            first_line: token[2] - 1
+                            last_line: token[2]
+                    else
+                        token[2] =
+                            first_line: token[2]
+                            last_line: token[2]
+                token
+}).addBatch({
 
     "lineNumber has become an object" :
 
