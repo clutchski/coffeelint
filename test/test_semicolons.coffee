@@ -118,4 +118,31 @@ vows.describe('semicolons').addBatch({
             assert.equal(error.message, "Line contains a trailing semicolon")
             assert.equal(error.rule, 'no_trailing_semicolons')
 
+    'Semicolons inside of blockquote string' :
+        topic : () ->
+            '''
+            foo = bar();
+
+            errs = """
+              this does not err;
+              this does;
+              #{isEmpty a};
+              #{isEmpty(b)};
+            """
+
+            nothing = """
+            this does not err;
+            this neither;
+            #{isEmpty(x)};
+            #{isEmpty y};
+            """
+            '''
+        'are ignored' : (source) ->
+            errors = coffeelint.lint(source, configError)
+            assert.lengthOf(errors, 1)
+            error = errors[0]
+            assert.equal(error.lineNumber, 1)
+            assert.equal(error.message, "Line contains a trailing semicolon")
+            assert.equal(error.rule, 'no_trailing_semicolons')
+
 }).export(module)
