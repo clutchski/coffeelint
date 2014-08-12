@@ -404,4 +404,26 @@ vows.describe('indent').addBatch({
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
 
+    'Ignore dots in comments':
+        topic: '''
+        try
+          # comment with dot at the end.
+          true
+        catch error
+        '''
+
+        ###
+        # This is broken but because its an edge case I don't want to put it
+        # into the test until its fixed.
+        try
+          foo # something.
+          true
+        catch error
+        ###
+
+
+        'returns no errors outside scope': (source) ->
+            errors = coffeelint.lint(source)
+            assert.isEmpty(errors)
+
 }).export(module)

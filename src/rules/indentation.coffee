@@ -165,7 +165,17 @@ module.exports = class Indentation
         # Make sure the previous line starts with a '.' and then also catch
         # an edge case where the line two lines above the current line ends
         # with an '.'
-        if prevIndent > 0 or lines[lineNumber - prevNum - 1]?.match(/\.$/)?
+        twoAbove = lines[lineNumber - prevNum - 1]
+
+        # If the line two above is a comment, turn it into an empty string for
+        # the test below.
+        #
+        # TODO: Figure out a better solution. This is going to break if you
+        # have a line that ends in a . but is also followed by comment. See the
+        # test.
+        twoAbove = "" if twoAbove?.match(/^\s*(#|$)/)?
+
+        if prevIndent > 0 or twoAbove?.match(/\.$/)?
             return curIndent - prevLine.match(/\S/)?.index
         else
             return tokens[i][1]
