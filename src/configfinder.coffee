@@ -33,7 +33,7 @@ loadJSON = (filename) ->
     try
         JSON.parse(fs.readFileSync(filename).toString())
     catch e
-        console.error "Could not load JSON file '%s': %s", filename, e
+        process.stderr.write "Could not load JSON file '#{filename}': #{e}"
         null
 
 # Tries to find a configuration file in either project directory (if file is
@@ -50,5 +50,4 @@ exports.getConfig = (filename = null) ->
     envs = process.env.HOME or process.env.HOMEPATH or process.env.USERPROFILE
     home = path.normalize(path.join(envs, "coffeelint.json"))
     if fs.existsSync(home)
-        console.log 'loaded', home
         return loadJSON(home)
