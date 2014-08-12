@@ -25,7 +25,7 @@ vows.describe('indent').addBatch({
             assert.equal(error.message, msg)
             assert.equal(error.rule, 'indentation')
             assert.equal(error.lineNumber, 5)
-            assert.equal(error.context, "Expected 2 got 4")
+            assert.equal(error.context, 'Expected 2 got 4')
 
         'can be overridden' : (source) ->
             config =
@@ -128,7 +128,13 @@ vows.describe('indent').addBatch({
 
         'is ignored. Issue #4' : (source) ->
             errors = coffeelint.lint(source)
-            assert.isEmpty(errors)
+            errors = coffeelint.lint(source)
+            assert.equal(errors.length, 1)
+            error = errors[0]
+
+            assert.equal(error.rule, 'indentation')
+            assert.equal(error.lineNumber, 7)
+            assert.equal(error.context, 'Expected 2 got 10')
 
     'Consecutive indented chained invocations' :
 
@@ -176,7 +182,7 @@ vows.describe('indent').addBatch({
 
             assert.equal(error.rule, 'indentation')
             assert.equal(error.lineNumber, 9)
-            assert.equal(error.context, "Expected 2 got 3")
+            assert.equal(error.context, 'Expected 2 got 3')
 
     'One chain invocations with bad indents' :
         topic : """
@@ -190,7 +196,7 @@ vows.describe('indent').addBatch({
 
             assert.equal(error.rule, 'indentation')
             assert.equal(error.lineNumber, 2)
-            assert.equal(error.context, "Expected 2 got 3")
+            assert.equal(error.context, 'Expected 2 got 3')
 
     'Separate chained invocations with bad indents' :
         topic : """
@@ -211,13 +217,13 @@ vows.describe('indent').addBatch({
 
             assert.equal(error.rule, 'indentation')
             assert.equal(error.lineNumber, 5)
-            assert.equal(error.context, "Expected 2 got 1")
+            assert.equal(error.context, 'Expected 2 got 1')
 
             error = errors[1]
 
             assert.equal(error.rule, 'indentation')
             assert.equal(error.lineNumber, 8)
-            assert.equal(error.context, "Expected 2 got 3")
+            assert.equal(error.context, 'Expected 2 got 3')
 
 
     'Ignore comment in indented chained invocations' :
@@ -320,14 +326,14 @@ vows.describe('indent').addBatch({
             assert.equal(error.message, msg)
             assert.equal(error.rule, 'indentation')
             assert.equal(error.lineNumber, 3)
-            assert.equal(error.context, "Expected 2 got 4")
+            assert.equal(error.context, 'Expected 2 got 4')
 
             error = errors[1]
 
             assert.equal(error.message, msg)
             assert.equal(error.rule, 'indentation')
             assert.equal(error.lineNumber, 7)
-            assert.equal(error.context, "Expected 2 got 4")
+            assert.equal(error.context, 'Expected 2 got 4')
 
         'is permitted when changing configuration to use 4 spaces': (source) ->
             config =
@@ -400,28 +406,6 @@ vows.describe('indent').addBatch({
                   long.expression.that.necessitates(linebreak))
                 @foo()
             """
-        'returns no errors outside scope': (source) ->
-            errors = coffeelint.lint(source)
-            assert.isEmpty(errors)
-
-    'Ignore dots in comments':
-        topic: '''
-        try
-          # comment with dot at the end.
-          true
-        catch error
-        '''
-
-        ###
-        # This is broken but because its an edge case I don't want to put it
-        # into the test until its fixed.
-        try
-          foo # something.
-          true
-        catch error
-        ###
-
-
         'returns no errors outside scope': (source) ->
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
