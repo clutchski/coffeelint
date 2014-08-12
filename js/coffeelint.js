@@ -2,7 +2,7 @@
 module.exports={
   "name": "coffeelint",
   "description": "Lint your CoffeeScript",
-  "version": "1.5.3",
+  "version": "1.5.5",
   "homepage": "http://www.coffeelint.org",
   "keywords": [
     "lint",
@@ -1326,7 +1326,7 @@ module.exports = Indentation = (function() {
   };
 
   Indentation.prototype.getCorrectIndent = function(tokenApi) {
-    var curIndent, i, lineNumber, lines, prevIndent, prevLine, prevNum, tokens, _ref, _ref1, _ref2, _ref3;
+    var curIndent, i, lineNumber, lines, prevIndent, prevLine, prevNum, tokens, _ref, _ref1, _ref2;
     lineNumber = tokenApi.lineNumber, lines = tokenApi.lines, tokens = tokenApi.tokens, i = tokenApi.i;
     curIndent = (_ref = lines[lineNumber].match(/\S/)) != null ? _ref.index : void 0;
     prevNum = 1;
@@ -1335,8 +1335,8 @@ module.exports = Indentation = (function() {
     }
     prevLine = lines[lineNumber - prevNum];
     prevIndent = (_ref1 = prevLine.match(/^(\s*)\./)) != null ? _ref1[1].length : void 0;
-    if (prevIndent > 0 || (((_ref2 = lines[lineNumber - prevNum - 1]) != null ? _ref2.match(/\.$/) : void 0) != null)) {
-      return curIndent - ((_ref3 = prevLine.match(/\S/)) != null ? _ref3.index : void 0);
+    if (prevIndent > 0) {
+      return curIndent - ((_ref2 = prevLine.match(/\S/)) != null ? _ref2.index : void 0);
     } else {
       return tokens[i][1];
     }
