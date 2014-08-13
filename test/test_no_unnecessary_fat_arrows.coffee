@@ -59,4 +59,11 @@ vows.describe('no unnecessary fat arrows').addBatch({
     'functions with parameter assignment'              : shouldPass '(@a) =>'
     'functions with destructuring parameter assignment': shouldPass '({@a}) =>'
 
+    'RequireJS modules containing classes with static methods': shouldPass '''
+    define [], ->
+      class MyClass
+        @omg: ->
+
+    '''
+
 }).export(module)
