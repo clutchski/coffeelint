@@ -221,11 +221,11 @@ options = optimist
                 checkstyle, raw), or module, or path to reporter file.')
             .describe("csv", "[deprecated] use --reporter csv")
             .describe("jslint", "[deprecated] use --reporter jslint")
+            .describe("nocolor", "[deprecated] use --color=never")
             .describe("checkstyle", "[deprecated] use --reporter checkstyle")
             .describe("color=<when>",
               "When to colorize the output. <when> can be one of always, never\
               , or auto.")
-            .describe("nocolor", "Don't colorize the output")
             .describe("s", "Lint the source from stdin")
             .describe("q", "Only print errors.")
             .describe("literate",
