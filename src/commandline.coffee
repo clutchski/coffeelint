@@ -184,8 +184,15 @@ reportAndExit = (errorReport, options) ->
                 reporterPath = strReporter
             require reporterPath
 
+    options.argv.color ?= if options.argv.nocolor then "never" else "auto"
+
+    colorize = switch options.argv.color
+        when "always" then true
+        when "never" then false
+        else process.stdout.isTTY
+
     reporter = new SelectedReporter errorReport, {
-        colorize: not options.argv.nocolor
+        colorize: colorize
         quiet: options.argv.q
     }
     reporter.publish()
@@ -214,8 +221,11 @@ options = optimist
                 checkstyle, raw), or module, or path to reporter file.')
             .describe("csv", "[deprecated] use --reporter csv")
             .describe("jslint", "[deprecated] use --reporter jslint")
+            .describe("nocolor", "[deprecated] use --color=never")
             .describe("checkstyle", "[deprecated] use --reporter checkstyle")
-            .describe("nocolor", "Don't colorize the output")
+            .describe("color=<when>",
+              "When to colorize the output. <when> can be one of always, never\
+              , or auto.")
             .describe("s", "Lint the source from stdin")
             .describe("q", "Only print errors.")
             .describe("literate",

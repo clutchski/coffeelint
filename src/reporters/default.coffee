@@ -4,11 +4,9 @@ module.exports = class Reporter
 
     constructor : (@errorReport, options = {}) ->
         {
-            colorize
+            @colorize
             @quiet
         } = options
-        colorize ?= true
-        @colorize = colorize and process.stdout.isTTY
         @ok = '✓'
         @warn = '⚡'
         @err = '✗'
