@@ -187,9 +187,9 @@ reportAndExit = (errorReport, options) ->
     options.argv.color ?= if options.argv.nocolor then "never" else "auto"
 
     colorize = switch options.argv.color
-      when "always" then true
-      when "never" then false
-      else process.stdout.isTTY
+        when "always" then true
+        when "never" then false
+        else process.stdout.isTTY
 
     reporter = new SelectedReporter errorReport, {
         colorize: colorize
