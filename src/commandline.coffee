@@ -209,6 +209,7 @@ options = optimist
             .alias("s", "stdin")
             .alias("q", "quiet")
             .alias("c", "cache")
+            .alias("x", "exclude")
             .describe("f", "Specify a custom configuration file.")
             .describe("rules", "Specify a custom rule or directory of rules.")
             .describe("makeconfig", "Prints a default config file")
@@ -226,6 +227,7 @@ options = optimist
             .describe("color=<when>",
               "When to colorize the output. <when> can be one of always, never\
               , or auto.")
+            .describe("exclude", "Specify a file or directory to exclude.")
             .describe("s", "Lint the source from stdin")
             .describe("q", "Only print errors.")
             .describe("literate",
@@ -286,6 +288,31 @@ else
         paths = options.argv._
         scripts = findCoffeeScripts(paths)
 
+        # Find excluded scripts.
+        excludedPaths = switch typeof options.argv.exclude
+            when "undefined" then []
+            when "string" then [options.argv.exclude]
+            else options.argv.exclude
+        excludedScripts = findCoffeeScripts(excludedPaths)
+
+        # Convert to absolute paths and sort
+        scripts = scripts.map (file) ->
+            [path.resolve(__dirname, file), file]
+        .sort ([a], [b]) -> if a > b then 1 else if a < b then -1 else 0
+        excludedScripts = excludedScripts.map (file) ->
+            path.resolve(__dirname, file)
+        .sort()
+
+        # Remove excluded scripts
+        allowedScripts = []
+        i = 0
+        l = excludedScripts.length
+        for script in scripts
+            if i < l and excludedScripts[i] == script[0]
+                i++
+            else
+                allowedScripts.push(script[1])
+
         # Lint the code.
-        errorReport = lintFiles(scripts, config, options.argv.literate)
+        errorReport = lintFiles(allowedScripts, config, options.argv.literate)
         reportAndExit errorReport, options
