@@ -10,19 +10,27 @@ vows.describe('PreferEnglishOperatorssemicolons').addBatch({
     'non-English operators':
         'should warn when == is used': ->
             result = coffeelint.lint('1 == 1', configError)[0]
-            assert.equal result.context, 'Found: =='
+            assert.equal result.context, 'Replace "==" with "is"'
 
         'should warn when != is used': ->
             result = coffeelint.lint('1 != 1', configError)[0]
-            assert.equal result.context, 'Found: !='
+            assert.equal result.context, 'Replace "!=" with "isnt"'
 
         'should warn when && is used': ->
             result = coffeelint.lint('1 && 1', configError)[0]
-            assert.equal result.context, 'Found: &&'
+            assert.equal result.context, 'Replace "&&" with "and"'
 
         'should warn when || is used': ->
             result = coffeelint.lint('1 || 1', configError)[0]
-            assert.equal result.context, 'Found: ||'
+            assert.equal result.context, 'Replace "||" with "or"'
+
+        'should warn when ! is used': ->
+            result = coffeelint.lint('x = !y', configError)[0]
+            assert.equal result.context, 'Replace "!" with "not"'
+
+        'should not warn when !! is used': ->
+            result = coffeelint.lint('x = !y', configError)
+            assert.isEmpty(result.length)
 
     'English operators':
         'should not warn when \'is\' is used': ->
