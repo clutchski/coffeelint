@@ -37,8 +37,6 @@ findCoffeeScripts = (paths) ->
             files.push(p)
     return files
 
-ErrorReport = require(path.join(thisdir, 'error_report'))
-
 # Return an error report from linting the given paths.
 lintFiles = (files, config) ->
 
