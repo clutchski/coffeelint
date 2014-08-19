@@ -118,6 +118,13 @@ deprecatedReporter = (errorReport, reporter) ->
     }
     return reporter
 
+coreReporters =
+    default: require(path.join(thisdir, 'reporters', 'default'))
+    csv: require(path.join(thisdir, 'reporters', 'csv'))
+    jslint: require(path.join(thisdir, 'reporters', 'jslint'))
+    checkstyle: require(path.join(thisdir, 'reporters', 'checkstyle'))
+    raw: require(path.join(thisdir, 'reporters', 'raw'))
+
 # Publish the error report and exit with the appropriate status.
 reportAndExit = (errorReport, options) ->
     strReporter = if options.argv.jslint
@@ -129,26 +136,16 @@ reportAndExit = (errorReport, options) ->
     else
         options.argv.reporter
 
-    DefaultReporter = require(path.join(thisdir, 'reporters', 'default'))
-    CSVReporter = require(path.join(thisdir, 'reporters', 'csv'))
-    JSLintReporter = require(path.join(thisdir, 'reporters', 'jslint'))
-    CheckstyleReporter = require(path.join(thisdir, 'reporters', 'checkstyle'))
-    RawReporter = require(path.join(thisdir, 'reporters', 'raw'))
 
-    SelectedReporter = switch strReporter
-        when undefined, 'default' then DefaultReporter
-        when 'jslint' then JSLintReporter
-        when 'csv' then CSVReporter
-        when 'checkstyle' then CheckstyleReporter
-        when 'raw' then RawReporter
-        else
-            try
-                reporterPath = resolve strReporter, {
-                    basedir: process.cwd()
-                }
-            catch
-                reporterPath = strReporter
-            require reporterPath
+    strReporter ?= 'default'
+    SelectedReporter = coreReporters[strReporter] ? do ->
+        try
+            reporterPath = resolve strReporter, {
+                basedir: process.cwd()
+            }
+        catch
+            reporterPath = strReporter
+        require reporterPath
 
     options.argv.color ?= if options.argv.nocolor then "never" else "auto"
 
