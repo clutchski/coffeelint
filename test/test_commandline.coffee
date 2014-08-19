@@ -11,13 +11,15 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 
 
 # The path to the command line tool.
-coffeelintPath = path.join('bin', 'coffeelint')
+coffeelintPath = path.join('..', 'bin', 'coffeelint')
 
+execOptions =
+    cwd: __dirname
 # Run the coffeelint command line with the given
 # args. Callback will be called with (error, stdout,
 # stderr)
 commandline = (args, callback) ->
-    exec("#{coffeelintPath} #{args.join(" ")}", callback)
+    exec("#{coffeelintPath} #{args.join(" ")}", execOptions, callback)
 
 
 process.env.HOME = ""
@@ -62,7 +64,7 @@ vows.describe('commandline').addBatch({
         topic : () ->
             args = [
                 '--noconfig'
-                'test/fixtures/clean.coffee'
+                'fixtures/clean.coffee'
             ]
             commandline args, this.callback
             return undefined
@@ -77,7 +79,7 @@ vows.describe('commandline').addBatch({
         topic : () ->
             args = [
                 '--noconfig'
-                'test/fixtures/fourspaces.coffee'
+                'fixtures/fourspaces.coffee'
             ]
             commandline args, this.callback
             return undefined
@@ -90,7 +92,7 @@ vows.describe('commandline').addBatch({
 
         topic : () ->
             args = [
-                'test/fixtures/findconfigtest/sevenspaces.coffee'
+                'fixtures/findconfigtest/sevenspaces.coffee'
             ]
             commandline args, this.callback
             return undefined
@@ -102,7 +104,7 @@ vows.describe('commandline').addBatch({
 
         topic : () ->
             args = [
-                'test/fixtures/findconfigtest/package/sixspaces.coffee'
+                'fixtures/findconfigtest/package/sixspaces.coffee'
             ]
             commandline args, this.callback
             return undefined
@@ -115,8 +117,8 @@ vows.describe('commandline').addBatch({
         topic : () ->
             args = [
                 '-f'
-                'test/fixtures/fourspaces.json'
-                'test/fixtures/fourspaces.coffee'
+                'fixtures/fourspaces.json'
+                'fixtures/fourspaces.coffee'
             ]
 
             commandline args, this.callback
@@ -133,7 +135,7 @@ vows.describe('commandline').addBatch({
                 # file modifies NODE_PATH so this can look like a 3rd party
                 # module.
                 "he_who_must_not_be_named"
-                'test/fixtures/custom_rules/voldemort.coffee'
+                'fixtures/custom_rules/voldemort.coffee'
             ]
 
             commandline args, this.callback
@@ -147,8 +149,8 @@ vows.describe('commandline').addBatch({
         topic : () ->
             args = [
                 '-f'
-                'test/fixtures/custom_rules/rule_module.json'
-                'test/fixtures/custom_rules/voldemort.coffee'
+                'fixtures/custom_rules/rule_module.json'
+                'fixtures/custom_rules/voldemort.coffee'
             ]
 
             commandline args, this.callback
@@ -164,9 +166,9 @@ vows.describe('commandline').addBatch({
             args = [
                 '--noconfig'
                 '-f'
-                'test/fixtures/fourspaces.json'
-                'test/fixtures/fourspaces.coffee'
-                'test/fixtures/clean.coffee'
+                'fixtures/fourspaces.json'
+                'fixtures/fourspaces.coffee'
+                'fixtures/clean.coffee'
             ]
 
             commandline args, this.callback
@@ -178,7 +180,7 @@ vows.describe('commandline').addBatch({
     'with configuration file' :
 
         topic : () ->
-            configPath = 'generated_coffeelint.json'
+            configPath = '../generated_coffeelint.json'
             configFile = fs.openSync configPath, 'w'
             commandline ['--makeconfig'], (error, stdout, stderr) =>
                 fs.writeSync configFile, stdout
@@ -186,7 +188,7 @@ vows.describe('commandline').addBatch({
                 args = [
                     '-f'
                     configPath
-                    'test/fixtures/clean.coffee'
+                    'fixtures/clean.coffee'
                 ]
                 commandline args, (args...) =>
                     this.callback stdout, args...
@@ -205,8 +207,8 @@ vows.describe('commandline').addBatch({
         topic : () ->
             args = [
                 '-f'
-                'test/fixtures/twospaces.warning.json'
-                'test/fixtures/fourspaces.coffee'
+                'fixtures/twospaces.warning.json'
+                'fixtures/fourspaces.coffee'
             ]
 
             commandline args, this.callback
@@ -220,7 +222,7 @@ vows.describe('commandline').addBatch({
         topic : () ->
             args = [
                 '--noconfig'
-                'test/fixtures/syntax_error.coffee'
+                'fixtures/syntax_error.coffee'
             ]
             commandline args, this.callback
             return undefined
@@ -234,8 +236,8 @@ vows.describe('commandline').addBatch({
             args = [
                 '--noconfig',
                 '-r',
-                'test/fixtures/clean.coffee',
-                'test/fixtures/subdir'
+                'fixtures/clean.coffee',
+                'fixtures/subdir'
             ]
             commandline args, this.callback
             return undefined
@@ -250,8 +252,8 @@ vows.describe('commandline').addBatch({
         topic : () ->
             args = [
                 '-f'
-                'coffeelint.json'
-                'test/fixtures/cyclo_fail.coffee'
+                '../coffeelint.json'
+                'fixtures/cyclo_fail.coffee'
                 '--reporter jslint'
             ]
             commandline args, this.callback
@@ -265,7 +267,7 @@ vows.describe('commandline').addBatch({
         'with working string':
             topic: () ->
                 exec("echo y = 1 | #{coffeelintPath} --noconfig --stdin",
-                    this.callback)
+                    execOptions, this.callback)
                 return undefined
 
             'passes': (error, stdout, stderr) ->
@@ -277,7 +279,7 @@ vows.describe('commandline').addBatch({
         'with failing string due to whitespace':
             topic: () ->
                 exec("echo 'x = 1 '| #{coffeelintPath} --noconfig --stdin",
-                    this.callback)
+                    execOptions, this.callback)
                 return undefined
 
             'fails': (error, stdout, stderr) ->
@@ -290,7 +292,7 @@ vows.describe('commandline').addBatch({
             topic: () ->
                 exec("echo 'This is Markdown\n\n    y = 1' | " +
                     "#{coffeelintPath} --noconfig --stdin --literate",
-                    this.callback)
+                    execOptions, this.callback)
                 return undefined
 
             'passes': (error, stdout, stderr) ->
@@ -303,7 +305,7 @@ vows.describe('commandline').addBatch({
             topic: () ->
                 exec("echo 'This is Markdown\n\n    x = 1 \n    y=2'| " +
                     "#{coffeelintPath} --noconfig --stdin --literate",
-                    this.callback)
+                    execOptions, this.callback)
                 return undefined
 
             'fails': (error, stdout, stderr) ->
@@ -315,7 +317,7 @@ vows.describe('commandline').addBatch({
         'with non existing enviroment set config file':
             topic: () ->
                 args = [
-                    'test/fixtures/clean.coffee'
+                    'fixtures/clean.coffee'
                 ]
                 process.env.COFFEELINT_CONFIG = "not_existing_293ujff"
                 commandline args, this.callback
@@ -327,9 +329,9 @@ vows.describe('commandline').addBatch({
         'with existing enviroment set config file':
             topic: () ->
                 args = [
-                    'test/fixtures/fourspaces.coffee'
+                    'fixtures/fourspaces.coffee'
                 ]
-                conf = "test/fixtures/fourspaces.json"
+                conf = "fixtures/fourspaces.json"
                 process.env.COFFEELINT_CONFIG = conf
                 commandline args, this.callback
                 return undefined
@@ -341,9 +343,9 @@ vows.describe('commandline').addBatch({
             topic: () ->
                 args = [
                     '--noconfig'
-                    'test/fixtures/fourspaces.coffee'
+                    'fixtures/fourspaces.coffee'
                 ]
-                conf = "test/fixtures/fourspaces.json"
+                conf = "fixtures/fourspaces.json"
                 process.env.COFFEELINT_CONFIG = conf
                 commandline args, this.callback
                 return undefined
@@ -355,7 +357,7 @@ vows.describe('commandline').addBatch({
         'with option q set':
             'and no errors occured':
                 topic: () ->
-                    args = [ '-q', '--noconfig', 'test/fixtures/clean.coffee' ]
+                    args = [ '-q', '--noconfig', 'fixtures/clean.coffee' ]
                     commandline args, this.callback
                     return undefined
 
@@ -364,7 +366,7 @@ vows.describe('commandline').addBatch({
 
             'and errors occured':
                 topic: () ->
-                    args = [ '-q', 'test/fixtures/syntax_error.coffee' ]
+                    args = [ '-q', 'fixtures/syntax_error.coffee' ]
                     commandline args, this.callback
                     return undefined
 
@@ -374,7 +376,7 @@ vows.describe('commandline').addBatch({
         'with option q not set':
             'and no errors occured':
                 topic: () ->
-                    args = [ 'test/fixtures/clean.coffee' ]
+                    args = [ 'fixtures/clean.coffee' ]
                     commandline args, this.callback
                     return undefined
 
@@ -383,7 +385,7 @@ vows.describe('commandline').addBatch({
 
             'and errors occured':
                 topic: () ->
-                    args = [ 'test/fixtures/syntax_error.coffee' ]
+                    args = [ 'fixtures/syntax_error.coffee' ]
                     commandline args, this.callback
                     return undefined
 
