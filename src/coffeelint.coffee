@@ -170,6 +170,10 @@ hasSyntaxError = (source) ->
         return false
     return true
 
+ErrorReport = require('./error_report.coffee')
+coffeelint.getErrorReport = ->
+    new ErrorReport coffeelint
+
 # Check the source against the given configuration and return an array
 # of any errors found. An error is an object with the following
 # properties:

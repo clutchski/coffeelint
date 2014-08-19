@@ -37,65 +37,26 @@ findCoffeeScripts = (paths) ->
             files.push(p)
     return files
 
-# A summary of errors in a CoffeeLint run.
-class ErrorReport
-
-    constructor : () ->
-        @paths = {}
-
-    getExitCode : () ->
-        for path of @paths
-            return 1 if @pathHasError(path)
-        return 0
-
-    getSummary : () ->
-        pathCount = errorCount = warningCount = 0
-        for path, errors of @paths
-            pathCount++
-            for error in errors
-                errorCount++ if error.level is 'error'
-                warningCount++ if error.level is 'warn'
-        return {errorCount, warningCount, pathCount}
-
-    getErrors : (path) ->
-        return @paths[path]
-
-    pathHasWarning : (path) ->
-        return @_hasLevel(path, 'warn')
-
-    pathHasError : (path) ->
-        return @_hasLevel(path, 'error')
-
-    hasError : () ->
-        for path of @paths
-            return true if @pathHasError(path)
-        return false
-
-    _hasLevel : (path, level) ->
-        for error in @paths[path]
-            return true if error.level is level
-        return false
-
-
-
 # Return an error report from linting the given paths.
 lintFiles = (files, config) ->
-    errorReport = new ErrorReport()
+
+
+    errorReport = new coffeelint.getErrorReport()
     for file in files
         source = read(file)
         literate = CoffeeScript.helpers.isLiterate file
 
         fileConfig = if config then config else getFallbackConfig(file)
 
-        errorReport.paths[file] = coffeelint.lint(source, fileConfig, literate)
+        errorReport.lint(file, source, fileConfig, literate)
     return errorReport
 
 # Return an error report from linting the given coffeescript source.
 lintSource = (source, config, literate = false) ->
-    errorReport = new ErrorReport()
+    errorReport = new coffeelint.getErrorReport()
     config or= getFallbackConfig()
 
-    errorReport.paths["stdin"] = coffeelint.lint(source, config, literate)
+    errorReport.lint("stdin", source, config, literate)
     return errorReport
 
 # Get fallback configuration. With the -F flag found configs in standard places
