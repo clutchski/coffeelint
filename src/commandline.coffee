@@ -25,16 +25,37 @@ read = (path) ->
     realPath = fs.realpathSync(path)
     return fs.readFileSync(realPath).toString()
 
-# Return a list of CoffeeScript's in the given paths.
-findCoffeeScripts = (paths) ->
-    files = []
+# Return a hashmap of CoffeeScript files in the given path or array of paths.
+findCoffeeScripts = (paths, treatAsGlobs = false) ->
+    paths = [paths] if typeof paths == "string"
+
+    fileHash = {}
     for p in paths
-        if fs.statSync(p).isDirectory()
-            # The glob library only uses forward slashes.
-            files = files.concat(glob.sync("#{p}/**/*.coffee"))
+        if treatAsGlobs
+            files = glob.sync(p)
+            for file in files
+                absPath = path.resolve(__dirname, file)
+                fileHash[absPath] = file
         else
-            files.push(p)
-    return files
+            try
+                stat = fs.statSync(p)
+            catch error
+                if error.code == "ENOENT" # No such file or directory error
+                    continue
+                else
+                    throw error # Not expecting this error, bubble it up
+
+            if stat.isDirectory()
+                # The glob library only uses forward slashes.
+                files = glob.sync("#{p}/**/*.coffee")
+                for file in files
+                    absPath = path.resolve(__dirname, file)
+                    fileHash[absPath] = file
+            else
+                absPath = path.resolve(__dirname, p)
+                fileHash[absPath] = p
+
+    return fileHash
 
 # A summary of errors in a CoffeeLint run.
 class ErrorReport
@@ -200,6 +221,27 @@ reportAndExit = (errorReport, options) ->
     process.on 'exit', () ->
         process.exit errorReport.getExitCode()
 
+# Return a list of scripts to lint
+scriptsList = (paths, excludedPaths, ignoredPaths) ->
+    scripts = findCoffeeScripts(paths)
+    excludedScripts = findCoffeeScripts(excludedPaths)
+    ignoredScripts = findCoffeeScripts(ignoredPaths, true)
+
+    # Remove excluded scripts
+    for script of excludedScripts
+        delete scripts[script]
+
+    # Remove ignored scripts
+    for script of ignoredScripts
+        delete scripts[script]
+
+    # Turn scripts hash into array
+    allowedScripts = []
+    for script of scripts
+        allowedScripts.push(scripts[script])
+
+    return allowedScripts
+
 # Declare command line options.
 options = optimist
             .usage("Usage: coffeelint [options] source [...]")
@@ -233,6 +275,8 @@ options = optimist
             .describe("literate",
                 "Used with --stdin to process as Literate CoffeeScript")
             .describe("c", "Cache linting results")
+            .describe("excludePath", "Specify a custom path to use as
+                .coffeelintignore")
             .boolean("csv")
             .boolean("jslint")
             .boolean("checkstyle")
@@ -244,6 +288,7 @@ options = optimist
             .boolean("s")
             .boolean("q", "Print errors only.")
             .boolean("c")
+            .default("exclude", [])
 
 if options.argv.v
     console.log coffeelint.VERSION
@@ -284,35 +329,18 @@ else
             errorReport = lintSource(data, config, options.argv.literate)
             reportAndExit errorReport, options
     else
-        # Find scripts to lint.
-        paths = options.argv._
-        scripts = findCoffeeScripts(paths)
+        ignoreFile = []
+        try
+            ignoreFilePath = options.argv.excludePath || ".coffeelintignore"
+            ignoreFile = fs.readFileSync(ignoreFilePath).toString()
+            # Remove blank lines and any resulting empty entries
+            ignoreFile = "\n#{ignoreFile}\n"
+            ignoreFile = ignoreFile.replace(/\n{2,}/g, "\n") .split("\n")
+            ignoreFile.shift()
+            ignoreFile.pop()
 
-        # Find excluded scripts.
-        excludedPaths = switch typeof options.argv.exclude
-            when "undefined" then []
-            when "string" then [options.argv.exclude]
-            else options.argv.exclude
-        excludedScripts = findCoffeeScripts(excludedPaths)
-
-        # Convert to absolute paths and sort
-        scripts = scripts.map (file) ->
-            [path.resolve(__dirname, file), file]
-        .sort ([a], [b]) -> if a > b then 1 else if a < b then -1 else 0
-        excludedScripts = excludedScripts.map (file) ->
-            path.resolve(__dirname, file)
-        .sort()
-
-        # Remove excluded scripts
-        allowedScripts = []
-        i = 0
-        l = excludedScripts.length
-        for script in scripts
-            if i < l and excludedScripts[i] == script[0]
-                i++
-            else
-                allowedScripts.push(script[1])
+        scripts = scriptsList options.argv._, options.argv.exclude, ignoreFile
 
         # Lint the code.
-        errorReport = lintFiles(allowedScripts, config, options.argv.literate)
+        errorReport = lintFiles(scripts, config, options.argv.literate)
         reportAndExit errorReport, options
