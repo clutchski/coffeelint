@@ -160,6 +160,7 @@ coffeelint.registerRule(
     require './rules/no_interpolation_in_single_quotes.coffee'
 )
 coffeelint.registerRule require './rules/no_empty_functions.coffee'
+coffeelint.registerRule require './rules/prefer_english_operator.coffee'
 
 hasSyntaxError = (source) ->
     try
