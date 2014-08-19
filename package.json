@@ -26,6 +26,7 @@
     "coffee-script": "~1.7",
     "coffeeify": "~0.6.0",
     "glob": "^4.0.0",
+    "ignore": "^2.2.15",
     "optimist": "^0.6.1",
     "resolve": "^0.6.3"
   },
@@ -46,9 +47,9 @@
     "prepublish": "cake prepublish",
     "publish": "cake publish",
     "install": "cake install",
-    "lint": "cake compile && ./bin/coffeelint -f coffeelint.json src/*.coffee src/rules/*.coffee test/*.coffee test/*.litcoffee",
-    "lint-csv": "cake compile && ./bin/coffeelint --csv -f coffeelint.json src/*.coffee test/*.coffee",
-    "lint-jslint": "cake compile && ./bin/coffeelint --jslint -f coffeelint.json src/*.coffee test/*.coffee",
+    "lint": "cake compile && ./bin/coffeelint .",
+    "lint-csv": "cake compile && ./bin/coffeelint --csv .",
+    "lint-jslint": "cake compile && ./bin/coffeelint --jslint .",
     "compile": "cake compile"
   }
 }
