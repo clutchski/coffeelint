@@ -12,6 +12,7 @@ fs   = require("fs")
 os   = require("os")
 glob = require("glob")
 optimist = require("optimist")
+ignore = require('ignore')
 thisdir = path.dirname(fs.realpathSync(__filename))
 coffeelint = require(path.join(thisdir, "coffeelint"))
 configfinder = require(path.join(thisdir, "configfinder"))
@@ -285,6 +286,7 @@ else
         # Find scripts to lint.
         paths = options.argv._
         scripts = findCoffeeScripts(paths)
+        scripts = ignore().addIgnoreFile('.coffeelintignore').filter(scripts)
 
         # Lint the code.
         errorReport = lintFiles(scripts, config, options.argv.literate)
