@@ -8,10 +8,13 @@ module.exports = class RuleProcessor
         !! for converting to a boolean is ignored.
         '''
         level: 'ignore'
+        doubleNotLevel: 'ignore'
         message: 'Don\'t use &&, ||, ==, !=, or !'
 
     tokens: ['COMPARE', 'UNARY_MATH', 'LOGIC']
     lintToken: (token, tokenApi) ->
+        config = tokenApi.config[@rule.name]
+        level = config.level
         # Compare the actual token with the lexed token.
         { first_column, last_column } = token[2]
         line = tokenApi.lines[tokenApi.lineNumber]
@@ -23,13 +26,17 @@ module.exports = class RuleProcessor
                 when '||' then 'Replace "||" with "or"'
                 when '&&' then 'Replace "&&" with "and"'
                 when '!'
-                    # I think !!something is acceptable for coorcing a variable
-                    # into a boolean. The alternative seems very awkward
-                    # `not not something`?
-                    if tokenApi.peek(1)?[0] isnt 'UNARY_MATH' and
-                            tokenApi.peek(-1)?[0] isnt 'UNARY_MATH'
+                    # `not not expression` seems awkward, so `!!expression`
+                    # gets special handling.
+                    if tokenApi.peek(1)?[0] is 'UNARY_MATH'
+                        level = config.doubleNotLevel
+                        '"?" is usually better than "!!"'
+                    else if tokenApi.peek(-1)?[0] is 'UNARY_MATH'
+                        # Ignore the 2nd half of the double not
+                        undefined
+                    else
                         'Replace "!" with "not"'
                 else undefined
 
         if context?
-            { context }
+            { level, context }

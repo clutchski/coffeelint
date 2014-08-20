@@ -28,9 +28,21 @@ vows.describe('PreferEnglishOperatorssemicolons').addBatch({
             result = coffeelint.lint('x = !y', configError)[0]
             assert.equal result.context, 'Replace "!" with "not"'
 
-        'should not warn when !! is used': ->
-            result = coffeelint.lint('x = !y', configError)
-            assert.isEmpty(result.length)
+    'double not (!!)':
+        'is ignored by default': ->
+            result = coffeelint.lint('x = !!y', configError)
+            assert.equal(result.length, 0)
+
+        'can be configred at an independent level': ->
+
+            configError = {prefer_english_operator: {
+                level: 'error'
+                doubleNotLevel: 'warn'
+            }}
+
+            result = coffeelint.lint('x = !!y', configError)
+            assert.equal(result.length, 1)
+            assert.equal(result[0].level, 'warn')
 
     'English operators':
         'should not warn when \'is\' is used': ->
