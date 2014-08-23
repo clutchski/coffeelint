@@ -36,7 +36,7 @@ Past:
    [http://asaayers.github.io/clfiddle/](http://asaayers.github.io/clfiddle/).
 4. Add your test file `my_test.coffee` to the `test` directory.
 5. Register your rule in `src/coffeelint.coffee`.
-6. Run your test using `coffee vowsrunner.coffee --spec test/your_test_here.coffee`.
+6. Run your test using `./vowsrunner.js --spec test/your_test_here.coffee`.
 7. Run the whole tests suite using `npm test`.
 8. Check that your rule's documentation is generated properly (see _Updating documentation when
 adding a new rule_ below).
