@@ -43,10 +43,14 @@ loadJSON = (filename) ->
 exports.getConfig = (filename = null) ->
     if filename
         dir = path.dirname(path.resolve(filename))
-        npmConfig = loadNpmConfig(dir)
-        return npmConfig  if npmConfig
-        projConfig = findFile("coffeelint.json", dir)
-        return loadJSON(projConfig)  if projConfig
+    else
+        dir = process.cwd()
+
+    npmConfig = loadNpmConfig(dir)
+    return npmConfig  if npmConfig
+    projConfig = findFile("coffeelint.json", dir)
+    return loadJSON(projConfig)  if projConfig
+
     envs = process.env.USERPROFILE or process.env.HOME or process.env.HOMEPATH
     home = path.normalize(path.join(envs, "coffeelint.json"))
     if fs.existsSync(home)

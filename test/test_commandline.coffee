@@ -286,6 +286,19 @@ vows.describe('commandline').addBatch({
                 assert.isNotNull(error)
                 assert.include(stdout.toLowerCase(), 'trailing whitespace')
 
+        'Autoloads config based on cwd':
+            topic: () ->
+                exec("cat fixtures/cyclo_fail.coffee |" +
+                    " #{coffeelintPath} --stdin",
+                    execOptions, this.callback)
+                return undefined
+
+            'fails': (error, stdout, stderr) ->
+                # This one is a warning, so error will be null.
+                # assert.isNotNull(error)
+                assert.include(stdout.toLowerCase(), 'cyclomatic complexity')
+
+
     'literate coffeescript':
 
         'with working string':
