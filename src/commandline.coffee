@@ -190,6 +190,11 @@ else
     unless options.argv.noconfig
         if options.argv.f
             config = JSON.parse read options.argv.f
+
+            # If -f was specifying a package.json, extract the config
+            if config.coffeelintConfig
+                config =  config.coffeelintConfig
+
         else if (process.env.COFFEELINT_CONFIG and
         fs.existsSync(process.env.COFFEELINT_CONFIG))
             config = JSON.parse(read(process.env.COFFEELINT_CONFIG))
