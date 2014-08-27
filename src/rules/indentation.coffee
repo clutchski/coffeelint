@@ -118,10 +118,11 @@ module.exports = class Indentation
             callStart += 1
             findCallStart = tokenApi.peek(-callStart)
 
-        # Keep going back until we are not at a comment or a blank line
+        # Keep going back until we are not at a comment
         # and set a new "previousLine"
         while (lineNumber - prevNum > lastCheck) and
-                not /^\s*\./.test(lines[lineNumber - prevNum])
+                not /^\s*\./.test(lines[lineNumber - prevNum]) or
+                /^\s*$/.test(lines[lineNumber - prevNum])
             prevNum += 1
 
         checkNum = lineNumber - prevNum

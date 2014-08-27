@@ -149,6 +149,17 @@ vows.describe('indent').addBatch({
         'is permitted' : (source) ->
             assert.isEmpty(coffeelint.lint(source))
 
+    'Consecutive chained invocations and blank line' :
+
+        topic : """
+            $('body')
+
+                .addClass('k').hide()
+            """
+
+        'is permitted' : (source) ->
+            assert.isEmpty(coffeelint.lint(source))
+
     'Consecutive indented chained invocations and multi-line expression' :
 
         topic : """
