@@ -198,6 +198,22 @@
 
           <h2 class="section_title" id="changelog">Change Log</h2>
 
+
+          <div>
+            <h3 class="changelog_header">1.5.7-1.6.0</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v1.5.7...v1.6.0">2014.08.30<a></a></small>
+          <ul class="changelog_history">
+              <li>New rule <tt>prefer_english_operator</tt></li>
+              <li>New behavior <tt>.coffeelintignore</tt> works just like a .gitignore</li>
+              <li>Exposed <tt>ErrorReporter</tt> to 3rd parties so reporters can be used outside our CLI implementation. See <a href="https://github.com/clutchski/coffeelint/pull/330">#330</a> for details</li>
+              <li>Linting from STDIN will look for config files.</li>
+              <li><tt>-f</tt> option can specify a package.json that contains <tt>coffeelintConfig</tt></li>
+              <li>Depricated <tt>--no-color</tt> in favor of new <tt>--color=<always/never/auto></tt> option</li>
+              <li>Fixed an indentation bug when you have a blank line in the middle of a chained call.</li>
+          </ul>
+          </div>
+
           <div>
             <h3 class="changelog_header">1.5.3-1.5.5</h3>
             <small class="changelog_date">- <a

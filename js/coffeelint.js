@@ -2,7 +2,7 @@
 module.exports={
   "name": "coffeelint",
   "description": "Lint your CoffeeScript",
-  "version": "1.5.5",
+  "version": "1.6.0",
   "homepage": "http://www.coffeelint.org",
   "keywords": [
     "lint",
@@ -27,6 +27,7 @@ module.exports={
     "coffee-script": "~1.7",
     "coffeeify": "~0.6.0",
     "glob": "^4.0.0",
+    "ignore": "^2.2.15",
     "optimist": "^0.6.1",
     "resolve": "^0.6.3"
   },
@@ -42,14 +43,14 @@ module.exports={
   ],
   "scripts": {
     "pretest": "cake compile",
-    "test": "coffee vowsrunner.coffee --spec test/*.coffee test/*.litcoffee",
+    "test": "./vowsrunner.js --spec test/*.coffee test/*.litcoffee",
     "posttest": "npm run lint",
     "prepublish": "cake prepublish",
     "publish": "cake publish",
     "install": "cake install",
-    "lint": "cake compile && ./bin/coffeelint -f coffeelint.json src/*.coffee src/rules/*.coffee test/*.coffee test/*.litcoffee",
-    "lint-csv": "cake compile && ./bin/coffeelint --csv -f coffeelint.json src/*.coffee test/*.coffee",
-    "lint-jslint": "cake compile && ./bin/coffeelint --jslint -f coffeelint.json src/*.coffee test/*.coffee",
+    "lint": "cake compile && ./bin/coffeelint .",
+    "lint-csv": "cake compile && ./bin/coffeelint --csv .",
+    "lint-jslint": "cake compile && ./bin/coffeelint --jslint .",
     "compile": "cake compile"
   }
 }
@@ -279,7 +280,7 @@ CoffeeLint
 Copyright (c) 2011 Matthew Perpick.
 CoffeeLint is freely distributable under the MIT license.
  */
-var ASTLinter, CoffeeScript, ERROR, IGNORE, LexicalLinter, LineLinter, RULES, WARN, cache, coffeelint, defaults, difference, extend, hasSyntaxError, mergeDefaultConfig, nodeRequire, packageJSON, _rules,
+var ASTLinter, CoffeeScript, ERROR, ErrorReport, IGNORE, LexicalLinter, LineLinter, RULES, WARN, cache, coffeelint, defaults, difference, extend, hasSyntaxError, mergeDefaultConfig, nodeRequire, packageJSON, _rules,
   __slice = [].slice,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -478,12 +479,20 @@ coffeelint.registerRule(_dereq_('./rules/no_interpolation_in_single_quotes.coffe
 
 coffeelint.registerRule(_dereq_('./rules/no_empty_functions.coffee'));
 
+coffeelint.registerRule(_dereq_('./rules/prefer_english_operator.coffee'));
+
 hasSyntaxError = function(source) {
   try {
     CoffeeScript.tokens(source);
     return false;
   } catch (_error) {}
   return true;
+};
+
+ErrorReport = _dereq_('./error_report.coffee');
+
+coffeelint.getErrorReport = function() {
+  return new ErrorReport(coffeelint);
 };
 
 coffeelint.lint = function(source, userConfig, literate) {
@@ -598,7 +607,99 @@ coffeelint.setCache = function(obj) {
 };
 
 
-},{"./../package.json":1,"./ast_linter.coffee":2,"./lexical_linter.coffee":5,"./line_linter.coffee":6,"./rules.coffee":7,"./rules/arrow_spacing.coffee":8,"./rules/camel_case_classes.coffee":9,"./rules/colon_assignment_spacing.coffee":10,"./rules/cyclomatic_complexity.coffee":11,"./rules/duplicate_key.coffee":12,"./rules/empty_constructor_needs_parens.coffee":13,"./rules/indentation.coffee":14,"./rules/line_endings.coffee":15,"./rules/max_line_length.coffee":16,"./rules/missing_fat_arrows.coffee":17,"./rules/newlines_after_classes.coffee":18,"./rules/no_backticks.coffee":19,"./rules/no_debugger.coffee":20,"./rules/no_empty_functions.coffee":21,"./rules/no_empty_param_list.coffee":22,"./rules/no_implicit_braces.coffee":23,"./rules/no_implicit_parens.coffee":24,"./rules/no_interpolation_in_single_quotes.coffee":25,"./rules/no_plusplus.coffee":26,"./rules/no_stand_alone_at.coffee":27,"./rules/no_tabs.coffee":28,"./rules/no_throwing_strings.coffee":29,"./rules/no_trailing_semicolons.coffee":30,"./rules/no_trailing_whitespace.coffee":31,"./rules/no_unnecessary_double_quotes.coffee":32,"./rules/no_unnecessary_fat_arrows.coffee":33,"./rules/non_empty_constructor_needs_parens.coffee":34,"./rules/space_operators.coffee":35}],5:[function(_dereq_,module,exports){
+},{"./../package.json":1,"./ast_linter.coffee":2,"./error_report.coffee":5,"./lexical_linter.coffee":6,"./line_linter.coffee":7,"./rules.coffee":8,"./rules/arrow_spacing.coffee":9,"./rules/camel_case_classes.coffee":10,"./rules/colon_assignment_spacing.coffee":11,"./rules/cyclomatic_complexity.coffee":12,"./rules/duplicate_key.coffee":13,"./rules/empty_constructor_needs_parens.coffee":14,"./rules/indentation.coffee":15,"./rules/line_endings.coffee":16,"./rules/max_line_length.coffee":17,"./rules/missing_fat_arrows.coffee":18,"./rules/newlines_after_classes.coffee":19,"./rules/no_backticks.coffee":20,"./rules/no_debugger.coffee":21,"./rules/no_empty_functions.coffee":22,"./rules/no_empty_param_list.coffee":23,"./rules/no_implicit_braces.coffee":24,"./rules/no_implicit_parens.coffee":25,"./rules/no_interpolation_in_single_quotes.coffee":26,"./rules/no_plusplus.coffee":27,"./rules/no_stand_alone_at.coffee":28,"./rules/no_tabs.coffee":29,"./rules/no_throwing_strings.coffee":30,"./rules/no_trailing_semicolons.coffee":31,"./rules/no_trailing_whitespace.coffee":32,"./rules/no_unnecessary_double_quotes.coffee":33,"./rules/no_unnecessary_fat_arrows.coffee":34,"./rules/non_empty_constructor_needs_parens.coffee":35,"./rules/prefer_english_operator.coffee":36,"./rules/space_operators.coffee":37}],5:[function(_dereq_,module,exports){
+var ErrorReport;
+
+module.exports = ErrorReport = (function() {
+  function ErrorReport(coffeelint) {
+    this.coffeelint = coffeelint;
+    this.paths = {};
+  }
+
+  ErrorReport.prototype.lint = function(filename, source, config, literate) {
+    if (config == null) {
+      config = {};
+    }
+    if (literate == null) {
+      literate = false;
+    }
+    return this.paths[filename] = this.coffeelint.lint(source, config, literate);
+  };
+
+  ErrorReport.prototype.getExitCode = function() {
+    var path;
+    for (path in this.paths) {
+      if (this.pathHasError(path)) {
+        return 1;
+      }
+    }
+    return 0;
+  };
+
+  ErrorReport.prototype.getSummary = function() {
+    var error, errorCount, errors, path, pathCount, warningCount, _i, _len, _ref;
+    pathCount = errorCount = warningCount = 0;
+    _ref = this.paths;
+    for (path in _ref) {
+      errors = _ref[path];
+      pathCount++;
+      for (_i = 0, _len = errors.length; _i < _len; _i++) {
+        error = errors[_i];
+        if (error.level === 'error') {
+          errorCount++;
+        }
+        if (error.level === 'warn') {
+          warningCount++;
+        }
+      }
+    }
+    return {
+      errorCount: errorCount,
+      warningCount: warningCount,
+      pathCount: pathCount
+    };
+  };
+
+  ErrorReport.prototype.getErrors = function(path) {
+    return this.paths[path];
+  };
+
+  ErrorReport.prototype.pathHasWarning = function(path) {
+    return this._hasLevel(path, 'warn');
+  };
+
+  ErrorReport.prototype.pathHasError = function(path) {
+    return this._hasLevel(path, 'error');
+  };
+
+  ErrorReport.prototype.hasError = function() {
+    var path;
+    for (path in this.paths) {
+      if (this.pathHasError(path)) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  ErrorReport.prototype._hasLevel = function(path, level) {
+    var error, _i, _len, _ref;
+    _ref = this.paths[path];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      error = _ref[_i];
+      if (error.level === level) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  return ErrorReport;
+
+})();
+
+
+},{}],6:[function(_dereq_,module,exports){
 var BaseLinter, LexicalLinter, TokenApi,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -702,7 +803,7 @@ module.exports = LexicalLinter = (function(_super) {
 })(BaseLinter);
 
 
-},{"./base_linter.coffee":3}],6:[function(_dereq_,module,exports){
+},{"./base_linter.coffee":3}],7:[function(_dereq_,module,exports){
 var BaseLinter, LineApi, LineLinter, configStatement,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -885,7 +986,7 @@ module.exports = LineLinter = (function(_super) {
 })(BaseLinter);
 
 
-},{"./base_linter.coffee":3}],7:[function(_dereq_,module,exports){
+},{"./base_linter.coffee":3}],8:[function(_dereq_,module,exports){
 var ERROR, IGNORE, WARN;
 
 ERROR = 'error';
@@ -902,7 +1003,7 @@ module.exports = {
 };
 
 
-},{}],8:[function(_dereq_,module,exports){
+},{}],9:[function(_dereq_,module,exports){
 var ArrowSpacing;
 
 module.exports = ArrowSpacing = (function() {
@@ -947,7 +1048,7 @@ module.exports = ArrowSpacing = (function() {
 })();
 
 
-},{}],9:[function(_dereq_,module,exports){
+},{}],10:[function(_dereq_,module,exports){
 var CamelCaseClasses, regexes;
 
 regexes = {
@@ -994,7 +1095,7 @@ module.exports = CamelCaseClasses = (function() {
 })();
 
 
-},{}],10:[function(_dereq_,module,exports){
+},{}],11:[function(_dereq_,module,exports){
 var ColonAssignmentSpacing;
 
 module.exports = ColonAssignmentSpacing = (function() {
@@ -1048,7 +1149,7 @@ module.exports = ColonAssignmentSpacing = (function() {
 })();
 
 
-},{}],11:[function(_dereq_,module,exports){
+},{}],12:[function(_dereq_,module,exports){
 var NoTabs;
 
 module.exports = NoTabs = (function() {
@@ -1107,7 +1208,7 @@ module.exports = NoTabs = (function() {
 })();
 
 
-},{}],12:[function(_dereq_,module,exports){
+},{}],13:[function(_dereq_,module,exports){
 var DuplicateKey;
 
 module.exports = DuplicateKey = (function() {
@@ -1176,7 +1277,7 @@ module.exports = DuplicateKey = (function() {
 })();
 
 
-},{}],13:[function(_dereq_,module,exports){
+},{}],14:[function(_dereq_,module,exports){
 var EmptyConstructorNeedsParens;
 
 module.exports = EmptyConstructorNeedsParens = (function() {
@@ -1223,7 +1324,7 @@ module.exports = EmptyConstructorNeedsParens = (function() {
 })();
 
 
-},{}],14:[function(_dereq_,module,exports){
+},{}],15:[function(_dereq_,module,exports){
 var Indentation;
 
 module.exports = Indentation = (function() {
@@ -1301,7 +1402,7 @@ module.exports = Indentation = (function() {
       callStart += 1;
       findCallStart = tokenApi.peek(-callStart);
     }
-    while ((lineNumber - prevNum > lastCheck) && !/^\s*\./.test(lines[lineNumber - prevNum])) {
+    while ((lineNumber - prevNum > lastCheck) && !/^\s*\./.test(lines[lineNumber - prevNum]) || /^\s*$/.test(lines[lineNumber - prevNum])) {
       prevNum += 1;
     }
     checkNum = lineNumber - prevNum;
@@ -1347,7 +1448,7 @@ module.exports = Indentation = (function() {
 })();
 
 
-},{}],15:[function(_dereq_,module,exports){
+},{}],16:[function(_dereq_,module,exports){
 var LineEndings;
 
 module.exports = LineEndings = (function() {
@@ -1391,7 +1492,7 @@ module.exports = LineEndings = (function() {
 })();
 
 
-},{}],16:[function(_dereq_,module,exports){
+},{}],17:[function(_dereq_,module,exports){
 var MaxLineLength, regexes;
 
 regexes = {
@@ -1436,7 +1537,7 @@ module.exports = MaxLineLength = (function() {
 })();
 
 
-},{}],17:[function(_dereq_,module,exports){
+},{}],18:[function(_dereq_,module,exports){
 var MissingFatArrows, any, containsButIsnt,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
@@ -1562,7 +1663,7 @@ module.exports = MissingFatArrows = (function() {
 })();
 
 
-},{}],18:[function(_dereq_,module,exports){
+},{}],19:[function(_dereq_,module,exports){
 var NewlinesAfterClasses;
 
 module.exports = NewlinesAfterClasses = (function() {
@@ -1597,7 +1698,7 @@ module.exports = NewlinesAfterClasses = (function() {
 })();
 
 
-},{}],19:[function(_dereq_,module,exports){
+},{}],20:[function(_dereq_,module,exports){
 var NoBackticks;
 
 module.exports = NoBackticks = (function() {
@@ -1621,7 +1722,7 @@ module.exports = NoBackticks = (function() {
 })();
 
 
-},{}],20:[function(_dereq_,module,exports){
+},{}],21:[function(_dereq_,module,exports){
 var NoDebugger;
 
 module.exports = NoDebugger = (function() {
@@ -1647,7 +1748,7 @@ module.exports = NoDebugger = (function() {
 })();
 
 
-},{}],21:[function(_dereq_,module,exports){
+},{}],22:[function(_dereq_,module,exports){
 var NoEmptyFunctions, isEmptyCode;
 
 isEmptyCode = function(node, astApi) {
@@ -1691,7 +1792,7 @@ module.exports = NoEmptyFunctions = (function() {
 })();
 
 
-},{}],22:[function(_dereq_,module,exports){
+},{}],23:[function(_dereq_,module,exports){
 var NoEmptyParamList;
 
 module.exports = NoEmptyParamList = (function() {
@@ -1717,7 +1818,7 @@ module.exports = NoEmptyParamList = (function() {
 })();
 
 
-},{}],23:[function(_dereq_,module,exports){
+},{}],24:[function(_dereq_,module,exports){
 var NoImplicitBraces;
 
 module.exports = NoImplicitBraces = (function() {
@@ -1766,7 +1867,7 @@ module.exports = NoImplicitBraces = (function() {
 })();
 
 
-},{}],24:[function(_dereq_,module,exports){
+},{}],25:[function(_dereq_,module,exports){
 var NoImplicitParens;
 
 module.exports = NoImplicitParens = (function() {
@@ -1808,7 +1909,7 @@ module.exports = NoImplicitParens = (function() {
 })();
 
 
-},{}],25:[function(_dereq_,module,exports){
+},{}],26:[function(_dereq_,module,exports){
 var NoInterpolationInSingleQuotes;
 
 module.exports = NoInterpolationInSingleQuotes = (function() {
@@ -1835,7 +1936,7 @@ module.exports = NoInterpolationInSingleQuotes = (function() {
 })();
 
 
-},{}],26:[function(_dereq_,module,exports){
+},{}],27:[function(_dereq_,module,exports){
 var NoPlusPlus;
 
 module.exports = NoPlusPlus = (function() {
@@ -1861,7 +1962,7 @@ module.exports = NoPlusPlus = (function() {
 })();
 
 
-},{}],27:[function(_dereq_,module,exports){
+},{}],28:[function(_dereq_,module,exports){
 var NoStandAloneAt;
 
 module.exports = NoStandAloneAt = (function() {
@@ -1897,7 +1998,7 @@ module.exports = NoStandAloneAt = (function() {
 })();
 
 
-},{}],28:[function(_dereq_,module,exports){
+},{}],29:[function(_dereq_,module,exports){
 var NoTabs, indentationRegex,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -1928,7 +2029,7 @@ module.exports = NoTabs = (function() {
 })();
 
 
-},{}],29:[function(_dereq_,module,exports){
+},{}],30:[function(_dereq_,module,exports){
 var NoThrowingStrings;
 
 module.exports = NoThrowingStrings = (function() {
@@ -1955,7 +2056,7 @@ module.exports = NoThrowingStrings = (function() {
 })();
 
 
-},{}],30:[function(_dereq_,module,exports){
+},{}],31:[function(_dereq_,module,exports){
 var NoTrailingSemicolons, regexes,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   __slice = [].slice;
@@ -2007,7 +2108,7 @@ module.exports = NoTrailingSemicolons = (function() {
 })();
 
 
-},{}],31:[function(_dereq_,module,exports){
+},{}],32:[function(_dereq_,module,exports){
 var NoTrailingWhitespace, regexes;
 
 regexes = {
@@ -2070,7 +2171,7 @@ module.exports = NoTrailingWhitespace = (function() {
 })();
 
 
-},{}],32:[function(_dereq_,module,exports){
+},{}],33:[function(_dereq_,module,exports){
 var NoUnnecessaryDoubleQuotes;
 
 module.exports = NoUnnecessaryDoubleQuotes = (function() {
@@ -2126,7 +2227,7 @@ module.exports = NoUnnecessaryDoubleQuotes = (function() {
 })();
 
 
-},{}],33:[function(_dereq_,module,exports){
+},{}],34:[function(_dereq_,module,exports){
 var NoUnnecessaryFatArrows, any,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -2207,7 +2308,7 @@ module.exports = NoUnnecessaryFatArrows = (function() {
 })();
 
 
-},{}],34:[function(_dereq_,module,exports){
+},{}],35:[function(_dereq_,module,exports){
 var NonEmptyConstructorNeedsParens, ParentClass,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2239,7 +2340,68 @@ module.exports = NonEmptyConstructorNeedsParens = (function(_super) {
 })(ParentClass);
 
 
-},{"./empty_constructor_needs_parens.coffee":13}],35:[function(_dereq_,module,exports){
+},{"./empty_constructor_needs_parens.coffee":14}],36:[function(_dereq_,module,exports){
+var RuleProcessor;
+
+module.exports = RuleProcessor = (function() {
+  function RuleProcessor() {}
+
+  RuleProcessor.prototype.rule = {
+    name: 'prefer_english_operator',
+    description: 'This rule prohibits &&, ||, ==, != and !.\nUse and, or, is, isnt, and not instead.\n!! for converting to a boolean is ignored.',
+    level: 'ignore',
+    doubleNotLevel: 'ignore',
+    message: 'Don\'t use &&, ||, ==, !=, or !'
+  };
+
+  RuleProcessor.prototype.tokens = ['COMPARE', 'UNARY_MATH', 'LOGIC'];
+
+  RuleProcessor.prototype.lintToken = function(token, tokenApi) {
+    var actual_token, config, context, first_column, last_column, level, line, _ref;
+    config = tokenApi.config[this.rule.name];
+    level = config.level;
+    _ref = token[2], first_column = _ref.first_column, last_column = _ref.last_column;
+    line = tokenApi.lines[tokenApi.lineNumber];
+    actual_token = line.slice(first_column, +last_column + 1 || 9e9);
+    context = (function() {
+      var _ref1, _ref2;
+      switch (actual_token) {
+        case '==':
+          return 'Replace "==" with "is"';
+        case '!=':
+          return 'Replace "!=" with "isnt"';
+        case '||':
+          return 'Replace "||" with "or"';
+        case '&&':
+          return 'Replace "&&" with "and"';
+        case '!':
+          if (((_ref1 = tokenApi.peek(1)) != null ? _ref1[0] : void 0) === 'UNARY_MATH') {
+            level = config.doubleNotLevel;
+            return '"?" is usually better than "!!"';
+          } else if (((_ref2 = tokenApi.peek(-1)) != null ? _ref2[0] : void 0) === 'UNARY_MATH') {
+            return void 0;
+          } else {
+            return 'Replace "!" with "not"';
+          }
+          break;
+        default:
+          return void 0;
+      }
+    })();
+    if (context != null) {
+      return {
+        level: level,
+        context: context
+      };
+    }
+  };
+
+  return RuleProcessor;
+
+})();
+
+
+},{}],37:[function(_dereq_,module,exports){
 var SpaceOperators,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
