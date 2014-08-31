@@ -146,4 +146,21 @@ vows.describe('no_unnecessary_double_quotes').addBatch({
             assert.equal(error.lineNumber, 1)
             assert.equal(error.rule, 'no_unnecessary_double_quotes')
 
+    'Test multiline regexp #286':
+        topic:
+            '''
+            a = 'hello'
+            b = ///
+              .*
+              #{a}
+              [0-9]
+            ///
+            c = RegExp(".*#{a}0-9")
+            '''
+
+        'should not generate an error': (source) ->
+            config = {no_unnecessary_double_quotes : {level:'error'}}
+            errors = coffeelint.lint(source, config)
+            assert.lengthOf(errors, 0)
+
 }).export(module)
