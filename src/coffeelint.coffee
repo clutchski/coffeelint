@@ -113,7 +113,7 @@ coffeelint.registerRule = (RuleConstructor, ruleName = undefined) ->
 
     if typeof p.lintToken is 'function'
         e "'tokens' is required for 'lintToken'" unless p.tokens
-    else if typeof p.lintLine  isnt 'function' and
+    else if typeof p.lintLine isnt 'function' and
             typeof p.lintAST isnt 'function'
         e "Rules must implement lintToken, lintLine, or lintAST"
 
@@ -161,6 +161,7 @@ coffeelint.registerRule(
 )
 coffeelint.registerRule require './rules/no_empty_functions.coffee'
 coffeelint.registerRule require './rules/prefer_english_operator.coffee'
+coffeelint.registerRule require './rules/ensure_comprehensions.coffee'
 
 hasSyntaxError = (source) ->
     try
