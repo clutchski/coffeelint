@@ -31,6 +31,7 @@ module.exports = class Indentation
     # Return an error if the given indentation token is not correct.
     lintToken: (token, tokenApi) ->
         [type, numIndents, { first_line: lineNumber }] = token
+        { lines, lineNumber } = tokenApi
 
         expected = tokenApi.config[@rule.name].value
 
@@ -41,10 +42,9 @@ module.exports = class Indentation
             # the linting pass if the '.' token is not at the beginning of
             # the line
 
-            { lines, lineNumber } = tokenApi
             currentLine = lines[lineNumber]
 
-            if currentLine.match(/\S/i)[0] is '.'
+            if currentLine.match(/\S/i)?[0] is '.'
                 return @handleChain(tokenApi, expected)
             return undefined
 
@@ -113,16 +113,15 @@ module.exports = class Indentation
         # Traverse up the token list until we see a CALL_START token.
         # Don't scan above this line
         findCallStart = tokenApi.peek(-callStart)
-        while (findCallStart and findCallStart[0] isnt 'CALL_START')
+        while (findCallStart and findCallStart[0] isnt 'TERMINATOR')
             { first_line: lastCheck } = findCallStart[2]
             callStart += 1
             findCallStart = tokenApi.peek(-callStart)
 
-        # Keep going back until we are not at a comment
+        # Keep going back until we are not at a comment or a blank lines
         # and set a new "previousLine"
         while (lineNumber - prevNum > lastCheck) and
-                not /^\s*\./.test(lines[lineNumber - prevNum]) or
-                /^\s*$/.test(lines[lineNumber - prevNum])
+                not /^\s*\./.test(lines[lineNumber - prevNum])
             prevNum += 1
 
         checkNum = lineNumber - prevNum
