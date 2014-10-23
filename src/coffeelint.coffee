@@ -24,6 +24,7 @@ else
     # which breaks NodeJS
     # https://github.com/substack/node-browserify/issues/471
     CoffeeScript = nodeRequire 'coffee-script'
+    CoffeeReactTransform = nodeRequire 'coffee-react-transform'
 
 # Browserify will inline the file at compile time.
 packageJSON = require('./../package.json')
@@ -222,6 +223,10 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
                     unless r of config and config[r].level in ['warn','error']
                         disabled_initially.push r
                         config[r] = { level: 'error' }
+
+    # Do cjsx transform when configured
+    if userConfig['cjsx']?['transform']? == true
+      source = CoffeeReactTransform(source)
 
     # Do AST linting first so all compile errors are caught.
     astErrors = new ASTLinter(source, config, _rules, CoffeeScript).lint()
