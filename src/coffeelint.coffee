@@ -198,6 +198,10 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
 
     source = @invertLiterate source if literate
 
+    # apply transform functions in the order they were defined, if at all
+    userConfig.transform?.forEach (fn) ->
+        source = fn(source)
+
     # coffeescript_error is unique because it's embedded in the ASTLinter. It
     # indicates a syntax error and would not work well as a stand alone rule.
     #

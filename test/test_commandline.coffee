@@ -405,4 +405,38 @@ vows.describe('commandline').addBatch({
                 'output': (error, stdout, stderr) ->
                     assert.isNotEmpty(stdout)
 
+    'loads transform functions':
+
+        'from the --transform flag':
+            topic: () ->
+                args = [
+                    '--transform'
+                    'empty_coffee_transform'
+                    'fixtures/syntax_error.coffee'
+                ]
+                commandline args, this.callback
+                return undefined
+
+            'passes': (error, stdout, stderr) ->
+                assert.isNull(error)
+                assert.isEmpty(stderr)
+                assert.isString(stdout)
+                assert.include(stdout, '0 errors and 0 warnings')
+
+        'merges --transform flag with config file, giving flags precedence':
+            topic: () ->
+                exec("echo '- i'| " +
+                    "#{coffeelintPath} " +
+                    "--stdin " +
+                    "-f fixtures/transform.json " +
+                    "--transform order_matters_transform/one",
+                    execOptions,
+                    this.callback)
+                return undefined
+
+            'fails': (error, stdout, stderr) ->
+                assert.isNull(error)
+                assert.isEmpty(stderr)
+                assert.isString(stdout)
+                assert.include(stdout, '0 errors and 0 warnings')
 }).export(module)
