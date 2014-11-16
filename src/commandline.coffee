@@ -47,7 +47,7 @@ lintFiles = (files, config) ->
         literate = CoffeeScript.helpers.isLiterate file
 
         fileConfig = if config then config else getFallbackConfig(file)
-
+        loadTransforms(fileConfig)
         errorReport.lint(file, source, fileConfig, literate)
     return errorReport
 
@@ -55,7 +55,7 @@ lintFiles = (files, config) ->
 lintSource = (source, config, literate = false) ->
     errorReport = new coffeelint.getErrorReport()
     config or= getFallbackConfig()
-
+    loadTransforms(config)
     errorReport.lint("stdin", source, config, literate)
     return errorReport
 
@@ -65,6 +65,24 @@ lintSource = (source, config, literate = false) ->
 getFallbackConfig = (filename = null) ->
     unless options.argv.noconfig
         configfinder.getConfig(filename)
+
+loadTransforms = (config = {}) ->
+    transFunctions = []
+
+    for list in [options.argv.transform, config.transform]
+        continue unless list
+        list = [ list ] unless Array.isArray(list)
+
+        for transform in list
+            switch typeof transform
+                when 'string'
+                    transFunctions.push(require transform)
+                when 'function'
+                    transFunctions.push(transform)
+                else
+                    console.log('invalid transform', transform)
+
+    config.transform = transFunctions
 
 # These reporters are usually parsed by other software, so I can't just echo a
 # warning.  Creating a fake file is my best attempt.
@@ -155,6 +173,9 @@ options = optimist
             .describe("literate",
                 "Used with --stdin to process as Literate CoffeeScript")
             .describe("c", "Cache linting results")
+            .describe("transform",
+                "Module name or path which should be loaded and called to\
+                transform the source before linting")
             .boolean("csv")
             .boolean("jslint")
             .boolean("checkstyle")

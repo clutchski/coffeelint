@@ -161,6 +161,9 @@ coffeelint.registerRule(
 )
 coffeelint.registerRule require './rules/no_empty_functions.coffee'
 coffeelint.registerRule require './rules/prefer_english_operator.coffee'
+coffeelint.registerRule(
+    require './rules/transform_messes_up_line_numbers.coffee'
+)
 
 hasSyntaxError = (source) ->
     try
@@ -187,6 +190,7 @@ coffeelint.getErrorReport = ->
 #   }
 #
 coffeelint.lint = (source, userConfig = {}, literate = false) ->
+    errors = []
 
     # When run from the browser it may not be able to find the ruleLoader.
     try
@@ -212,6 +216,19 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
 
     config = mergeDefaultConfig(userConfig)
 
+    # apply transform functions in the order they were defined, if at all
+    preTransformSource = source
+    userConfig.transform?.forEach (fn) ->
+        source = fn(source)
+
+    if config.transform_messes_up_line_numbers.level in ['warn','error']
+        if preTransformSource != source
+            errors.push(extend(
+                { lineNumber : 1 },
+                config.transform_messes_up_line_numbers
+            ))
+
+
     # Check ahead for inline enabled rules
     disabled_initially = []
     for l in source.split('\n')
@@ -225,7 +242,7 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
 
     # Do AST linting first so all compile errors are caught.
     astErrors = new ASTLinter(source, config, _rules, CoffeeScript).lint()
-    errors = [].concat(astErrors)
+    errors = errors.concat(astErrors)
 
     # only do further checks if the syntax is okay, otherwise they just fail
     # with syntax error exceptions
