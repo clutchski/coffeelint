@@ -421,7 +421,8 @@ vows.describe('commandline').addBatch({
                 assert.isNull(error)
                 assert.isEmpty(stderr)
                 assert.isString(stdout)
-                assert.include(stdout, '0 errors and 0 warnings')
+                assert.include(stdout, 'Transforming source messes')
+                assert.include(stdout, '0 errors and 1 warning')
 
         'merges --transform flag with config file, giving flags precedence':
             topic: () ->
@@ -438,5 +439,6 @@ vows.describe('commandline').addBatch({
                 assert.isNull(error)
                 assert.isEmpty(stderr)
                 assert.isString(stdout)
-                assert.include(stdout, '0 errors and 0 warnings')
+                assert.include(stdout, 'Transforming source messes')
+                assert.include(stdout, '0 errors and 1 warning')
 }).export(module)
