@@ -71,6 +71,9 @@
     "no_plusplus": {
         "level": "ignore"
     },
+    "spacing_after_comma": {
+        "level": "ignore"
+    },
     "no_stand_alone_at": {
         "level": "ignore"
     },
