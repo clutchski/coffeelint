@@ -2,7 +2,7 @@
 module.exports={
   "name": "coffeelint",
   "description": "Lint your CoffeeScript",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "homepage": "http://www.coffeelint.org",
   "keywords": [
     "lint",
@@ -481,6 +481,8 @@ coffeelint.registerRule(_dereq_('./rules/no_empty_functions.coffee'));
 
 coffeelint.registerRule(_dereq_('./rules/prefer_english_operator.coffee'));
 
+coffeelint.registerRule(_dereq_('./rules/spacing_after_comma.coffee'));
+
 hasSyntaxError = function(source) {
   try {
     CoffeeScript.tokens(source);
@@ -607,7 +609,7 @@ coffeelint.setCache = function(obj) {
 };
 
 
-},{"./../package.json":1,"./ast_linter.coffee":2,"./error_report.coffee":5,"./lexical_linter.coffee":6,"./line_linter.coffee":7,"./rules.coffee":8,"./rules/arrow_spacing.coffee":9,"./rules/camel_case_classes.coffee":10,"./rules/colon_assignment_spacing.coffee":11,"./rules/cyclomatic_complexity.coffee":12,"./rules/duplicate_key.coffee":13,"./rules/empty_constructor_needs_parens.coffee":14,"./rules/indentation.coffee":15,"./rules/line_endings.coffee":16,"./rules/max_line_length.coffee":17,"./rules/missing_fat_arrows.coffee":18,"./rules/newlines_after_classes.coffee":19,"./rules/no_backticks.coffee":20,"./rules/no_debugger.coffee":21,"./rules/no_empty_functions.coffee":22,"./rules/no_empty_param_list.coffee":23,"./rules/no_implicit_braces.coffee":24,"./rules/no_implicit_parens.coffee":25,"./rules/no_interpolation_in_single_quotes.coffee":26,"./rules/no_plusplus.coffee":27,"./rules/no_stand_alone_at.coffee":28,"./rules/no_tabs.coffee":29,"./rules/no_throwing_strings.coffee":30,"./rules/no_trailing_semicolons.coffee":31,"./rules/no_trailing_whitespace.coffee":32,"./rules/no_unnecessary_double_quotes.coffee":33,"./rules/no_unnecessary_fat_arrows.coffee":34,"./rules/non_empty_constructor_needs_parens.coffee":35,"./rules/prefer_english_operator.coffee":36,"./rules/space_operators.coffee":37}],5:[function(_dereq_,module,exports){
+},{"./../package.json":1,"./ast_linter.coffee":2,"./error_report.coffee":5,"./lexical_linter.coffee":6,"./line_linter.coffee":7,"./rules.coffee":8,"./rules/arrow_spacing.coffee":9,"./rules/camel_case_classes.coffee":10,"./rules/colon_assignment_spacing.coffee":11,"./rules/cyclomatic_complexity.coffee":12,"./rules/duplicate_key.coffee":13,"./rules/empty_constructor_needs_parens.coffee":14,"./rules/indentation.coffee":15,"./rules/line_endings.coffee":16,"./rules/max_line_length.coffee":17,"./rules/missing_fat_arrows.coffee":18,"./rules/newlines_after_classes.coffee":19,"./rules/no_backticks.coffee":20,"./rules/no_debugger.coffee":21,"./rules/no_empty_functions.coffee":22,"./rules/no_empty_param_list.coffee":23,"./rules/no_implicit_braces.coffee":24,"./rules/no_implicit_parens.coffee":25,"./rules/no_interpolation_in_single_quotes.coffee":26,"./rules/no_plusplus.coffee":27,"./rules/no_stand_alone_at.coffee":28,"./rules/no_tabs.coffee":29,"./rules/no_throwing_strings.coffee":30,"./rules/no_trailing_semicolons.coffee":31,"./rules/no_trailing_whitespace.coffee":32,"./rules/no_unnecessary_double_quotes.coffee":33,"./rules/no_unnecessary_fat_arrows.coffee":34,"./rules/non_empty_constructor_needs_parens.coffee":35,"./rules/prefer_english_operator.coffee":36,"./rules/space_operators.coffee":37,"./rules/spacing_after_comma.coffee":38}],5:[function(_dereq_,module,exports){
 var ErrorReport;
 
 module.exports = ErrorReport = (function() {
@@ -1343,13 +1345,13 @@ module.exports = Indentation = (function() {
   }
 
   Indentation.prototype.lintToken = function(token, tokenApi) {
-    var currentLine, expected, ignoreIndent, isArrayIndent, isInterpIndent, isMultiline, lineNumber, lines, numIndents, previous, previousSymbol, type, _ref, _ref1;
+    var currentLine, expected, ignoreIndent, isArrayIndent, isInterpIndent, isMultiline, lineNumber, lines, numIndents, previous, previousSymbol, type, _ref, _ref1, _ref2;
     type = token[0], numIndents = token[1], (_ref = token[2], lineNumber = _ref.first_line);
+    lines = tokenApi.lines, lineNumber = tokenApi.lineNumber;
     expected = tokenApi.config[this.rule.name].value;
     if (type === '.') {
-      lines = tokenApi.lines, lineNumber = tokenApi.lineNumber;
       currentLine = lines[lineNumber];
-      if (currentLine.match(/\S/i)[0] === '.') {
+      if (((_ref1 = currentLine.match(/\S/i)) != null ? _ref1[0] : void 0) === '.') {
         return this.handleChain(tokenApi, expected);
       }
       return void 0;
@@ -1365,7 +1367,7 @@ module.exports = Indentation = (function() {
     isInterpIndent = previous && previous[0] === '+';
     previous = tokenApi.peek(-1);
     isArrayIndent = this.inArray() && (previous != null ? previous.newLine : void 0);
-    previousSymbol = (_ref1 = tokenApi.peek(-1)) != null ? _ref1[0] : void 0;
+    previousSymbol = (_ref2 = tokenApi.peek(-1)) != null ? _ref2[0] : void 0;
     isMultiline = previousSymbol === '=' || previousSymbol === ',';
     ignoreIndent = isInterpIndent || isArrayIndent || isMultiline;
     numIndents = this.getCorrectIndent(tokenApi);
@@ -1397,12 +1399,12 @@ module.exports = Indentation = (function() {
     lineNumber = tokenApi.lineNumber, lines = tokenApi.lines;
     currentLine = lines[lineNumber];
     findCallStart = tokenApi.peek(-callStart);
-    while (findCallStart && findCallStart[0] !== 'CALL_START') {
+    while (findCallStart && findCallStart[0] !== 'TERMINATOR') {
       lastCheck = findCallStart[2].first_line;
       callStart += 1;
       findCallStart = tokenApi.peek(-callStart);
     }
-    while ((lineNumber - prevNum > lastCheck) && !/^\s*\./.test(lines[lineNumber - prevNum]) || /^\s*$/.test(lines[lineNumber - prevNum])) {
+    while ((lineNumber - prevNum > lastCheck) && !/^\s*\./.test(lines[lineNumber - prevNum])) {
       prevNum += 1;
     }
     checkNum = lineNumber - prevNum;
@@ -2175,8 +2177,6 @@ module.exports = NoTrailingWhitespace = (function() {
 var NoUnnecessaryDoubleQuotes;
 
 module.exports = NoUnnecessaryDoubleQuotes = (function() {
-  function NoUnnecessaryDoubleQuotes() {}
-
   NoUnnecessaryDoubleQuotes.prototype.rule = {
     name: 'no_unnecessary_double_quotes',
     level: 'ignore',
@@ -2184,25 +2184,76 @@ module.exports = NoUnnecessaryDoubleQuotes = (function() {
     description: 'This rule prohibits double quotes unless string interpolation is\nused or the string contains single quotes.\n<pre>\n<code># Double quotes are discouraged:\nfoo = "bar"\n\n# Unless string interpolation is used:\nfoo = "#{bar}baz"\n\n# Or they prevent cumbersome escaping:\nfoo = "I\'m just following the \'rules\'"\n</code>\n</pre>\nDouble quotes are permitted by default.'
   };
 
+  function NoUnnecessaryDoubleQuotes() {
+    this.regexps = [];
+  }
+
   NoUnnecessaryDoubleQuotes.prototype.tokens = ['STRING'];
 
   NoUnnecessaryDoubleQuotes.prototype.lintToken = function(token, tokenApi) {
-    var hasLegalConstructs, stringValue, tokenValue;
+    var e, hasLegalConstructs, i, notInBlock, s, stringValue, tokenValue;
     tokenValue = token[1];
+    i = tokenApi.i;
     stringValue = tokenValue.match(/^\"(.*)\"$/);
-    if (!stringValue) {
+    if (this.regexps.length === 0) {
+      this.regexps = this.getBlockRegExps(tokenApi);
+    }
+    notInBlock = ((function() {
+      var _i, _len, _ref, _ref1, _results;
+      _ref = this.regexps;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        _ref1 = _ref[_i], s = _ref1[0], e = _ref1[1];
+        if ((s < i && i < e)) {
+          _results.push(1);
+        }
+      }
+      return _results;
+    }).call(this)).length === 0;
+    if (!(stringValue && notInBlock)) {
       return false;
     }
     hasLegalConstructs = this.isInterpolated(tokenApi) || this.containsSingleQuote(tokenValue);
     return !hasLegalConstructs;
   };
 
+  NoUnnecessaryDoubleQuotes.prototype.getBlockRegExps = function(tokenApi) {
+    var callEnds, col, curTok, i, idx, ii, lin, lines, regexps, t, tokens, _i, _j, _len, _len1, _ref;
+    lines = tokenApi.lines, tokens = tokenApi.tokens;
+    regexps = [];
+    for (i = _i = 0, _len = tokens.length; _i < _len; i = ++_i) {
+      t = tokens[i];
+      if (!(t[0] === 'IDENTIFIER' && t[1] === 'RegExp')) {
+        continue;
+      }
+      _ref = t[2], lin = _ref.first_line, col = _ref.first_column;
+      if (lines[lin].slice(col, +(col + 2) + 1 || 9e9) === "///") {
+        regexps.push([i, 0]);
+      }
+    }
+    for (idx = _j = 0, _len1 = regexps.length; _j < _len1; idx = ++_j) {
+      i = regexps[idx][0];
+      ii = 2;
+      callEnds = 1;
+      while (callEnds > 0 && (curTok = tokens[i + ii][0])) {
+        if (curTok === 'CALL_END') {
+          callEnds--;
+        }
+        if (curTok === 'CALL_START') {
+          callEnds++;
+        }
+        ii++;
+      }
+      regexps[idx][1] = i + ii - 1;
+    }
+    return regexps;
+  };
+
   NoUnnecessaryDoubleQuotes.prototype.isInterpolated = function(tokenApi) {
-    var currentIndex, i, isInterpolated, lineTokens, token, tokenName, _i, _ref;
-    currentIndex = tokenApi.i;
+    var i, idx, isInterpolated, token, tokenName, _i, _ref;
+    idx = tokenApi.i;
     isInterpolated = false;
-    lineTokens = tokenApi.tokensByLine[tokenApi.lineNumber];
-    for (i = _i = 1; 1 <= currentIndex ? _i <= currentIndex : _i >= currentIndex; i = 1 <= currentIndex ? ++_i : --_i) {
+    for (i = _i = 1; 1 <= idx ? _i <= idx : _i >= idx; i = 1 <= idx ? ++_i : --_i) {
       token = tokenApi.peek(-i);
       if (token == null) {
         break;
@@ -2210,7 +2261,7 @@ module.exports = NoUnnecessaryDoubleQuotes = (function() {
       tokenName = token[0];
       if (tokenName === ')' && token.stringEnd) {
         break;
-      } else if (tokenName === '(' && ((_ref = token.origin) != null ? _ref[1] : void 0) === "string interpolation") {
+      } else if (tokenName === '(' && ((_ref = token.origin) != null ? _ref[1] : void 0) === 'string interpolation') {
         isInterpolated = true;
         break;
       }
@@ -2519,6 +2570,34 @@ module.exports = SpaceOperators = (function() {
   };
 
   return SpaceOperators;
+
+})();
+
+
+},{}],38:[function(_dereq_,module,exports){
+var RuleProcessor;
+
+module.exports = RuleProcessor = (function() {
+  function RuleProcessor() {}
+
+  RuleProcessor.prototype.rule = {
+    name: 'spacing_after_comma',
+    description: 'This rule requires a space after commas.',
+    level: 'ignore',
+    message: 'Spaces are requires after commas'
+  };
+
+  RuleProcessor.prototype.tokens = [','];
+
+  RuleProcessor.prototype.lintToken = function(token, tokenApi) {
+    if (!token.spaced) {
+      return {
+        context: token[1]
+      };
+    }
+  };
+
+  return RuleProcessor;
 
 })();
 
