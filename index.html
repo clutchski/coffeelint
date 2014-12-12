@@ -143,6 +143,14 @@ class Gangster
           level to <tt>ignore</tt>. If you set the level to <tt>warn</tt>,
           violations will be reported, but won't cause a non-zero exit code.
         </p>
+        <p>
+          To disable a rule inline use the following:
+        </p>
+        <pre><code>
+# coffeelint: disable=max_line_length
+foo = "some/huge/line/string/with/embed/#{values}.that/surpasses/the/max/column/width"
+# coffeelint: enable=max_line_length
+        </code></pre>
         <p>Here's a rundown of CoffeeLint's rules:</p>
         <table class="options">
           <thead>
