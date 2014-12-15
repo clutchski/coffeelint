@@ -2,7 +2,7 @@
 module.exports={
   "name": "coffeelint",
   "description": "Lint your CoffeeScript",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "homepage": "http://www.coffeelint.org",
   "keywords": [
     "lint",
@@ -2584,13 +2584,13 @@ module.exports = RuleProcessor = (function() {
     name: 'spacing_after_comma',
     description: 'This rule requires a space after commas.',
     level: 'ignore',
-    message: 'Spaces are requires after commas'
+    message: 'Spaces are required after commas'
   };
 
   RuleProcessor.prototype.tokens = [','];
 
   RuleProcessor.prototype.lintToken = function(token, tokenApi) {
-    if (!token.spaced) {
+    if (!(token.spaced || token.newLine)) {
       return {
         context: token[1]
       };
