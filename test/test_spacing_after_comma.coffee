@@ -21,7 +21,23 @@ vows.describe('commas').addBatch({
             error = errors[0]
             assert.isObject(error)
             assert.equal(error.lineNumber, 1)
-            assert.equal(error.message, "Spaces are requires after commas")
+            assert.equal(error.message, "Spaces are required after commas")
             assert.equal(error.rule, 'spacing_after_comma')
+
+    'newline after commas' :
+
+        topic: () ->
+            '''
+            multiLineFuncCall(
+              arg1,
+              arg2,
+              arg3
+            )
+            '''
+
+        'should not issue warns' : (source) ->
+            config = {spacing_after_comma : {level:'warn'}}
+            errors = coffeelint.lint(source, config)
+            assert.equal(errors.length, 0)
 
 }).export(module)
