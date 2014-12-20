@@ -198,6 +198,13 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
     if cache?.has source then return cache?.get source
 
     source = @invertLiterate source if literate
+    if userConfig?.coffeelint?.transforms?
+        for m in userConfig?.coffeelint?.transforms
+            transform = ruleLoader.require(m)
+            source = transform source
+
+    if userConfig?.coffeelint?.coffeescript?
+        CoffeeScript = ruleLoader.require userConfig.coffeelint.coffeescript
 
     # coffeescript_error is unique because it's embedded in the ASTLinter. It
     # indicates a syntax error and would not work well as a stand alone rule.

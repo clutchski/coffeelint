@@ -3,6 +3,29 @@ resolve = require('resolve').sync
 
 # moduleName is a NodeJS module, or a path to a module NodeJS can load.
 module.exports =
+    require: (moduleName) ->
+        try
+            # Try to find the project-level rule first.
+            rulePath = resolve moduleName, {
+                basedir: process.cwd()
+            }
+            return require rulePath
+        try
+            # Globally installed rule
+            return require moduleName
+        try
+            # Maybe the user used a relative path from the command line. This
+            # doesn't make much sense from a config file, but seems natural
+            # with the --rules option.
+            #
+            # No try around this one, an exception here should abort the rest of
+            # this function.
+            return require path.resolve(process.cwd(), moduleName)
+
+        # This was already tried once. It will definitely fail, but it will
+        # fail with a more sensible error message than the last require()
+        # above.
+        require moduleName
 
     loadFromConfig: (coffeelint, config) ->
         for ruleName, data of config when data?.module?
@@ -11,26 +34,7 @@ module.exports =
     # moduleName is a NodeJS module, or a path to a module NodeJS can load.
     loadRule: (coffeelint, moduleName, ruleName = undefined) ->
         try
-            try
-                # Try to find the project-level rule first.
-                rulePath = resolve moduleName, {
-                    basedir: process.cwd()
-                }
-                ruleModule = require rulePath
-            try
-                # This seems awkward, but the ?= will prevent it from trying to
-                # require if the previous step succeeded without an exception.
-                #
-                # Globally installed rule
-                ruleModule ?= require moduleName
-
-            # Maybe the user used a relative path from the command line. This
-            # doesn't make much sense from a config file, but seems natural
-            # with the --rules option.
-            #
-            # No try around this one, an exception here should abort the rest of
-            # this function.
-            ruleModule ?= require path.resolve(process.cwd(), moduleName)
+            ruleModule = @require moduleName
 
             # Most rules can export as a single constructor function
             if typeof ruleModule is 'function'

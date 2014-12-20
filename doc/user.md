@@ -72,6 +72,49 @@ attribute to specify the correct module name. It may not exactly match the rule
 name.
 
 All rules should have a `coffeelintrule` tag on [npmjs.org][rules].
+
+How do I use JSX (ReactJS)
+==========================
+
+CoffeeLint 1.8 allows you to add transformers that will run over the code
+before CoffeeLint processes it.
+
+*WARNING*: CoffeeLint cannot control what these transformers do. They may
+violate all kinds of rules you have setup. It's up to you to wrap your code in
+`# coffeelint: disable=max_line_length` or whatever you need.
+
+*WARNING*: These transformers might not maintain line numbers. If this happens
+and it's a problem, it's up to you to contact the developers to see if they can
+keep everything on the same lines.
+
+In your coffeelint.json:
+
+```json
+{
+    "coffeelint": {
+        "transforms": [ "coffee-react-transform" ]
+    }
+}
+```
+
+What about different flavors of CoffeeScript, like IcedCoffeeScript?
+====================================================================
+
+While this functionality was added in 1.8, it's basically unsupported. If your
+chosen flavor breaks things it's up to you to contact the maintainer and see if
+they are willing to bring their implementation in line with the official
+CoffeeScript.
+
+Using IcedCoffeeScript [does break][IcedCoffeeScript] the `cyclomatic_complexity` rule 
+
+```json
+{
+    "coffeelint": {
+        "coffeescript": [ "iced-coffee-script" ]
+    }
+}
+```
  
 [options]: http://www.coffeelint.org/#options
 [rules]: https://www.npmjs.org/search?q=coffeelintrule
+[IcedCoffeeScript]: https://github.com/clutchski/coffeelint/issues/349#issuecomment-67737784
