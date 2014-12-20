@@ -162,6 +162,9 @@ coffeelint.registerRule(
 coffeelint.registerRule require './rules/no_empty_functions.coffee'
 coffeelint.registerRule require './rules/prefer_english_operator.coffee'
 coffeelint.registerRule require './rules/spacing_after_comma.coffee'
+coffeelint.registerRule(
+    require './rules/transform_messes_up_line_numbers.coffee'
+)
 
 hasSyntaxError = (source) ->
     try
@@ -188,6 +191,7 @@ coffeelint.getErrorReport = ->
 #   }
 #
 coffeelint.lint = (source, userConfig = {}, literate = false) ->
+    errors = []
 
     # When run from the browser it may not be able to find the ruleLoader.
     try
@@ -196,12 +200,30 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
 
     cache?.setConfig userConfig
     if cache?.has source then return cache?.get source
+    config = mergeDefaultConfig(userConfig)
 
     source = @invertLiterate source if literate
     if userConfig?.coffeelint?.transforms?
+        sourceLength = source.split("\n").length
         for m in userConfig?.coffeelint?.transforms
             transform = ruleLoader.require(m)
             source = transform source
+
+        # NOTE: This can have false negatives. For example if your transformer
+        # changes one line into two early in the file and later condenses two
+        # into one you'll end up with the same length and not get the warning
+        # even though everything in between will be off by one.
+        if sourceLength isnt source.split("\n").length and
+                config.transform_messes_up_line_numbers.level isnt 'ignore'
+            errors.push(extend(
+                {
+                    lineNumber: 1
+                    context: "File was transformed from #{sourceLength
+                        } lines to #{ source.split("\n").length} lines"
+                },
+                config.transform_messes_up_line_numbers
+            ))
+            console.log errors
 
     if userConfig?.coffeelint?.coffeescript?
         CoffeeScript = ruleLoader.require userConfig.coffeelint.coffeescript
@@ -218,7 +240,6 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
             # warnings for configuration.
             undefined
 
-    config = mergeDefaultConfig(userConfig)
 
     # Check ahead for inline enabled rules
     disabled_initially = []
@@ -233,7 +254,7 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
 
     # Do AST linting first so all compile errors are caught.
     astErrors = new ASTLinter(source, config, _rules, CoffeeScript).lint()
-    errors = [].concat(astErrors)
+    errors = errors.concat(astErrors)
 
     # only do further checks if the syntax is okay, otherwise they just fail
     # with syntax error exceptions
