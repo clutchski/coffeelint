@@ -256,6 +256,13 @@ class Cat
 </td>
 </tr>
 <tr>
+<td class="rule">ensure_comprehensions</td>
+<td class="description">
+    This rule makes sure that parentheses are around comprehensions.
+    <p><em>default level: warn</em></p>
+</td>
+</tr>
+<tr>
 <td class="rule">indentation</td>
 <td class="description">
     This rule imposes a standard number of spaces to be used for
@@ -572,6 +579,14 @@ Use and, or, is, isnt, and not instead.
     <p><em>default level: ignore</em></p>
 </td>
 </tr>
+<tr>
+<td class="rule">transform_messes_up_line_numbers</td>
+<td class="description">
+    This rule detects when changes are made by transform function,
+and warns that line numbers are probably incorrect.
+    <p><em>default level: warn</em></p>
+</td>
+</tr>
               </tbody>
             </table>
           </p>
@@ -771,6 +786,26 @@ Use and, or, is, isnt, and not instead.
           </p>
 
           <h2 class="section_title" id="changelog">Change Log</h2>
+
+          <div>
+            <h3 class="changelog_header">1.7.1-1.8.1</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v1.7.l...v1.8.1">2014.12.20<a></a></small>
+          <ul class="changelog_history">
+              <li>New rule <tt>ensure_comprehensions</tt> (warn by default)</li>
+              <li>Added options to
+                  <a href="https://github.com/clutchski/coffeelint/blob/master/doc/user.md#how-do-i-use-jsx-reactjs">
+                      transform
+                  </a>
+                  code before processing it. (JSX support) or to use a different
+                  <a href="https://github.com/clutchski/coffeelint/blob/master/doc/user.md#what-about-different-flavors-of-coffeescript-like-icedcoffeescript">
+                      flavor of CoffeeScript
+                  </a>
+                  .
+              </li>
+              <li>New rule <tt>transform_messes_up_line_numbers</tt>. This simply tells you if a transform you're using changes the total number of lines in the file.</li>
+          </ul>
+          </div>
 
           <div>
             <h3 class="changelog_header">1.7.0-1.7.1</h3>

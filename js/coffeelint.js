@@ -2,7 +2,7 @@
 module.exports={
   "name": "coffeelint",
   "description": "Lint your CoffeeScript",
-  "version": "1.7.1",
+  "version": "1.8.1",
   "homepage": "http://www.coffeelint.org",
   "keywords": [
     "lint",
@@ -483,6 +483,10 @@ coffeelint.registerRule(_dereq_('./rules/prefer_english_operator.coffee'));
 
 coffeelint.registerRule(_dereq_('./rules/spacing_after_comma.coffee'));
 
+coffeelint.registerRule(_dereq_('./rules/transform_messes_up_line_numbers.coffee'));
+
+coffeelint.registerRule(_dereq_('./rules/ensure_comprehensions.coffee'));
+
 hasSyntaxError = function(source) {
   try {
     CoffeeScript.tokens(source);
@@ -498,13 +502,14 @@ coffeelint.getErrorReport = function() {
 };
 
 coffeelint.lint = function(source, userConfig, literate) {
-  var all_errors, astErrors, block_config, cmd, config, disabled, disabled_initially, e, errors, i, l, lexErrors, lexicalLinter, lineErrors, lineLinter, name, next_line, r, ruleLoader, rules, s, tokensByLine, _i, _j, _k, _len, _len1, _ref, _ref1, _ref2, _ref3, _ref4;
+  var all_errors, astErrors, block_config, cmd, config, disabled, disabled_initially, e, errors, i, l, lexErrors, lexicalLinter, lineErrors, lineLinter, m, name, next_line, r, ruleLoader, rules, s, sourceLength, tokensByLine, transform, _i, _j, _k, _l, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8;
   if (userConfig == null) {
     userConfig = {};
   }
   if (literate == null) {
     literate = false;
   }
+  errors = [];
   try {
     ruleLoader = nodeRequire('./ruleLoader');
     ruleLoader.loadFromConfig(this, userConfig);
@@ -515,8 +520,28 @@ coffeelint.lint = function(source, userConfig, literate) {
   if (cache != null ? cache.has(source) : void 0) {
     return cache != null ? cache.get(source) : void 0;
   }
+  config = mergeDefaultConfig(userConfig);
   if (literate) {
     source = this.invertLiterate(source);
+  }
+  if ((userConfig != null ? (_ref = userConfig.coffeelint) != null ? _ref.transforms : void 0 : void 0) != null) {
+    sourceLength = source.split("\n").length;
+    _ref2 = userConfig != null ? (_ref1 = userConfig.coffeelint) != null ? _ref1.transforms : void 0 : void 0;
+    for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+      m = _ref2[_i];
+      transform = ruleLoader.require(m);
+      source = transform(source);
+    }
+    if (sourceLength !== source.split("\n").length && config.transform_messes_up_line_numbers.level !== 'ignore') {
+      errors.push(extend({
+        lineNumber: 1,
+        context: "File was transformed from " + sourceLength + " lines to " + (source.split("\n").length) + " lines"
+      }, config.transform_messes_up_line_numbers));
+      console.log(errors);
+    }
+  }
+  if ((userConfig != null ? (_ref3 = userConfig.coffeelint) != null ? _ref3.coffeescript : void 0 : void 0) != null) {
+    CoffeeScript = ruleLoader.require(userConfig.coffeelint.coffeescript);
   }
   for (name in userConfig) {
     if (name !== 'coffeescript_error' && name !== '_comment') {
@@ -525,18 +550,17 @@ coffeelint.lint = function(source, userConfig, literate) {
       }
     }
   }
-  config = mergeDefaultConfig(userConfig);
   disabled_initially = [];
-  _ref = source.split('\n');
-  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-    l = _ref[_i];
+  _ref4 = source.split('\n');
+  for (_j = 0, _len1 = _ref4.length; _j < _len1; _j++) {
+    l = _ref4[_j];
     s = LineLinter.configStatement.exec(l);
     if ((s != null ? s.length : void 0) > 2 && __indexOf.call(s, 'enable') >= 0) {
-      _ref1 = s.slice(1);
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        r = _ref1[_j];
+      _ref5 = s.slice(1);
+      for (_k = 0, _len2 = _ref5.length; _k < _len2; _k++) {
+        r = _ref5[_k];
         if (r !== 'enable' && r !== 'disable') {
-          if (!(r in config && ((_ref2 = config[r].level) === 'warn' || _ref2 === 'error'))) {
+          if (!(r in config && ((_ref6 = config[r].level) === 'warn' || _ref6 === 'error'))) {
             disabled_initially.push(r);
             config[r] = {
               level: 'error'
@@ -547,7 +571,7 @@ coffeelint.lint = function(source, userConfig, literate) {
     }
   }
   astErrors = new ASTLinter(source, config, _rules, CoffeeScript).lint();
-  errors = [].concat(astErrors);
+  errors = errors.concat(astErrors);
   if (!hasSyntaxError(source)) {
     lexicalLinter = new LexicalLinter(source, config, _rules, CoffeeScript);
     lexErrors = lexicalLinter.lint();
@@ -570,7 +594,7 @@ coffeelint.lint = function(source, userConfig, literate) {
   errors = [];
   disabled = disabled_initially;
   next_line = 0;
-  for (i = _k = 0, _ref3 = source.split('\n').length; 0 <= _ref3 ? _k < _ref3 : _k > _ref3; i = 0 <= _ref3 ? ++_k : --_k) {
+  for (i = _l = 0, _ref7 = source.split('\n').length; 0 <= _ref7 ? _l < _ref7 : _l > _ref7; i = 0 <= _ref7 ? ++_l : --_l) {
     for (cmd in block_config) {
       rules = block_config[cmd][i];
       if (rules != null) {
@@ -592,7 +616,7 @@ coffeelint.lint = function(source, userConfig, literate) {
       e = all_errors[0];
       if (e.lineNumber === i + 1 || (e.lineNumber == null)) {
         e = all_errors.shift();
-        if (_ref4 = e.rule, __indexOf.call(disabled, _ref4) < 0) {
+        if (_ref8 = e.rule, __indexOf.call(disabled, _ref8) < 0) {
           errors.push(e);
         }
       }
@@ -609,7 +633,7 @@ coffeelint.setCache = function(obj) {
 };
 
 
-},{"./../package.json":1,"./ast_linter.coffee":2,"./error_report.coffee":5,"./lexical_linter.coffee":6,"./line_linter.coffee":7,"./rules.coffee":8,"./rules/arrow_spacing.coffee":9,"./rules/camel_case_classes.coffee":10,"./rules/colon_assignment_spacing.coffee":11,"./rules/cyclomatic_complexity.coffee":12,"./rules/duplicate_key.coffee":13,"./rules/empty_constructor_needs_parens.coffee":14,"./rules/indentation.coffee":15,"./rules/line_endings.coffee":16,"./rules/max_line_length.coffee":17,"./rules/missing_fat_arrows.coffee":18,"./rules/newlines_after_classes.coffee":19,"./rules/no_backticks.coffee":20,"./rules/no_debugger.coffee":21,"./rules/no_empty_functions.coffee":22,"./rules/no_empty_param_list.coffee":23,"./rules/no_implicit_braces.coffee":24,"./rules/no_implicit_parens.coffee":25,"./rules/no_interpolation_in_single_quotes.coffee":26,"./rules/no_plusplus.coffee":27,"./rules/no_stand_alone_at.coffee":28,"./rules/no_tabs.coffee":29,"./rules/no_throwing_strings.coffee":30,"./rules/no_trailing_semicolons.coffee":31,"./rules/no_trailing_whitespace.coffee":32,"./rules/no_unnecessary_double_quotes.coffee":33,"./rules/no_unnecessary_fat_arrows.coffee":34,"./rules/non_empty_constructor_needs_parens.coffee":35,"./rules/prefer_english_operator.coffee":36,"./rules/space_operators.coffee":37,"./rules/spacing_after_comma.coffee":38}],5:[function(_dereq_,module,exports){
+},{"./../package.json":1,"./ast_linter.coffee":2,"./error_report.coffee":5,"./lexical_linter.coffee":6,"./line_linter.coffee":7,"./rules.coffee":8,"./rules/arrow_spacing.coffee":9,"./rules/camel_case_classes.coffee":10,"./rules/colon_assignment_spacing.coffee":11,"./rules/cyclomatic_complexity.coffee":12,"./rules/duplicate_key.coffee":13,"./rules/empty_constructor_needs_parens.coffee":14,"./rules/ensure_comprehensions.coffee":15,"./rules/indentation.coffee":16,"./rules/line_endings.coffee":17,"./rules/max_line_length.coffee":18,"./rules/missing_fat_arrows.coffee":19,"./rules/newlines_after_classes.coffee":20,"./rules/no_backticks.coffee":21,"./rules/no_debugger.coffee":22,"./rules/no_empty_functions.coffee":23,"./rules/no_empty_param_list.coffee":24,"./rules/no_implicit_braces.coffee":25,"./rules/no_implicit_parens.coffee":26,"./rules/no_interpolation_in_single_quotes.coffee":27,"./rules/no_plusplus.coffee":28,"./rules/no_stand_alone_at.coffee":29,"./rules/no_tabs.coffee":30,"./rules/no_throwing_strings.coffee":31,"./rules/no_trailing_semicolons.coffee":32,"./rules/no_trailing_whitespace.coffee":33,"./rules/no_unnecessary_double_quotes.coffee":34,"./rules/no_unnecessary_fat_arrows.coffee":35,"./rules/non_empty_constructor_needs_parens.coffee":36,"./rules/prefer_english_operator.coffee":37,"./rules/space_operators.coffee":38,"./rules/spacing_after_comma.coffee":39,"./rules/transform_messes_up_line_numbers.coffee":40}],5:[function(_dereq_,module,exports){
 var ErrorReport;
 
 module.exports = ErrorReport = (function() {
@@ -1327,6 +1351,72 @@ module.exports = EmptyConstructorNeedsParens = (function() {
 
 
 },{}],15:[function(_dereq_,module,exports){
+var EnsureComprehensions,
+  __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+module.exports = EnsureComprehensions = (function() {
+  function EnsureComprehensions() {}
+
+  EnsureComprehensions.prototype.rule = {
+    name: 'ensure_comprehensions',
+    level: 'warn',
+    message: 'Comprehensions must have parentheses around them',
+    description: 'This rule makes sure that parentheses are around comprehensions.'
+  };
+
+  EnsureComprehensions.prototype.tokens = ['FOR'];
+
+  EnsureComprehensions.prototype.lintToken = function(token, tokenApi) {
+    var atEqual, idents, peeker, prevIdents, prevToken, _ref, _ref1;
+    idents = this.findIdents(tokenApi);
+    peeker = -1;
+    atEqual = false;
+    prevIdents = [];
+    while ((prevToken = tokenApi.peek(peeker))) {
+      if (prevToken[0] === 'IDENTIFIER') {
+        if (!atEqual) {
+          prevIdents.push(prevToken[1]);
+        } else if (_ref = prevToken[1], __indexOf.call(idents, _ref) >= 0) {
+          return;
+        }
+      }
+      if (((_ref1 = prevToken[0]) === '(' || _ref1 === '->' || _ref1 === 'TERMINATOR') || (prevToken.newLine != null)) {
+        break;
+      }
+      if (prevToken[0] === '=') {
+        atEqual = true;
+      }
+      peeker--;
+    }
+    if (atEqual && prevIdents.length > 0) {
+      return {
+        context: ''
+      };
+    }
+  };
+
+  EnsureComprehensions.prototype.findIdents = function(tokenApi) {
+    var idents, nextToken, peeker, _ref;
+    peeker = 1;
+    idents = [];
+    while ((nextToken = tokenApi.peek(peeker))) {
+      if (nextToken[0] === 'IDENTIFIER') {
+        idents.push(nextToken[1]);
+      }
+      if ((_ref = nextToken[0]) === 'FORIN' || _ref === 'FOROF') {
+        break;
+      }
+      peeker++;
+    }
+    return idents;
+  };
+
+  return EnsureComprehensions;
+
+})();
+
+
+},{}],16:[function(_dereq_,module,exports){
 var Indentation;
 
 module.exports = Indentation = (function() {
@@ -1450,7 +1540,7 @@ module.exports = Indentation = (function() {
 })();
 
 
-},{}],16:[function(_dereq_,module,exports){
+},{}],17:[function(_dereq_,module,exports){
 var LineEndings;
 
 module.exports = LineEndings = (function() {
@@ -1494,7 +1584,7 @@ module.exports = LineEndings = (function() {
 })();
 
 
-},{}],17:[function(_dereq_,module,exports){
+},{}],18:[function(_dereq_,module,exports){
 var MaxLineLength, regexes;
 
 regexes = {
@@ -1539,7 +1629,7 @@ module.exports = MaxLineLength = (function() {
 })();
 
 
-},{}],18:[function(_dereq_,module,exports){
+},{}],19:[function(_dereq_,module,exports){
 var MissingFatArrows, any, containsButIsnt,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
@@ -1665,7 +1755,7 @@ module.exports = MissingFatArrows = (function() {
 })();
 
 
-},{}],19:[function(_dereq_,module,exports){
+},{}],20:[function(_dereq_,module,exports){
 var NewlinesAfterClasses;
 
 module.exports = NewlinesAfterClasses = (function() {
@@ -1700,7 +1790,7 @@ module.exports = NewlinesAfterClasses = (function() {
 })();
 
 
-},{}],20:[function(_dereq_,module,exports){
+},{}],21:[function(_dereq_,module,exports){
 var NoBackticks;
 
 module.exports = NoBackticks = (function() {
@@ -1724,7 +1814,7 @@ module.exports = NoBackticks = (function() {
 })();
 
 
-},{}],21:[function(_dereq_,module,exports){
+},{}],22:[function(_dereq_,module,exports){
 var NoDebugger;
 
 module.exports = NoDebugger = (function() {
@@ -1750,7 +1840,7 @@ module.exports = NoDebugger = (function() {
 })();
 
 
-},{}],22:[function(_dereq_,module,exports){
+},{}],23:[function(_dereq_,module,exports){
 var NoEmptyFunctions, isEmptyCode;
 
 isEmptyCode = function(node, astApi) {
@@ -1794,7 +1884,7 @@ module.exports = NoEmptyFunctions = (function() {
 })();
 
 
-},{}],23:[function(_dereq_,module,exports){
+},{}],24:[function(_dereq_,module,exports){
 var NoEmptyParamList;
 
 module.exports = NoEmptyParamList = (function() {
@@ -1820,7 +1910,7 @@ module.exports = NoEmptyParamList = (function() {
 })();
 
 
-},{}],24:[function(_dereq_,module,exports){
+},{}],25:[function(_dereq_,module,exports){
 var NoImplicitBraces;
 
 module.exports = NoImplicitBraces = (function() {
@@ -1869,7 +1959,7 @@ module.exports = NoImplicitBraces = (function() {
 })();
 
 
-},{}],25:[function(_dereq_,module,exports){
+},{}],26:[function(_dereq_,module,exports){
 var NoImplicitParens;
 
 module.exports = NoImplicitParens = (function() {
@@ -1911,7 +2001,7 @@ module.exports = NoImplicitParens = (function() {
 })();
 
 
-},{}],26:[function(_dereq_,module,exports){
+},{}],27:[function(_dereq_,module,exports){
 var NoInterpolationInSingleQuotes;
 
 module.exports = NoInterpolationInSingleQuotes = (function() {
@@ -1938,7 +2028,7 @@ module.exports = NoInterpolationInSingleQuotes = (function() {
 })();
 
 
-},{}],27:[function(_dereq_,module,exports){
+},{}],28:[function(_dereq_,module,exports){
 var NoPlusPlus;
 
 module.exports = NoPlusPlus = (function() {
@@ -1964,7 +2054,7 @@ module.exports = NoPlusPlus = (function() {
 })();
 
 
-},{}],28:[function(_dereq_,module,exports){
+},{}],29:[function(_dereq_,module,exports){
 var NoStandAloneAt;
 
 module.exports = NoStandAloneAt = (function() {
@@ -2000,7 +2090,7 @@ module.exports = NoStandAloneAt = (function() {
 })();
 
 
-},{}],29:[function(_dereq_,module,exports){
+},{}],30:[function(_dereq_,module,exports){
 var NoTabs, indentationRegex,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -2031,7 +2121,7 @@ module.exports = NoTabs = (function() {
 })();
 
 
-},{}],30:[function(_dereq_,module,exports){
+},{}],31:[function(_dereq_,module,exports){
 var NoThrowingStrings;
 
 module.exports = NoThrowingStrings = (function() {
@@ -2058,7 +2148,7 @@ module.exports = NoThrowingStrings = (function() {
 })();
 
 
-},{}],31:[function(_dereq_,module,exports){
+},{}],32:[function(_dereq_,module,exports){
 var NoTrailingSemicolons, regexes,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   __slice = [].slice;
@@ -2110,7 +2200,7 @@ module.exports = NoTrailingSemicolons = (function() {
 })();
 
 
-},{}],32:[function(_dereq_,module,exports){
+},{}],33:[function(_dereq_,module,exports){
 var NoTrailingWhitespace, regexes;
 
 regexes = {
@@ -2173,7 +2263,7 @@ module.exports = NoTrailingWhitespace = (function() {
 })();
 
 
-},{}],33:[function(_dereq_,module,exports){
+},{}],34:[function(_dereq_,module,exports){
 var NoUnnecessaryDoubleQuotes;
 
 module.exports = NoUnnecessaryDoubleQuotes = (function() {
@@ -2278,7 +2368,7 @@ module.exports = NoUnnecessaryDoubleQuotes = (function() {
 })();
 
 
-},{}],34:[function(_dereq_,module,exports){
+},{}],35:[function(_dereq_,module,exports){
 var NoUnnecessaryFatArrows, any,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -2359,7 +2449,7 @@ module.exports = NoUnnecessaryFatArrows = (function() {
 })();
 
 
-},{}],35:[function(_dereq_,module,exports){
+},{}],36:[function(_dereq_,module,exports){
 var NonEmptyConstructorNeedsParens, ParentClass,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2391,7 +2481,7 @@ module.exports = NonEmptyConstructorNeedsParens = (function(_super) {
 })(ParentClass);
 
 
-},{"./empty_constructor_needs_parens.coffee":14}],36:[function(_dereq_,module,exports){
+},{"./empty_constructor_needs_parens.coffee":14}],37:[function(_dereq_,module,exports){
 var RuleProcessor;
 
 module.exports = RuleProcessor = (function() {
@@ -2452,7 +2542,7 @@ module.exports = RuleProcessor = (function() {
 })();
 
 
-},{}],37:[function(_dereq_,module,exports){
+},{}],38:[function(_dereq_,module,exports){
 var SpaceOperators,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -2574,7 +2664,7 @@ module.exports = SpaceOperators = (function() {
 })();
 
 
-},{}],38:[function(_dereq_,module,exports){
+},{}],39:[function(_dereq_,module,exports){
 var RuleProcessor;
 
 module.exports = RuleProcessor = (function() {
@@ -2598,6 +2688,28 @@ module.exports = RuleProcessor = (function() {
   };
 
   return RuleProcessor;
+
+})();
+
+
+},{}],40:[function(_dereq_,module,exports){
+var CamelCaseClasses;
+
+module.exports = CamelCaseClasses = (function() {
+  function CamelCaseClasses() {}
+
+  CamelCaseClasses.prototype.rule = {
+    name: 'transform_messes_up_line_numbers',
+    level: 'warn',
+    message: 'Transforming source messes up line numbers',
+    description: "This rule detects when changes are made by transform function,\nand warns that line numbers are probably incorrect."
+  };
+
+  CamelCaseClasses.prototype.tokens = [];
+
+  CamelCaseClasses.prototype.lintToken = function(token, tokenApi) {};
+
+  return CamelCaseClasses;
 
 })();
 
