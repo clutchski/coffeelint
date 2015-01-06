@@ -136,8 +136,7 @@ options = optimist
             .describe("f", "Specify a custom configuration file.")
             .describe("rules", "Specify a custom rule or directory of rules.")
             .describe("makeconfig", "Prints a default config file")
-            .describe("noconfig",
-                "Ignores the environment variable COFFEELINT_CONFIG.")
+            .describe("noconfig", "Ignores any config file.")
             .describe("h", "Print help information.")
             .describe("v", "Print current version number.")
             .describe("r", "(not used, but left for backward compatibility)")
