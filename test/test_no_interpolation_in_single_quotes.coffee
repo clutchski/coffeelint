@@ -28,6 +28,18 @@ vows.describe('no_interpolation_in_single_quotes').addBatch({
             )
             assert.equal(error.rule, 'no_interpolation_in_single_quotes')
 
+    'False interpolation in single quotes' :
+
+        topic : () ->
+            '''
+            foo = '#{= inter}foo#{#polation}'
+            '''
+
+        'interpolation in single quotes can be forbidden' : (source) ->
+            config = {no_interpolation_in_single_quotes : {level:'error'}}
+            errors = coffeelint.lint(source, config)
+            assert.isArray(errors)
+            assert.isEmpty(errors)
 
     'Interpolation in double quotes' :
 
