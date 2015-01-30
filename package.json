@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "browserify": "~3.37",
-    "coffee-script": "~1.7",
+    "coffee-script": "~1.9",
     "coffeeify": "~0.6.0",
     "glob": "^4.0.0",
     "ignore": "^2.2.15",
