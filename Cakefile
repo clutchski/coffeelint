@@ -31,11 +31,12 @@ task 'compile:commandline', 'Compiles commandline.js', ->
         coffeeSync "src/#{src}", "lib/#{dest}"
 
 task 'compile:browserify', 'Uses browserify to compile coffeelint', ->
-    b = browserify [ './src/coffeelint.coffee' ]
     opts =
         standalone: 'coffeelint'
+    b = browserify(opts)
+    b.add [ './src/coffeelint.coffee' ]
     b.transform require('coffeeify')
-    b.bundle(opts).pipe fs.createWriteStream('lib/coffeelint.js')
+    b.bundle().pipe fs.createWriteStream('lib/coffeelint.js')
 
 task 'prepublish', 'Prepublish', ->
     { npm_config_argv } = process.env
