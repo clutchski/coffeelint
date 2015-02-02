@@ -14,7 +14,7 @@ vows.describe('commas').addBatch({
             errors = coffeelint.lint(source)
             assert.equal(errors.length, 0)
 
-        'permitted by default' : (source) ->
+        'can be forbidden' : (source) ->
             config = {spacing_after_comma : {level:'warn'}}
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 1)
