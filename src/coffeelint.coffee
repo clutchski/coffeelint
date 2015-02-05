@@ -310,5 +310,4 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
 
     errors
 
-
 coffeelint.setCache = (obj) -> cache = obj

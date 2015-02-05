@@ -56,8 +56,6 @@ module.exports = class NoTrailingSemicolons
         hasNewLine = last and last.newLine?
         # Don't throw errors when the contents of multiline strings,
         # regexes and the like end in ";"
-        #
-        # `CALL_END` Added because of #314
         if hasSemicolon and not hasNewLine and lineApi.lineHasToken() and
-                not (last[0] in ['STRING', 'IDENTIFIER', 'CALL_END'])
+                not (last[0] in ['STRING', 'IDENTIFIER', 'STRING_END'])
             return true
