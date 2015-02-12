@@ -19,7 +19,7 @@ BaseLinter = require './base_linter.coffee'
 #
 module.exports = class LexicalLinter extends BaseLinter
 
-    constructor : (source, config, rules, CoffeeScript) ->
+    constructor: (source, config, rules, CoffeeScript) ->
         super source, config, rules
 
         @tokenApi = new TokenApi CoffeeScript, source, @config, @tokensByLine
@@ -31,7 +31,7 @@ module.exports = class LexicalLinter extends BaseLinter
         return typeof rule.lintToken is 'function'
 
     # Return a list of errors encountered in the given source.
-    lint : () ->
+    lint: () ->
         errors = []
 
         for token, i in @tokenApi.tokens
@@ -41,7 +41,7 @@ module.exports = class LexicalLinter extends BaseLinter
 
 
     # Return an error if the given token fails a lint check, false otherwise.
-    lintToken : (token) ->
+    lintToken: (token) ->
         [type, value, lineNumber] = token
 
         if typeof lineNumber is "object"
@@ -66,7 +66,7 @@ module.exports = class LexicalLinter extends BaseLinter
             errors.push v if v?
         errors
 
-    createError : (ruleName, attrs = {}) ->
+    createError: (ruleName, attrs = {}) ->
         attrs.lineNumber = @lineNumber + 1
         attrs.line = @tokenApi.lines[@lineNumber]
         super ruleName, attrs
