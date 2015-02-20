@@ -182,6 +182,33 @@ x((a,b)-> 3)
 </td>
 </tr>
 <tr>
+<td class="rule">braces_spacing</td>
+<td class="description">
+    This rule checks to see that there is the proper spacing inside
+curly braces. The spacing amount is specified by "spaces".
+
+<pre><code>
+# Spaces is 0
+{a: b}     # Good
+{a: b }    # Bad
+{ a: b}    # Bad
+{ a: b }   # Bad
+
+# Spaces is 1
+{a: b}     # Bad
+{a: b }    # Bad
+{ a: b}    # Bad
+{ a: b }   # Good
+{ a: b  }  # Bad
+{  a: b }  # Bad
+{  a: b  } # Bad
+</code></pre>
+
+This rule is disabled by default.
+    <p><em>default level: ignore</em></p>
+</td>
+</tr>
+<tr>
 <td class="rule">camel_case_classes</td>
 <td class="description">
     This rule mandates that all class names are CamelCased. Camel
@@ -788,9 +815,20 @@ and warns that line numbers are probably incorrect.
           <h2 class="section_title" id="changelog">Change Log</h2>
 
           <div>
+            <h3 class="changelog_header">1.8.1-1.9.0</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v1.8.1...v1.9.0">2015.2.20<a></a></small>
+          <ul class="changelog_history">
+              <li>Updated to CoffeeScript 1.9.1 thanks to swang</li>
+              <li>Fix <tt>no_implicit_braces error</tt> in class declarations</li>
+              <li>New rule <tt>braces_padding</tt></li>
+          </ul>
+          </div>
+
+          <div>
             <h3 class="changelog_header">1.7.1-1.8.1</h3>
             <small class="changelog_date">- <a
-            href="https://github.com/clutchski/coffeelint/compare/v1.7.l...v1.8.1">2014.12.20<a></a></small>
+            href="https://github.com/clutchski/coffeelint/compare/v1.7.1...v1.8.1">2014.12.20<a></a></small>
           <ul class="changelog_history">
               <li>New rule <tt>ensure_comprehensions</tt> (warn by default)</li>
               <li>Added options to
@@ -935,7 +973,7 @@ and warns that line numbers are probably incorrect.
             <li>Dropped support for CoffeeScript 1.6. (Use ~1.0.0 if you still need it)</li>
           </ul>
           </div>
-          
+
           <div>
             <h3 class="changelog_header">0.6.0-1.0.0</h3>
             <small class="changelog_date">- <a
