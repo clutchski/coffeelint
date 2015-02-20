@@ -7,23 +7,23 @@ module.exports = class SpaceOperators
         message : 'Operators must be spaced properly'
         description: "This rule enforces that operators have space around them."
 
-    tokens: [ '+', '-', '=', '**', 'MATH', 'COMPARE', 'LOGIC',
-        'COMPOUND_ASSIGN', '(', ')', 'CALL_START', 'CALL_END' ]
+    tokens: ['+', '-', '=', '**', 'MATH', 'COMPARE', 'LOGIC', 'COMPOUND_ASSIGN',
+        'STRING_START', 'STRING_END', 'CALL_START', 'CALL_END']
 
     constructor: ->
         @callTokens = []    # A stack tracking the call token pairs.
         @parenTokens = []   # A stack tracking the parens token pairs.
+        @isInterpolation = false
 
-    lintToken : ([type], tokenApi) ->
+    lintToken: ([type], tokenApi) ->
 
         # These just keep track of state
         if type in [ 'CALL_START', 'CALL_END' ]
-            @lintCall arguments...
-            return undefined
-        if type in [ '(', ')' ]
-            @lintParens arguments...
-            return undefined
+            @trackCall arguments...
+            return
 
+        if type in [ 'STRING_START', 'STRING_END' ]
+            return @trackParens arguments...
 
         # These may return errors
         if type in [ '+', '-' ]
@@ -34,7 +34,7 @@ module.exports = class SpaceOperators
     lintPlus: (token, tokenApi) ->
         # We can't check this inside of interpolations right now, because the
         # plusses used for the string type co-ercion are marked not spaced.
-        if @isInInterpolation() or @isInExtendedRegex()
+        if @isInterpolation or @isInExtendedRegex()
             return null
 
         p = tokenApi.peek(-1)
@@ -43,9 +43,9 @@ module.exports = class SpaceOperators
                     'THROW', 'LOGIC', 'POST_IF', ':', '[', 'INDENT',
                     'COMPOUND_ASSIGN', 'RETURN', 'MATH', 'BY', 'LEADING_WHEN']
         isUnary = if not p then false else p[0] in unaries
-        if (isUnary and token.spaced) or
-                    (not isUnary and not token.newLine and
-                    (not token.spaced or (p and not p.spaced)))
+        if (isUnary and token.spaced?) or
+                (not isUnary and not token.newLine and
+                (not token.spaced or (p and not p.spaced)))
             return {context: token[1]}
         else
             null
@@ -57,12 +57,12 @@ module.exports = class SpaceOperators
         else
             null
 
-    isInExtendedRegex : () ->
+    isInExtendedRegex: () ->
         for t in @callTokens
             return true if t.isRegex
         return false
 
-    lintCall : (token, tokenApi) ->
+    trackCall: (token, tokenApi) ->
         if token[0] is 'CALL_START'
             p = tokenApi.peek(-1)
             # Track regex calls, to know (approximately) if we're in an
@@ -73,23 +73,10 @@ module.exports = class SpaceOperators
             @callTokens.pop()
         return null
 
-    isInInterpolation : () ->
-        for t in @parenTokens
-            return true if t.isInterpolation
-        return false
-
-    lintParens : (token, tokenApi) ->
-        if token[0] is '('
-            p1 = tokenApi.peek(-1)
-            n1 = tokenApi.peek(1)
-            n2 = tokenApi.peek(2)
-            # String interpolations start with '' + so start the type co-ercion,
-            # so track if we're inside of one. This is most definitely not
-            # 100% true but what else can we do?
-            i = n1 and n2 and n1[0] is 'STRING' and n2[0] is '+'
-            token.isInterpolation = i
-            @parenTokens.push(token)
-        else
-            @parenTokens.pop()
+    trackParens: (token, tokenApi) ->
+        if token[0] is 'STRING_START'
+            @isInterpolation = true
+        else if token[0] is 'STRING_END'
+            @isInterpolation = false
         # We're not linting, just tracking interpolations.
         null

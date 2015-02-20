@@ -29,8 +29,9 @@ module.exports = class NoThrowingStrings
     tokens: [ 'THROW' ]
 
     lintToken : (token, tokenApi) ->
-        [n1, n2] = [tokenApi.peek(), tokenApi.peek(2)]
-        # Catch literals and string interpolations, which are wrapped in
-        # parens.
-        nextIsString = n1[0] is 'STRING' or (n1[0] is '(' and n2[0] is 'STRING')
+        [n1, ...] = tokenApi.peek()
+        # Catch literals and string interpolations, which are wrapped in parens.
+
+        nextIsString = n1 is 'STRING' or n1 is 'STRING_START'
+
         return nextIsString

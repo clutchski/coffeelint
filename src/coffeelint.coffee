@@ -216,11 +216,13 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
         # even though everything in between will be off by one.
         if sourceLength isnt source.split("\n").length and
                 config.transform_messes_up_line_numbers.level isnt 'ignore'
+
             errors.push(extend(
                 {
                     lineNumber: 1
-                    context: "File was transformed from #{sourceLength
-                        } lines to #{ source.split("\n").length} lines"
+                    context: "File was transformed from
+                        #{sourceLength} lines to
+                        #{source.split("\n").length} lines"
                 },
                 config.transform_messes_up_line_numbers
             ))
@@ -307,6 +309,5 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
     cache?.set source, errors
 
     errors
-
 
 coffeelint.setCache = (obj) -> cache = obj
