@@ -3,10 +3,10 @@ module.exports = class NoImplicitBraces
 
     rule:
         name: 'no_implicit_braces'
-        level : 'ignore'
-        message : 'Implicit braces are forbidden'
+        level: 'ignore'
+        message: 'Implicit braces are forbidden'
         strict: true
-        description: """
+        description: '''
             This rule prohibits implicit braces when declaring object literals.
             Implicit braces can make code more difficult to understand,
             especially when used in combination with optional parenthesis.
@@ -22,31 +22,42 @@ module.exports = class NoImplicitBraces
             </pre>
             Implicit braces are permitted by default, since their use is
             idiomatic CoffeeScript.
-            """
+        '''
 
-    tokens: [ "{" ]
+    tokens: ['{', 'OUTDENT', 'CLASS']
+
+    constructor: ->
+        @isClass = false
+        @classBrace = false
 
     lintToken: (token, tokenApi) ->
+        [type, val, lineNum] = token
+
+        if type is 'OUTDENT' or type is 'CLASS'
+            return @trackClass arguments...
+
         if token.generated
+            # If we're inside a class but have not yet seen a brace,
+            # allow this generated brace THIS ONE TIME
+            if @classBrace
+                @classBrace = false
+                return
 
             # If strict mode is turned off it allows implicit braces when the
             # object is declared over multiple lines.
             unless tokenApi.config[@rule.name].strict
-                [ previousToken ] = tokenApi.peek(-1)
-                if  previousToken is 'INDENT'
+                [previousToken] = tokenApi.peek(-1)
+                if previousToken is 'INDENT'
                     return
+            return true
 
-            @isPartOfClass(tokenApi)
+    trackClass: (token, tokenApi) ->
+        [[n0, ..., ln], [n1, ...]] = [token, tokenApi.peek()]
 
-
-    isPartOfClass: (tokenApi) ->
-        # Peek back to the last line break. If there is a class
-        # definition, ignore the generated brace.
-        i = -1
-        loop
-            t = tokenApi.peek(i)
-            if not t? or t[0] is 'TERMINATOR'
-                return true
-            if t[0] is 'CLASS'
-                return null
-            i -= 1
+        if n0 is 'OUTDENT' and n1 is 'TERMINATOR'
+            @isClass = false
+            @classBrace = false
+        if n0 is 'CLASS'
+            @isClass = true
+            @classBrace = true
+        return null

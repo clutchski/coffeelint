@@ -20,7 +20,7 @@ module.exports = class NoImplicitParens
             """
 
 
-    tokens: [ 'CALL_END' ]
+    tokens: ['CALL_END']
 
     lintToken : (token, tokenApi) ->
         if token.generated
