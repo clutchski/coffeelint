@@ -16,8 +16,14 @@ nodeRequire = require;
 
 if (typeof window !== "undefined" && window !== null) {
   CoffeeScript = window.CoffeeScript;
-} else {
+}
+
+if (CoffeeScript == null) {
   CoffeeScript = nodeRequire('coffee-script');
+}
+
+if (CoffeeScript == null) {
+  throw new Error('Unable to find CoffeeScript');
 }
 
 packageJSON = require('./../package.json');
@@ -366,7 +372,7 @@ coffeelint.setCache = function(obj) {
 module.exports={
   "name": "coffeelint",
   "description": "Lint your CoffeeScript",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "homepage": "http://www.coffeelint.org",
   "keywords": [
     "lint",
