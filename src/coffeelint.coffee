@@ -24,7 +24,7 @@ if window?
 # https://github.com/substack/node-browserify/issues/471
 #
 # Atom has a `window`, but not a `window.CoffeeScript`. Calling `nodeRequire`
-# here should fix Atom wihtout breaking anything else.
+# here should fix Atom without breaking anything else.
 CoffeeScript ?= nodeRequire 'coffee-script'
 
 unless CoffeeScript?
