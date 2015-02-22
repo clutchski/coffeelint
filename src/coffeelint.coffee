@@ -17,13 +17,18 @@ nodeRequire = require
 if window?
     # If we're in the browser assume CoffeeScript is already loaded.
     CoffeeScript = window.CoffeeScript
-else
-    # By using nodeRequire it prevents browserify from finding this dependency.
-    # If it isn't hidden there is an error attempting to inline CoffeeScript.
-    # if browserify uses `-i` to ignore the dependency it creates an empty shim
-    # which breaks NodeJS
-    # https://github.com/substack/node-browserify/issues/471
-    CoffeeScript = nodeRequire 'coffee-script'
+# By using nodeRequire it prevents browserify from finding this dependency.
+# If it isn't hidden there is an error attempting to inline CoffeeScript.
+# if browserify uses `-i` to ignore the dependency it creates an empty shim
+# which breaks NodeJS
+# https://github.com/substack/node-browserify/issues/471
+#
+# Atom has a `window`, but not a `window.CoffeeScript`. Calling `nodeRequire`
+# here should fix Atom wihtout breaking anything else.
+CoffeeScript ?= nodeRequire 'coffee-script'
+
+unless CoffeeScript?
+    throw new Error('Unable to find CoffeeScript')
 
 # Browserify will inline the file at compile time.
 packageJSON = require('./../package.json')
