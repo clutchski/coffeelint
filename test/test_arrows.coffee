@@ -16,6 +16,13 @@ vows.describe('arrows').addBatch({
               console.log("foo->bar")
             test5 = (foo, bar) ->
               console.log("foo->bar")
+            test6 = (foo, bar)=>@baz
+            test7 = (foo, bar) =>@baz
+            test8 = (foo, bar)=> @baz
+            test9 = (foo, bar)=>
+              @baz
+            test10 = (foo, bar) =>
+              @baz
             '''
 
         'will return an error' : (source) ->
@@ -24,11 +31,15 @@ vows.describe('arrows').addBatch({
                 "arrow_spacing": { "level": "error"}
             }
             errors = coffeelint.lint(source, config)
-            assert.equal(errors.length, 4)
+            assert.equal(errors.length, 8)
             assert.equal(errors[0].lineNumber, 1)
             assert.equal(errors[1].lineNumber, 2)
             assert.equal(errors[2].lineNumber, 3)
             assert.equal(errors[3].lineNumber, 4)
+            assert.equal(errors[4].lineNumber, 8)
+            assert.equal(errors[5].lineNumber, 9)
+            assert.equal(errors[6].lineNumber, 10)
+            assert.equal(errors[7].lineNumber, 11)
 
         'will be ignored (no error)' : (source) ->
             config = { "arrow_spacing": { "level": "ignore" } }

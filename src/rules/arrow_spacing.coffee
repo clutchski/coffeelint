@@ -4,7 +4,7 @@ module.exports = class ArrowSpacing
     rule:
         name: 'arrow_spacing'
         level : 'ignore'
-        message : 'Function arrow (->) must be spaced properly'
+        message : 'Function arrows (-> and =>) must be spaced properly'
         description: """
             <p>This rule checks to see that there is spacing before and after
             the arrow operator that declares a function. This rule is disabled
@@ -23,7 +23,7 @@ module.exports = class ArrowSpacing
             </pre>
              """
 
-    tokens: [ '->' ]
+    tokens: [ '->', '=>' ]
 
     lintToken : (token, tokenApi) ->
         # Throw error unless the following happens.
