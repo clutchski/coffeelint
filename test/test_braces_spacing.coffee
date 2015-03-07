@@ -36,6 +36,8 @@ configs =
         braces_spacing: {level: 'error', spaces: 0}
     oneSpace:
         braces_spacing: {level: 'error', spaces: 1}
+    oneSpaceAllowEmtpy:
+        braces_spacing: {level: 'error', spaces: 1, allow_empty: true}
 
 shouldPass = (source, config = {}) ->
     topic: coffeelint.lint(source, config)
@@ -154,6 +156,30 @@ vows.describe('braces_spacing').addBatch({
             'one space inside on both braces':
                 shouldPass(sources.stringInterpolation.oneSpace,
                            configs.oneSpace)
+
+
+    'enabled with spaces set to 1 and allow_empty set to true' :
+        'braces on the line':
+            'no spaces inside both braces':
+                shouldPass(sources.sameLine.noSpaces,
+                           configs.oneSpaceAllowEmtpy)
+
+            'two spaces inside on both braces':
+                shouldFail(sources.sameLine.twoSpaces,
+                           configs.oneSpaceAllowEmtpy,
+                           ['There should be 1 space inside "{"',
+                            'There should be 1 space inside "}"'])
+
+        'braces on separate lines':
+            'no spaces inside both braces':
+                shouldPass(sources.sameLine.noSpaces,
+                           configs.oneSpaceAllowEmtpy)
+
+            'two spaces inside on both braces':
+                shouldFail(sources.splitLine.twoSpaces,
+                           configs.oneSpaceAllowEmtpy,
+                           ['There should be 1 space inside "{"',
+                            'There should be 1 space inside "}"'])
 
 
 }).export(module)
