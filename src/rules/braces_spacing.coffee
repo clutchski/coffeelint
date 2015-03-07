@@ -15,6 +15,8 @@ module.exports = class BracesSpacing
             {a: b }    # Bad
             { a: b}    # Bad
             { a: b }   # Bad
+            {}         # Good
+            { }        # Bad
 
             # Spaces is 1
             {a: b}     # Bad
@@ -24,6 +26,12 @@ module.exports = class BracesSpacing
             { a: b  }  # Bad
             {  a: b }  # Bad
             {  a: b  } # Bad
+            {}         # Bad
+            { }        # Good
+
+            # Spaces is 1 and Allow Empty is true
+            {}         # Good
+            { }        # Good
             </code></pre>
 
             This rule is disabled by default.
@@ -57,8 +65,9 @@ module.exports = class BracesSpacing
 
         expected = tokenApi.config[@rule.name].spaces
         actual = @distanceBetweenTokens firstToken, secondToken
+        allowEmpty = expected is 1 and tokenApi.config[@rule.name].allow_empty
 
-        if actual is expected
+        if actual is expected or allowEmpty and actual is 0
             null
         else
             msg = "There should be #{expected} space"
