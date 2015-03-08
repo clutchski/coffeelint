@@ -4,10 +4,13 @@ module.exports = class BracesSpacing
         name: 'braces_spacing'
         level: 'ignore'
         spaces: 0
+        empty_object_spaces: 0
         message: 'Curly braces must have the proper spacing'
         description: '''
             This rule checks to see that there is the proper spacing inside
             curly braces. The spacing amount is specified by "spaces".
+            The spacing amount for empty objects is specified by
+            "empty_object_spaces".
 
             <pre><code>
             # Spaces is 0
@@ -24,6 +27,14 @@ module.exports = class BracesSpacing
             { a: b  }  # Bad
             {  a: b }  # Bad
             {  a: b  } # Bad
+
+            # Empty Object Spaces is 0
+            {}         # Good
+            { }        # Bad
+
+            # Empty Object Spaces is 1
+            {}         # Bad
+            { }        # Good
             </code></pre>
 
             This rule is disabled by default.
@@ -45,6 +56,13 @@ module.exports = class BracesSpacing
     tokensOnSameLine: (firstToken, secondToken) ->
         firstToken[2].first_line is secondToken[2].first_line
 
+    getExpectedSpaces: (tokenApi, firstToken, secondToken) ->
+        config = tokenApi.config[@rule.name]
+        if firstToken[0] is '{' and secondToken[0] is '}'
+            config.empty_object_spaces ? config.spaces
+        else
+            config.spaces
+
     lintToken: (token, tokenApi) ->
         return null if token.generated
 
@@ -55,7 +73,7 @@ module.exports = class BracesSpacing
 
         return null unless @tokensOnSameLine firstToken, secondToken
 
-        expected = tokenApi.config[@rule.name].spaces
+        expected = @getExpectedSpaces tokenApi, firstToken, secondToken
         actual = @distanceBetweenTokens firstToken, secondToken
 
         if actual is expected
