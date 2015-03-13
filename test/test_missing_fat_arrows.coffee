@@ -66,7 +66,7 @@ vows.describe(RULE).addBatch({
             class A
                 @m: -> 1
             """
-        'with this': shouldPass """
+        'with this': shouldError """
             class A
                 @m: -> this
             """
@@ -76,7 +76,7 @@ vows.describe(RULE).addBatch({
             class A
                 m: -> 1
             """
-        'with this': shouldPass """
+        'with this': shouldError """
             class A
                 m: -> this
             """
@@ -107,10 +107,10 @@ vows.describe(RULE).addBatch({
         'with this': shouldPass """
             class A
                 f = => this
-                m: -> this
-                @n: -> this
-                o: -> this
-                @p: -> this
+                m: => this
+                @n: => this
+                o: => this
+                @p: => this
             """
 
     'https://github.com/clutchski/coffeelint/issues/215':
