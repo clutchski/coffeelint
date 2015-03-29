@@ -26,7 +26,7 @@ findFile = (name, dir) ->
 # Possibly find CoffeeLint configuration within a package.json file.
 loadNpmConfig = (dir) ->
     fp = findFile("package.json", dir)
-    loadJSON(fp).coffeelintConfig  if fp
+    loadJSON(fp)?.coffeelintConfig  if fp
 
 # Parse a JSON file gracefully.
 loadJSON = (filename) ->
