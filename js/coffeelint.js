@@ -372,7 +372,7 @@ coffeelint.setCache = function(obj) {
 module.exports={
   "name": "coffeelint",
   "description": "Lint your CoffeeScript",
-  "version": "1.9.1",
+  "version": "1.9.3",
   "homepage": "http://www.coffeelint.org",
   "keywords": [
     "lint",
@@ -1053,11 +1053,11 @@ module.exports = ArrowSpacing = (function() {
   ArrowSpacing.prototype.rule = {
     name: 'arrow_spacing',
     level: 'ignore',
-    message: 'Function arrow (->) must be spaced properly',
+    message: 'Function arrows (-> and =>) must be spaced properly',
     description: "<p>This rule checks to see that there is spacing before and after\nthe arrow operator that declares a function. This rule is disabled\nby default.</p> <p>Note that if arrow_spacing is enabled, and you\npass an empty function as a parameter, arrow_spacing will accept\neither a space or no space in-between the arrow operator and the\nparenthesis</p>\n<pre><code># Both of this will not trigger an error,\n# even with arrow_spacing enabled.\nx(-> 3)\nx( -> 3)\n\n# However, this will trigger an error\nx((a,b)-> 3)\n</code>\n</pre>"
   };
 
-  ArrowSpacing.prototype.tokens = ['->'];
+  ArrowSpacing.prototype.tokens = ['->', '=>'];
 
   ArrowSpacing.prototype.lintToken = function(token, tokenApi) {
     var pp;
