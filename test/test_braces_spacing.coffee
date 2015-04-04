@@ -4,6 +4,10 @@ assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
 sources =
+    emptyObject:
+        noSpaces: '{}'
+        oneSpace: '{ }'
+        twoSpaces: '{  }'
     implicit: 'foo: bar'
     ownLine: '''
              x = {
@@ -32,10 +36,14 @@ sources =
         oneSpace: "\"\#{ foo }\""
 
 configs =
-    zeroSpaces:
-        braces_spacing: {level: 'error', spaces: 0}
+    oneEmptyObjectSpace:
+        braces_spacing: {level: 'error', empty_object_spaces: 1}
     oneSpace:
         braces_spacing: {level: 'error', spaces: 1}
+    zeroEmptyObjectSpaces:
+        braces_spacing: {level: 'error', empty_object_spaces: 0}
+    zeroSpaces:
+        braces_spacing: {level: 'error', spaces: 0}
 
 shouldPass = (source, config = {}) ->
     topic: coffeelint.lint(source, config)
@@ -154,6 +162,42 @@ vows.describe('braces_spacing').addBatch({
             'one space inside on both braces':
                 shouldPass(sources.stringInterpolation.oneSpace,
                            configs.oneSpace)
+
+
+    'enabled with empty object spaces set to 0':
+        'no spaces inside both braces':
+            shouldPass(sources.emptyObject.noSpaces,
+                       configs.zeroEmptyObjectSpaces)
+
+        'one space inside on both braces':
+            shouldFail(sources.emptyObject.oneSpace,
+                       configs.zeroEmptyObjectSpaces,
+                       ['There should be 0 spaces inside "{"',
+                        'There should be 0 spaces inside "}"'])
+
+        'two spaces inside on both braces':
+            shouldFail(sources.emptyObject.twoSpaces,
+                       configs.zeroEmptyObjectSpaces,
+                       ['There should be 0 spaces inside "{"',
+                        'There should be 0 spaces inside "}"'])
+
+
+    'enabled with empty object spaces set to 1':
+        'no spaces inside both braces':
+            shouldFail(sources.emptyObject.noSpaces,
+                       configs.oneEmptyObjectSpace,
+                       ['There should be 1 space inside "{"',
+                        'There should be 1 space inside "}"'])
+
+        'one space inside on both braces':
+            shouldPass(sources.emptyObject.oneSpace,
+                       configs.oneEmptyObjectSpace)
+
+        'two spaces inside on both braces':
+            shouldFail(sources.emptyObject.twoSpaces,
+                       configs.oneEmptyObjectSpace,
+                       ['There should be 1 space inside "{"',
+                        'There should be 1 space inside "}"'])
 
 
 }).export(module)
