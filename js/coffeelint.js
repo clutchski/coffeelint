@@ -372,7 +372,7 @@ coffeelint.setCache = function(obj) {
 module.exports={
   "name": "coffeelint",
   "description": "Lint your CoffeeScript",
-  "version": "1.9.3",
+  "version": "1.9.4",
   "homepage": "http://www.coffeelint.org",
   "keywords": [
     "lint",
@@ -1100,8 +1100,9 @@ module.exports = BracesSpacing = (function() {
     name: 'braces_spacing',
     level: 'ignore',
     spaces: 0,
+    empty_object_spaces: 0,
     message: 'Curly braces must have the proper spacing',
-    description: 'This rule checks to see that there is the proper spacing inside\ncurly braces. The spacing amount is specified by "spaces".\n\n<pre><code>\n# Spaces is 0\n{a: b}     # Good\n{a: b }    # Bad\n{ a: b}    # Bad\n{ a: b }   # Bad\n\n# Spaces is 1\n{a: b}     # Bad\n{a: b }    # Bad\n{ a: b}    # Bad\n{ a: b }   # Good\n{ a: b  }  # Bad\n{  a: b }  # Bad\n{  a: b  } # Bad\n</code></pre>\n\nThis rule is disabled by default.'
+    description: 'This rule checks to see that there is the proper spacing inside\ncurly braces. The spacing amount is specified by "spaces".\nThe spacing amount for empty objects is specified by\n"empty_object_spaces".\n\n<pre><code>\n# Spaces is 0\n{a: b}     # Good\n{a: b }    # Bad\n{ a: b}    # Bad\n{ a: b }   # Bad\n\n# Spaces is 1\n{a: b}     # Bad\n{a: b }    # Bad\n{ a: b}    # Bad\n{ a: b }   # Good\n{ a: b  }  # Bad\n{  a: b }  # Bad\n{  a: b  } # Bad\n\n# Empty Object Spaces is 0\n{}         # Good\n{ }        # Bad\n\n# Empty Object Spaces is 1\n{}         # Bad\n{ }        # Good\n</code></pre>\n\nThis rule is disabled by default.'
   };
 
   BracesSpacing.prototype.tokens = ['{', '}'];
@@ -1127,6 +1128,16 @@ module.exports = BracesSpacing = (function() {
     return firstToken[2].first_line === secondToken[2].first_line;
   };
 
+  BracesSpacing.prototype.getExpectedSpaces = function(tokenApi, firstToken, secondToken) {
+    var config, ref;
+    config = tokenApi.config[this.rule.name];
+    if (firstToken[0] === '{' && secondToken[0] === '}') {
+      return (ref = config.empty_object_spaces) != null ? ref : config.spaces;
+    } else {
+      return config.spaces;
+    }
+  };
+
   BracesSpacing.prototype.lintToken = function(token, tokenApi) {
     var actual, expected, firstToken, msg, ref, secondToken;
     if (token.generated) {
@@ -1136,7 +1147,7 @@ module.exports = BracesSpacing = (function() {
     if (!this.tokensOnSameLine(firstToken, secondToken)) {
       return null;
     }
-    expected = tokenApi.config[this.rule.name].spaces;
+    expected = this.getExpectedSpaces(tokenApi, firstToken, secondToken);
     actual = this.distanceBetweenTokens(firstToken, secondToken);
     if (actual === expected) {
       return null;
@@ -1761,8 +1772,9 @@ module.exports = MissingFatArrows = (function() {
   MissingFatArrows.prototype.rule = {
     name: 'missing_fat_arrows',
     level: 'ignore',
+    is_strict: false,
     message: 'Used `this` in a function without a fat arrow',
-    description: "Warns when you use `this` inside a function that wasn't defined\nwith a fat arrow. This rule does not apply to methods defined in a\nclass, since they have `this` bound to the class instance (or the\nclass itself, for class methods).\n\nIt is impossible to statically determine whether a function using\n`this` will be bound with the correct `this` value due to language\nfeatures like `Function.prototype.call` and\n`Function.prototype.bind`, so this rule may produce false positives."
+    description: "Warns when you use `this` inside a function that wasn't defined\nwith a fat arrow. This rule does not apply to methods defined in a\nclass, since they have `this` bound to the class instance (or the\nclass itself, for class methods). The option `is_strict` is\navailable for checking bindings of class methods.\n\nIt is impossible to statically determine whether a function using\n`this` will be bound with the correct `this` value due to language\nfeatures like `Function.prototype.call` and\n`Function.prototype.bind`, so this rule may produce false positives."
   };
 
   MissingFatArrows.prototype.lintAST = function(node, astApi) {
@@ -1772,11 +1784,12 @@ module.exports = MissingFatArrows = (function() {
   };
 
   MissingFatArrows.prototype.lintNode = function(node, methods) {
-    var error;
+    var error, is_strict, ref;
     if (methods == null) {
       methods = [];
     }
-    if ((!this.isFatArrowCode(node)) && (indexOf.call(methods, node) < 0) && (this.needsFatArrow(node))) {
+    is_strict = (ref = this.astApi.config[this.rule.name]) != null ? ref.is_strict : void 0;
+    if ((!this.isFatArrowCode(node)) && (is_strict ? true : indexOf.call(methods, node) < 0) && (this.needsFatArrow(node))) {
       error = this.astApi.createError({
         lineNumber: node.locationData.first_line + 1
       });

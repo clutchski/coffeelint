@@ -186,6 +186,8 @@ x((a,b)-> 3)
 <td class="description">
     This rule checks to see that there is the proper spacing inside
 curly braces. The spacing amount is specified by "spaces".
+The spacing amount for empty objects is specified by
+"empty_object_spaces".
 
 <pre><code>
 # Spaces is 0
@@ -202,6 +204,14 @@ curly braces. The spacing amount is specified by "spaces".
 { a: b  }  # Bad
 {  a: b }  # Bad
 {  a: b  } # Bad
+
+# Empty Object Spaces is 0
+{}         # Good
+{ }        # Bad
+
+# Empty Object Spaces is 1
+{}         # Bad
+{ }        # Good
 </code></pre>
 
 This rule is disabled by default.
@@ -335,7 +345,8 @@ Lines can be no longer than eighty characters by default.
     Warns when you use `this` inside a function that wasn't defined
 with a fat arrow. This rule does not apply to methods defined in a
 class, since they have `this` bound to the class instance (or the
-class itself, for class methods).
+class itself, for class methods). The option `is_strict` is
+available for checking bindings of class methods.
 
 It is impossible to statically determine whether a function using
 `this` will be bound with the correct `this` value due to language
@@ -813,6 +824,18 @@ and warns that line numbers are probably incorrect.
           </p>
 
           <h2 class="section_title" id="changelog">Change Log</h2>
+
+
+          <div>
+            <h3 class="changelog_header">1.9.3-1.9.4</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v1.9.3...v1.9.4">2015.4.6<a></a></small>
+          <ul class="changelog_history">
+              <li>missing_fat_arrows: added strict-mode option, defaults to false</li>
+              <li>Add "empty_object_spaces" to braces_spacing</li>
+          </ul>
+          </div>
+
 
           <div>
             <h3 class="changelog_header">1.9.1-1.9.3</h3>
