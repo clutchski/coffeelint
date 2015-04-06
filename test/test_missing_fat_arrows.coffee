@@ -6,25 +6,26 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 
 RULE = 'missing_fat_arrows'
 
-runLint = (source) ->
+runLint = (source, is_strict) ->
     config = {}
     config[name] = level: 'ignore' for name, rule of coffeelint.RULES
     config[RULE].level = 'error'
+    config[RULE].is_strict = is_strict
     coffeelint.lint source, config
 
-shouldError = (source, numErrors = 1) ->
+shouldError = (source, numErrors = 1, is_strict = false) ->
     topic: source
     'errors for missing arrow': (source) ->
-        errors = runLint source
+        errors = runLint source, is_strict
         assert.lengthOf errors, numErrors,
             "Expected #{numErrors} errors, got #{inspect errors}"
         error = errors[0]
         assert.equal error.rule, RULE
 
-shouldPass = (source) ->
+shouldPass = (source, is_strict = false) ->
     topic: source
     'does not error for no missing arrows': (source) ->
-        errors = runLint source
+        errors = runLint source, is_strict
         assert.isEmpty errors, "Expected no errors, got #{inspect errors}"
 
 vows.describe(RULE).addBatch({
@@ -71,6 +72,16 @@ vows.describe(RULE).addBatch({
                 @m: -> this
             """
 
+    'class instance method in strict mode':
+        'without this': shouldPass """
+            class A
+                @m: -> 1
+            """
+        'with this': shouldError """
+            class A
+                @m: -> this
+            """, null, true
+
     'class method':
         'without this': shouldPass """
             class A
@@ -80,6 +91,16 @@ vows.describe(RULE).addBatch({
             class A
                 m: -> this
             """
+
+    'class method in strict mode':
+        'without this': shouldPass """
+            class A
+                m: -> 1
+            """
+        'with this': shouldError """
+            class A
+                m: -> this
+            """, null, true
 
     'function in class body':
         'without this': shouldPass """
@@ -112,6 +133,16 @@ vows.describe(RULE).addBatch({
                 o: -> this
                 @p: -> this
             """
+
+    'mixture of class methods and function in class body in strict mode':
+        'with this': shouldPass """
+            class A
+                f = => this
+                m: => this
+                @n: => this
+                o: => this
+                @p: => this
+            """, true
 
     'https://github.com/clutchski/coffeelint/issues/215':
         'method with block comment': shouldPass """
