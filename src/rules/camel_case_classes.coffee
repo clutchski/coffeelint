@@ -7,9 +7,9 @@ module.exports = class CamelCaseClasses
     rule:
         name: 'camel_case_classes'
         level : 'error'
-        message : 'Class names should be camel cased'
+        message : 'Class names should be UpperCamelCased (aka PascalCased)'
         description: """
-            This rule mandates that all class names are CamelCased. Camel
+            This rule mandates that all class names are UpperCamelCased. Camel
             casing class names is a generally accepted way of distinguishing
             constructor functions - which require the 'new' prefix to behave
             properly - from plain old functions.
