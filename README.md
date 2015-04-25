@@ -43,7 +43,7 @@ adding a new rule_ below).
 9. Squash all commits into a single commit when done.
 10. Submit a pull request.
 
-[![Build Status](https://secure.travis-ci.org/clutchski/coffeelint.png)](http://travis-ci.org/clutchski/coffeelint)
+[![Build Status](https://secure.travis-ci.org/clutchski/coffeelint.svg)](http://travis-ci.org/clutchski/coffeelint)
 
 ### Updating documentation when adding a new rule
 
