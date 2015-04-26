@@ -5,6 +5,7 @@ JSHint does.
 
 fs = require 'fs'
 path = require 'path'
+stripComments = require 'strip-json-comments'
 
 # Cache for findFile
 findFileResults = {}
@@ -31,7 +32,7 @@ loadNpmConfig = (dir) ->
 # Parse a JSON file gracefully.
 loadJSON = (filename) ->
     try
-        JSON.parse(fs.readFileSync(filename).toString())
+        JSON.parse(stripComments(fs.readFileSync(filename).toString()))
     catch e
         process.stderr.write "Could not load JSON file '#{filename}': #{e}"
         null

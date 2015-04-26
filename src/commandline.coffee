@@ -13,6 +13,7 @@ os   = require("os")
 glob = require("glob")
 optimist = require("optimist")
 ignore = require('ignore')
+stripComments = require('strip-json-comments')
 thisdir = path.dirname(fs.realpathSync(__filename))
 coffeelint = require(path.join(thisdir, "coffeelint"))
 configfinder = require(path.join(thisdir, "configfinder"))
@@ -58,6 +59,10 @@ lintSource = (source, config, literate = false) ->
 
     errorReport.lint("stdin", source, config, literate)
     return errorReport
+
+# Load a config file given a path/filename
+loadConfig = (path) ->
+    JSON.parse(stripComments(read(path)))
 
 # Get fallback configuration. With the -F flag found configs in standard places
 # will be used for each file being linted. Standard places are package.json or
@@ -188,7 +193,7 @@ else
     config = null
     unless options.argv.noconfig
         if options.argv.f
-            config = JSON.parse read options.argv.f
+            config = loadConfig(options.argv.f)
 
             # If -f was specifying a package.json, extract the config
             if config.coffeelintConfig
@@ -196,7 +201,7 @@ else
 
         else if (process.env.COFFEELINT_CONFIG and
         fs.existsSync(process.env.COFFEELINT_CONFIG))
-            config = JSON.parse(read(process.env.COFFEELINT_CONFIG))
+            config = loadConfig(process.env.COFFEELINT_CONFIG)
 
     ruleLoader.loadRule(coffeelint, options.argv.rules) if options.argv.rules
 
