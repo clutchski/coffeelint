@@ -47,7 +47,7 @@ vows.describe('identifiers').addBatch({
             assert.lengthOf(errors, 4)
             error = errors[0]
             assert.equal(error.lineNumber, 1)
-            assert.equal(error.message,  'Class names should be UpperCamelCased')
+            assert.equal(error.message,  'Class name should be UpperCamelCased')
             assert.equal(error.context,  'class name: animal')
             assert.equal(error.rule,  'camel_case_classes')
 
