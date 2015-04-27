@@ -76,7 +76,7 @@ vows.describe(RULE).addBatch({
         'without this': shouldPass """
             class A
                 @m: -> 1
-            """
+            """, true
         'with this': shouldError """
             class A
                 @m: -> this
@@ -96,11 +96,23 @@ vows.describe(RULE).addBatch({
         'without this': shouldPass """
             class A
                 m: -> 1
-            """
+            """, true
         'with this': shouldError """
             class A
                 m: -> this
             """, null, true
+
+    'class constructor in strict mode':
+        'without this': shouldPass """
+            class A
+                constructor: -> 1
+            """, true
+        'with this': shouldPass """
+            class A
+                constructor: -> this
+                dd: 'constructor'
+                xx: -> 'constructor'
+            """, true
 
     'function in class body':
         'without this': shouldPass """
