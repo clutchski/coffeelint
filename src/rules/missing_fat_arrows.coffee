@@ -36,6 +36,9 @@ module.exports = class MissingFatArrows
 
     lintNode: (node, methods = []) ->
         is_strict = @astApi.config[@rule.name]?.is_strict
+        if @isConstructor node
+            return
+
         if (not @isFatArrowCode node) and
                 # Ignore any nodes we know to be methods
                 (if is_strict then true else node not in methods) and
@@ -59,6 +62,7 @@ module.exports = class MissingFatArrows
     isObject: (node) => @astApi.getNodeName(node) is 'Obj'
     isThis: (node) => @isValue(node) and node.base.value is 'this'
     isFatArrowCode: (node) => @isCode(node) and node.bound
+    isConstructor: (node) -> node.variable?.base.value is 'constructor'
 
 
 
