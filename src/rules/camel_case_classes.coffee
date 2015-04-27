@@ -7,7 +7,7 @@ module.exports = class CamelCaseClasses
     rule:
         name: 'camel_case_classes'
         level : 'error'
-        message : 'Class names should be UpperCamelCased (aka PascalCased)'
+        message : 'Class names should be UpperCamelCased'
         description: """
             This rule mandates that all class names are UpperCamelCased. Camel
             casing class names is a generally accepted way of distinguishing
