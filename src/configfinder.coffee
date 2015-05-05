@@ -85,7 +85,6 @@ exports.getConfig = (filename = null) ->
 
     config = getConfig(dir)
 
-    console.log('config', config)
     if config
         config = expandModuleNames(dir, config)
 
