@@ -6,6 +6,7 @@ JSHint does.
 fs = require 'fs'
 path = require 'path'
 stripComments = require 'strip-json-comments'
+resolve = require('resolve').sync
 
 # Cache for findFile
 findFileResults = {}
@@ -41,11 +42,7 @@ loadJSON = (filename) ->
 # given), as either the package.json's 'coffeelintConfig' property, or a project
 # specific 'coffeelint.json' or a global 'coffeelint.json' in the home
 # directory.
-exports.getConfig = (filename = null) ->
-    if filename
-        dir = path.dirname(path.resolve(filename))
-    else
-        dir = process.cwd()
+getConfig = (dir) ->
 
     npmConfig = loadNpmConfig(dir)
     return npmConfig  if npmConfig
@@ -56,3 +53,40 @@ exports.getConfig = (filename = null) ->
     home = path.normalize(path.join(envs, "coffeelint.json"))
     if fs.existsSync(home)
         return loadJSON(home)
+
+# configfinder is the only part of coffeelint that actually has the full
+# filename and can accurately resolve module names. This will find all of the
+# modules and expand them into full paths so that they can be found when the
+# source and config are passed to `coffeelint.lint`
+expandModuleNames = (dir, config) ->
+    for ruleName, data of config when data?.module?
+        config[ruleName].module = resolve data.module, {
+            basedir: dir
+        }
+
+    coffeelint = config.coffeelint
+    if coffeelint?.transforms?
+        coffeelint.transforms = coffeelint.transforms.map (moduleName) ->
+            return resolve moduleName, {
+                basedir: dir
+            }
+    if coffeelint?.coffeescript?
+        coffeelint.coffeescript = resolve coffeelint.coffeescript, {
+            basedir: dir
+        }
+
+    config
+
+exports.getConfig = (filename = null) ->
+    if filename
+        dir = path.dirname(path.resolve(filename))
+    else
+        dir = process.cwd()
+
+    config = getConfig(dir)
+
+    console.log('config', config)
+    if config
+        config = expandModuleNames(dir, config)
+
+    config
