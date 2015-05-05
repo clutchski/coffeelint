@@ -372,7 +372,7 @@ coffeelint.setCache = function(obj) {
 module.exports={
   "name": "coffeelint",
   "description": "Lint your CoffeeScript",
-  "version": "1.9.4",
+  "version": "1.9.5",
   "homepage": "http://www.coffeelint.org",
   "keywords": [
     "lint",
@@ -399,7 +399,8 @@ module.exports={
     "glob": "^4.0.0",
     "ignore": "^2.2.15",
     "optimist": "^0.6.1",
-    "resolve": "^0.6.3"
+    "resolve": "^0.6.3",
+    "strip-json-comments": "^1.0.2"
   },
   "devDependencies": {
     "vows": ">=0.6.0",
@@ -1182,8 +1183,8 @@ module.exports = CamelCaseClasses = (function() {
   CamelCaseClasses.prototype.rule = {
     name: 'camel_case_classes',
     level: 'error',
-    message: 'Class names should be camel cased',
-    description: "This rule mandates that all class names are CamelCased. Camel\ncasing class names is a generally accepted way of distinguishing\nconstructor functions - which require the 'new' prefix to behave\nproperly - from plain old functions.\n<pre>\n<code># Good!\nclass BoaConstrictor\n\n# Bad!\nclass boaConstrictor\n</code>\n</pre>\nThis rule is enabled by default."
+    message: 'Class name should be UpperCamelCased',
+    description: "This rule mandates that all class names are UpperCamelCased.\nCamel casing class names is a generally accepted way of\ndistinguishing constructor functions - which require the 'new'\nprefix to behave properly - from plain old functions.\n<pre>\n<code># Good!\nclass BoaConstrictor\n\n# Bad!\nclass boaConstrictor\n</code>\n</pre>\nThis rule is enabled by default."
   };
 
   CamelCaseClasses.prototype.tokens = ['CLASS'];
@@ -1711,7 +1712,7 @@ module.exports = MaxLineLength = (function() {
     var limitComments, lineLength, max, ref, ref1;
     max = (ref = lineApi.config[this.rule.name]) != null ? ref.value : void 0;
     limitComments = (ref1 = lineApi.config[this.rule.name]) != null ? ref1.limitComments : void 0;
-    lineLength = line.trimRight().length;
+    lineLength = line.replace(/\s+$/, '').length;
     if (lineApi.isLiterate() && regexes.literateComment.test(line)) {
       lineLength -= 2;
     }
@@ -1789,6 +1790,9 @@ module.exports = MissingFatArrows = (function() {
       methods = [];
     }
     is_strict = (ref = this.astApi.config[this.rule.name]) != null ? ref.is_strict : void 0;
+    if (this.isConstructor(node)) {
+      return;
+    }
     if ((!this.isFatArrowCode(node)) && (is_strict ? true : indexOf.call(methods, node) < 0) && (this.needsFatArrow(node))) {
       error = this.astApi.createError({
         lineNumber: node.locationData.first_line + 1
@@ -1833,6 +1837,11 @@ module.exports = MissingFatArrows = (function() {
 
   MissingFatArrows.prototype.isFatArrowCode = function(node) {
     return this.isCode(node) && node.bound;
+  };
+
+  MissingFatArrows.prototype.isConstructor = function(node) {
+    var ref;
+    return ((ref = node.variable) != null ? ref.base.value : void 0) === 'constructor';
   };
 
   MissingFatArrows.prototype.needsFatArrow = function(node) {
@@ -2143,7 +2152,7 @@ module.exports = NoInterpolationInSingleQuotes = (function() {
   NoInterpolationInSingleQuotes.prototype.lintToken = function(token, tokenApi) {
     var hasInterpolation, tokenValue;
     tokenValue = token[1];
-    hasInterpolation = tokenValue.match(/#\{[^}]+\}/);
+    hasInterpolation = tokenValue.match(/^\'.*#\{[^}]+\}.*\'$/);
     return hasInterpolation;
   };
 
