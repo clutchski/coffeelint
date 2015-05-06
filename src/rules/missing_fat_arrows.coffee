@@ -62,7 +62,7 @@ module.exports = class MissingFatArrows
     isObject: (node) => @astApi.getNodeName(node) is 'Obj'
     isThis: (node) => @isValue(node) and node.base.value is 'this'
     isFatArrowCode: (node) => @isCode(node) and node.bound
-    isConstructor: (node) -> node.variable?.base.value is 'constructor'
+    isConstructor: (node) -> node.variable?.base?.value is 'constructor'
 
 
 
