@@ -66,6 +66,7 @@ difference = (a, b) ->
 LineLinter = require './line_linter.coffee'
 LexicalLinter = require './lexical_linter.coffee'
 ASTLinter = require './ast_linter.coffee'
+ScopeLinter = require './scope_linter.coffee'
 
 # Cache instance, disabled by default
 cache = null
@@ -119,8 +120,9 @@ coffeelint.registerRule = (RuleConstructor, ruleName = undefined) ->
     if typeof p.lintToken is 'function'
         e "'tokens' is required for 'lintToken'" unless p.tokens
     else if typeof p.lintLine isnt 'function' and
-            typeof p.lintAST isnt 'function'
-        e "Rules must implement lintToken, lintLine, or lintAST"
+            typeof p.lintAST isnt 'function' and
+            typeof p.lintScope isnt 'function'
+        e "Rules must implement lintToken, lintLine, lintAST, or lintScope"
 
     # Capture the default options for the new rule.
     RULES[p.rule.name] = p.rule
@@ -264,6 +266,9 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
     # Do AST linting first so all compile errors are caught.
     astErrors = new ASTLinter(source, config, _rules, CoffeeScript).lint()
     errors = errors.concat(astErrors)
+
+    scopeErrors = new ScopeLinter(source, config, _rules, CoffeeScript).lint()
+    errors = errors.concat(scopeErrors)
 
     # only do further checks if the syntax is okay, otherwise they just fail
     # with syntax error exceptions
