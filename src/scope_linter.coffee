@@ -1,14 +1,15 @@
 BaseLinter = require './base_linter.coffee'
-cofeescope = require('coffeescope')
+coffeescope = require('coffeescope')
 
 class ScopeApi
+    constructor: (@config) ->
     createError: ->
         # See below, this gets replaced with a version that knows the rule name
 
 
-module.exports = class ASTLinter extends BaseLinter
+module.exports = class ScopeLinter extends BaseLinter
 
-    constructor : (source, config, rules) ->
+    constructor : (source, config, rules, @CoffeeScript) ->
         super source, config, rules
         @scopeApi = new ScopeApi @config
 
@@ -18,7 +19,17 @@ module.exports = class ASTLinter extends BaseLinter
     lint : () ->
         errors = []
 
+        try
+            globalScope = coffeescope.scan(@CoffeeScript, @source)
+        catch error
+            return [@createError('coffeelint', {
+                message: "CoffeeScope Error: #{error.message}"
+                level: 'warn'
+                lineNumber: 1
+            })]
+
         for rule in @rules
+            ruleName = rule.rule.name
             @scopeApi.createError = (attrs = {}) =>
                 @createError rule.rule.name, attrs
 
@@ -27,7 +38,13 @@ module.exports = class ASTLinter extends BaseLinter
             # multiple errors.
             rule.errors = errors
 
-            globalScope = coffeescope(@source)
+            try
+                rule.lintScope(globalScope, @scopeApi)
+            catch error
+                errors.push(@createError('coffeelint', {
+                    message: "#{ruleName} Error: #{error.message}"
+                    level: 'warn'
+                    lineNumber: 1
+                }))
 
-            rule.lintScope(@node, @scopeApi)
         errors

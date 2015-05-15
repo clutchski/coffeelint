@@ -81,4 +81,3 @@ module.exports = class Reporter
 
     plural : (str, count) ->
         if count is 1 then str else "#{str}s"
-

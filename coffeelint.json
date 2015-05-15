@@ -1,4 +1,7 @@
 {
+    "no_unused_vars": {
+        "args": "none"
+    },
     "arrow_spacing": {
         "level": "error"
     },
