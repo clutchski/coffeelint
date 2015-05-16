@@ -37,6 +37,11 @@ module.exports = class NoUnnecessaryDoubleQuotes
 
         return false unless stringValue # no double quotes, all OK
 
+        # When CoffeeScript generates calls to RegExp it double quotes the 2nd
+        # parameter. Using peek(2) becuase the peek(1) would be a CALL_END
+        if tokenApi.peek(2)?[0] is 'REGEX_END'
+            return false
+
         hasLegalConstructs = @isInterpolation or @hasSingleQuote(tokenValue)
         return not hasLegalConstructs
 
