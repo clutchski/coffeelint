@@ -5,6 +5,20 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 
 vows.describe('newparens').addBatch({
 
+    '#421':
+        topic: '''
+        new OPERATIONS[operationSpec.type] operationSpec.field
+
+        new Foo[bar].baz[qux] param1
+        '''
+
+        'should pass': (source) ->
+            config =
+                empty_constructor_needs_parens:
+                    level: 'error'
+            errors = coffeelint.lint(source, config)
+            assert.equal(errors.length, 0)
+
     'Missing Parentheses on "new Foo"' :
 
         topic: () ->
