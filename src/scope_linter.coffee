@@ -18,9 +18,21 @@ module.exports = class ScopeLinter extends BaseLinter
 
     lint : () ->
         errors = []
+        globals = []
+        environments = {}
+
+        for rule in @rules
+            config = @scopeApi.config[rule.rule.name]
+            for v in ( config.globals ? [] )
+                globals.push(v)
+
+            for env, value of ( config.environments ? [] ) when value
+                environments[env] = true
+
+        options = { environments, globals }
 
         try
-            globalScope = coffeescope.scan(@CoffeeScript, @source)
+            globalScope = coffeescope.scan(@CoffeeScript, @source, options)
         catch error
             return [@createError('coffeelint', {
                 message: "CoffeeScope Error: #{error.message}"

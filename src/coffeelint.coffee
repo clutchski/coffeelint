@@ -175,6 +175,7 @@ coffeelint.registerRule(
 )
 coffeelint.registerRule require './rules/ensure_comprehensions.coffee'
 coffeelint.registerRule require './rules/no_unused_vars.coffee'
+coffeelint.registerRule require './rules/no_undefined_vars.coffee'
 
 hasSyntaxError = (source) ->
     try

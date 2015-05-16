@@ -1,4 +1,9 @@
 {
+    "no_undefined_vars": {
+        "environments": {
+            "node": true
+        }
+    },
     "no_unused_vars": {
         "args": "none"
     },
