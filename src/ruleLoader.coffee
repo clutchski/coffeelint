@@ -44,5 +44,7 @@ module.exports =
                 for rule in ruleModule
                     coffeelint.registerRule rule
         catch e
+            # coffeelint: disable=no_debugger
             console.error "Error loading #{moduleName}"
             throw e
+            # coffeelint: enable=no_debugger

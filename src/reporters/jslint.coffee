@@ -3,7 +3,9 @@ module.exports = class JSLintReporter
     constructor : (@errorReport, options = {}) ->
 
     print : (message) ->
+        # coffeelint: disable=no_debugger
         console.log message
+        # coffeelint: enable=no_debugger
 
     publish : () ->
         @print "<?xml version=\"1.0\" encoding=\"utf-8\"?><jslint>"

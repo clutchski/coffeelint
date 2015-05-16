@@ -77,8 +77,9 @@ module.exports = class Reporter
         pathReport
 
     print : (message) ->
+        # coffeelint: disable=no_debugger
         console.log message
+        # coffeelint: enable=no_debugger
 
     plural : (str, count) ->
         if count is 1 then str else "#{str}s"
-

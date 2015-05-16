@@ -3,7 +3,9 @@ module.exports = class CSVReporter
     constructor : (@errorReport, options = {}) ->
 
     print : (message) ->
+        # coffeelint: disable=no_debugger
         console.log message
+        # coffeelint: enable=no_debugger
 
     publish : () ->
         header = ["path","lineNumber", "lineNumberEnd", "level", "message"]
