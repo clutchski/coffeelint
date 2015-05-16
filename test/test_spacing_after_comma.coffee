@@ -5,6 +5,17 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 
 vows.describe('commas').addBatch({
 
+    'regex':
+        topic: '''
+        ///^#{ inputValue }///i.test field.name
+        '''
+
+        'should not error': (source) ->
+            config = {spacing_after_comma : {level:'warn'}}
+            errors = coffeelint.lint(source, config)
+            assert.equal(errors.length, 0)
+
+
     'Whitespace after commas' :
 
         topic : () ->
