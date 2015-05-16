@@ -6,7 +6,9 @@ module.exports = class CheckstyleReporter
     constructor : (@errorReport, options = {}) ->
 
     print : (message) ->
+        # coffeelint: disable=no_debugger
         console.log message
+        # coffeelint: enable=no_debugger
 
     escape : JsLintReporter::escape
 

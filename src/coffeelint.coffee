@@ -232,7 +232,6 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
                 },
                 config.transform_messes_up_line_numbers
             ))
-            console.log errors
 
     if userConfig?.coffeelint?.coffeescript?
         CoffeeScript = ruleLoader.require userConfig.coffeelint.coffeescript
