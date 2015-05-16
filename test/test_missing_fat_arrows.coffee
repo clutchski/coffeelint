@@ -82,6 +82,11 @@ vows.describe(RULE).addBatch({
                 @m: -> this
             """, null, true
 
+    # https://github.com/clutchski/coffeelint/issues/412
+    'do methods should not error': shouldPass """
+        do -> 1
+        """
+
     'class method':
         'without this': shouldPass """
             class A
