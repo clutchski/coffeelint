@@ -13,15 +13,22 @@ module.exports = class EmptyConstructorNeedsParens
     # Return an error if the given indentation token is not correct.
     lintToken: (token, tokenApi) ->
         if token[1] is 'new'
+            peek = tokenApi.peek.bind(tokenApi)
             # Find the last chained identifier, e.g. Bar in new foo.bar.Bar().
             identifierIndex = 1
             loop
-                expectedIdentifier = tokenApi.peek(identifierIndex)
-                expectedCallStart  = tokenApi.peek(identifierIndex + 1)
+                expectedIdentifier = peek(identifierIndex)
+                expectedCallStart  = peek(identifierIndex + 1)
                 if expectedIdentifier?[0] is 'IDENTIFIER'
                     if expectedCallStart?[0] is '.'
+                        # skip the dot and start with the next token
                         identifierIndex += 2
                         continue
+                    if expectedCallStart?[0] is 'INDEX_START'
+                        while peek(identifierIndex)?[0] isnt 'INDEX_END'
+                            identifierIndex++
+                        continue
+
                 break
 
             # The callStart is generated if your parameters are all on the same
