@@ -40,6 +40,8 @@ vows.describe('identifiers').addBatch({
             class Burmese_Python extends Animal
 
             class canadaGoose extends Animal
+
+            class _PrivatePrefix
             """
 
         'are rejected by default' : (source) ->
