@@ -172,6 +172,7 @@ coffeelint.registerRule(
     require './rules/transform_messes_up_line_numbers.coffee'
 )
 coffeelint.registerRule require './rules/ensure_comprehensions.coffee'
+coffeelint.registerRule require './rules/no_this.coffee'
 
 hasSyntaxError = (source) ->
     try
