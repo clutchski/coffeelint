@@ -44,6 +44,7 @@
   "scripts": {
     "pretest": "cake compile",
     "test": "./vowsrunner.js --spec test/*.coffee test/*.litcoffee",
+    "testrule": "npm run compile && ./vowsrunner.js --spec",
     "posttest": "npm run lint",
     "prepublish": "cake prepublish",
     "publish": "cake publish",

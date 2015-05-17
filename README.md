@@ -32,11 +32,11 @@ Past:
 2. Run `npm install` to get dependencies.
 3. Create your rule in a single file as `src/rules/your_rule_here.coffee`, using the existing
    rules as a guide.
-   You may examine the AST and tokens using 
+   You may examine the AST and tokens using
    [http://asaayers.github.io/clfiddle/](http://asaayers.github.io/clfiddle/).
 4. Add your test file `my_test.coffee` to the `test` directory.
 5. Register your rule in `src/coffeelint.coffee`.
-6. Run your test using `./vowsrunner.js --spec test/your_test_here.coffee`.
+6. Run your test using `npm run testrule test/your_test_here.coffee`.
 7. Run the whole tests suite using `npm test`.
 8. Check that your rule's documentation is generated properly (see _Updating documentation when
 adding a new rule_ below).
@@ -93,4 +93,3 @@ follow these steps:
 probably need to install rake.
 * Open the `index.html` file with your favorite browser and make sure that your
 rule's documentation is generated properly.
-
