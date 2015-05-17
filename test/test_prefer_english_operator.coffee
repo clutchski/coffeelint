@@ -46,16 +46,16 @@ vows.describe('PreferEnglishOperatorssemicolons').addBatch({
 
     'English operators':
         'should not warn when \'is\' is used': ->
-            assert.isEmpty(coffeelint.lint('1 is 1', configError).length)
+            assert.isEmpty(coffeelint.lint('1 is 1', configError))
 
         'should not warn when \'isnt\' is used': ->
-            assert.isEmpty(coffeelint.lint('1 isnt 1', configError).length)
+            assert.isEmpty(coffeelint.lint('1 isnt 1', configError))
 
         'should not warn when \'and\' is used': ->
-            assert.isEmpty(coffeelint.lint('1 and 1', configError).length)
+            assert.isEmpty(coffeelint.lint('1 and 1', configError))
 
         'should not warn when \'or\' is used': ->
-            assert.isEmpty(coffeelint.lint('1 or 1', configError).length)
+            assert.isEmpty(coffeelint.lint('1 or 1', configError))
 
     'Comments': ->
         topic: """
@@ -71,14 +71,14 @@ vows.describe('PreferEnglishOperatorssemicolons').addBatch({
         ###
         """
         'should not warn when == is used in a comment': (source) ->
-            assert.isEmpty(coffeelint.lint(source, configError).length)
+            assert.isEmpty(coffeelint.lint(source, configError))
 
     'Strings':
         'should not warn when == is used in a single-quote string': ->
-            assert.isEmpty(coffeelint.lint('\'1 == 1\'', configError).length)
+            assert.isEmpty(coffeelint.lint('\'1 == 1\'', configError))
 
         'should not warn when == is used in a double-quote string': ->
-            assert.isEmpty(coffeelint.lint('"1 == 1"', configError).length)
+            assert.isEmpty(coffeelint.lint('"1 == 1"', configError))
 
         'should not warn when == is used in a multiline string': ->
             source = '''
@@ -86,7 +86,7 @@ vows.describe('PreferEnglishOperatorssemicolons').addBatch({
                 1 == 1
                 """
             '''
-            assert.isEmpty(coffeelint.lint(source, configError).length)
+            assert.isEmpty(coffeelint.lint(source, configError))
 
 }).export(module)
 
