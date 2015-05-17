@@ -185,7 +185,46 @@ vows.describe('spacing').addBatch({
             config = {space_operators : {level:'error'}}
             errors = coffeelint.lint(source, config)
             assert.lengthOf(errors, 2)
-            error = errors[0]
+
+    'No spaces around default parameters' :
+
+        'are permitted by default' : ->
+            errors = coffeelint.lint('foo = (bar={}) ->')
+            assert.isEmpty(errors)
+            errors = coffeelint.lint('foo = (bar = {}) ->')
+            assert.isEmpty(errors)
+
+        'can be forbidden' : ->
+            config = {space_operators : {level:'error'}}
+            errors = coffeelint.lint('foo = (bar={}) ->', config)
+            assert.lengthOf(errors, 1)
+            errors = coffeelint.lint('foo = (bar = {}) ->', config)
+            assert.isEmpty(errors)
+
+        'but also required through an option' : ->
+            config = {space_operators : {
+                level:'error', default_parameters:false
+            }}
+            # We do not do anything about things like:
+            #   foo = (bar=(a=1))
+            # There is little reason to use such code. So this will not
+            # warn even if it should.
+            errors = coffeelint.lint('foo = (bar={}) ->', config)
+            assert.isEmpty(errors)
+            errors = coffeelint.lint('foo = (bar ={}) ->', config)
+            assert.lengthOf(errors, 1)
+            errors = coffeelint.lint('foo = (bar = {}) ->', config)
+            assert.lengthOf(errors, 1)
+            errors = coffeelint.lint('foo = (bar= {}) ->', config)
+            assert.lengthOf(errors, 1)
+            errors = coffeelint.lint('foo = ({bar}={bar: 42}) ->', config)
+            assert.isEmpty(errors)
+            errors = coffeelint.lint('foo = ({bar} ={bar: 42}) ->', config)
+            assert.lengthOf(errors, 1)
+            errors = coffeelint.lint('foo = ({bar} = {bar: 42}) ->', config)
+            assert.lengthOf(errors, 1)
+            errors = coffeelint.lint('foo = ({bar}= {bar: 42}) ->', config)
+            assert.lengthOf(errors, 1)
 
 }).export(module)
 

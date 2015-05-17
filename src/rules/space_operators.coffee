@@ -5,25 +5,36 @@ module.exports = class SpaceOperators
         name: 'space_operators'
         level : 'ignore'
         message : 'Operators must be spaced properly'
-        description: "This rule enforces that operators have space around them."
+        description: """
+            This rule enforces that operators have space around them.
+            Optionally, you can set `default_parameters` to `false` to
+            require no space around `=` when used to define default paramaters.
+        """
+        default_parameters: true
 
     tokens: ['+', '-', '=', '**', 'MATH', 'COMPARE', 'LOGIC', 'COMPOUND_ASSIGN',
-        'STRING_START', 'STRING_END', 'CALL_START', 'CALL_END']
+        'STRING_START', 'STRING_END', 'CALL_START', 'CALL_END', 'PARAM_START'
+        'PARAM_END']
 
     constructor: ->
         @callTokens = []    # A stack tracking the call token pairs.
         @parenTokens = []   # A stack tracking the parens token pairs.
         @isInterpolation = false
+        @isParam = 0
 
     lintToken: ([type], tokenApi) ->
-
         # These just keep track of state
         if type in [ 'CALL_START', 'CALL_END' ]
             @trackCall arguments...
             return
 
+        if type in [ 'PARAM_START', 'PARAM_END' ]
+            @trackParams arguments...
+            return
+
         if type in [ 'STRING_START', 'STRING_END' ]
-            return @trackParens arguments...
+            @trackParens arguments...
+            return
 
         # These may return errors
         if type in [ '+', '-' ]
@@ -51,8 +62,14 @@ module.exports = class SpaceOperators
             null
 
     lintMath: (token, tokenApi) ->
+        default_parameters = tokenApi.config[@rule.name].default_parameters
         p = tokenApi.peek(-1)
-        if not token.newLine and (not token.spaced or (p and not p.spaced))
+        if not default_parameters and @isParam > 0 and token[0] is '='
+            if token.spaced or (p and p.spaced)
+                return {context: token[1]}
+            else
+                return null
+        else if not token.newLine and (not token.spaced or (p and not p.spaced))
             return {context: token[1]}
         else
             null
@@ -79,4 +96,12 @@ module.exports = class SpaceOperators
         else if token[0] is 'STRING_END'
             @isInterpolation = false
         # We're not linting, just tracking interpolations.
+        null
+
+    trackParams: (token, tokenApi) ->
+        if token[0] is 'PARAM_START'
+            @isParam++
+        else if token[0] is 'PARAM_END'
+            @isParam--
+        # We're not linting, just tracking function params.
         null
