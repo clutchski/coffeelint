@@ -173,6 +173,7 @@ coffeelint.registerRule(
 )
 coffeelint.registerRule require './rules/ensure_comprehensions.coffee'
 coffeelint.registerRule require './rules/no_this.coffee'
+coffeelint.registerRule require './rules/eol_last.coffee'
 
 hasSyntaxError = (source) ->
     try
