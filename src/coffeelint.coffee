@@ -174,6 +174,7 @@ coffeelint.registerRule(
 coffeelint.registerRule require './rules/ensure_comprehensions.coffee'
 coffeelint.registerRule require './rules/no_this.coffee'
 coffeelint.registerRule require './rules/eol_last.coffee'
+coffeelint.registerRule require './rules/no_private_function_fat_arrows.coffee'
 
 hasSyntaxError = (source) ->
     try
