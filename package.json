@@ -35,12 +35,7 @@
     "vows": ">=0.6.0",
     "underscore": ">=1.4.4"
   },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "http://github.com/clutchski/coffeelint/raw/master/LICENSE"
-    }
-  ],
+  "license": "MIT",
   "scripts": {
     "pretest": "cake compile",
     "test": "./vowsrunner.js --spec test/*.coffee test/*.litcoffee",
