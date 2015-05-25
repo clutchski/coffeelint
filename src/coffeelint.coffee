@@ -73,7 +73,14 @@ cache = null
 
 # Merge default and user configuration.
 mergeDefaultConfig = (userConfig) ->
+    # When run from the browser it may not be able to find the ruleLoader.
+    try
+        ruleLoader = nodeRequire './ruleLoader'
+        ruleLoader.loadFromConfig coffeelint, userConfig
+
     config = {}
+    if userConfig.coffeelint
+        config.coffeelint = userConfig.coffeelint
     for rule, ruleConfig of RULES
         config[rule] = defaults(userConfig[rule], ruleConfig)
     return config
@@ -87,7 +94,16 @@ coffeelint.trimConfig = (userConfig) ->
 
     for rule, config of userConfig
         dConfig = RULES[rule]
-        if config.level is dConfig.level is 'ignore'
+
+        if rule is 'coffeelint'
+            config.transforms = config._transforms
+            delete config._transforms
+
+            config.coffeescript = config._coffeescript
+            delete config._coffeescript
+
+            newConfig[rule] = config
+        else if config.level is dConfig.level is 'ignore'
             # If the rule is going to be ignored and would be by default it
             # doesn't matter what you may have configured
             undefined
@@ -96,6 +112,9 @@ coffeelint.trimConfig = (userConfig) ->
             # config.
             newConfig[rule] = { level: 'ignore' }
         else
+            config.module = config._module
+            delete config._module
+
             for key, value of config
                 continue if key in ['message', 'description', 'name']
 
@@ -227,11 +246,6 @@ coffeelint.getErrorReport = ->
 coffeelint.lint = (source, userConfig = {}, literate = false) ->
     errors = []
 
-    # When run from the browser it may not be able to find the ruleLoader.
-    try
-        ruleLoader = nodeRequire './ruleLoader'
-        ruleLoader.loadFromConfig this, userConfig
-
     cache?.setConfig userConfig
     if cache?.has source then return cache?.get source
     config = mergeDefaultConfig(userConfig)
@@ -240,8 +254,10 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
     if userConfig?.coffeelint?.transforms?
         sourceLength = source.split("\n").length
         for m in userConfig?.coffeelint?.transforms
-            transform = ruleLoader.require(m)
-            source = transform source
+            try
+                ruleLoader = nodeRequire './ruleLoader'
+                transform = ruleLoader.require(m)
+                source = transform source
 
         # NOTE: This can have false negatives. For example if your transformer
         # changes one line into two early in the file and later condenses two

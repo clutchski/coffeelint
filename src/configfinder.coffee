@@ -60,17 +60,20 @@ getConfig = (dir) ->
 # source and config are passed to `coffeelint.lint`
 expandModuleNames = (dir, config) ->
     for ruleName, data of config when data?.module?
+        config[ruleName]._module = config[ruleName].module
         config[ruleName].module = resolve data.module, {
             basedir: dir
         }
 
     coffeelint = config.coffeelint
     if coffeelint?.transforms?
+        coffeelint._transforms = coffeelint.transforms
         coffeelint.transforms = coffeelint.transforms.map (moduleName) ->
             return resolve moduleName, {
                 basedir: dir
             }
     if coffeelint?.coffeescript?
+        coffeelint._coffeescript = coffeelint.coffeescript
         coffeelint.coffeescript = resolve coffeelint.coffeescript, {
             basedir: dir
         }
