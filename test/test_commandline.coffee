@@ -202,6 +202,41 @@ vows.describe('commandline').addBatch({
             assert.isNotNull(stdout)
             assert.isNull(error)
 
+    '--trimconfig with default':
+        topic: ->
+            configPath = '../generated_coffeelint.json'
+            args = [
+                '-f'
+                configPath
+                '--trimconfig'
+            ]
+            commandline args, (error, stdout) =>
+                this.callback null, stdout
+
+            return undefined
+
+        'works': (config) ->
+            assert.equal(config, '{}\n')
+
+    "repo's coffeelint.json":
+        topic: ->
+            args = [
+                '-f',
+                '../coffeelint.json',
+                '--trimconfig'
+            ]
+            commandline args, (error, stdout) =>
+                this.callback null, stdout
+
+            return undefined
+
+        'is minimal' : (error, config) ->
+            expected = fs.readFileSync(
+                path.join(__dirname, '..', 'coffeelint.json')
+            ).toString()
+
+            assert.equal(config, expected)
+
     'does not fail on warnings' :
 
         topic : () ->

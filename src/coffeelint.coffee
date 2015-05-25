@@ -76,9 +76,34 @@ mergeDefaultConfig = (userConfig) ->
     config = {}
     for rule, ruleConfig of RULES
         config[rule] = defaults(userConfig[rule], ruleConfig)
-
-
     return config
+
+sameJSON = (a, b) ->
+    JSON.stringify(a) is JSON.stringify(b)
+
+coffeelint.trimConfig = (userConfig) ->
+    newConfig = {}
+    userConfig = mergeDefaultConfig(userConfig)
+
+    for rule, config of userConfig
+        dConfig = RULES[rule]
+        if config.level is dConfig.level is 'ignore'
+            # If the rule is going to be ignored and would be by default it
+            # doesn't matter what you may have configured
+            undefined
+        else if config.level is 'ignore'
+            # If the rule is being ignored you don't need the rest of the
+            # config.
+            newConfig[rule] = { level: 'ignore' }
+        else
+            for key, value of config
+                continue if key in ['message', 'description', 'name']
+
+                dValue = dConfig[key]
+                if value isnt dValue and not sameJSON(value, dValue)
+                    newConfig[rule] ?= {}
+                    newConfig[rule][key] = value
+    return newConfig
 
 coffeelint.invertLiterate = (source) ->
     source = CoffeeScript.helpers.invertLiterate source
