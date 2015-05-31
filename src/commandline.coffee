@@ -27,10 +27,10 @@ log = ->
     console.log(arguments...)
     # coffeelint: enable=no_debugger
 
+jsonIndentation = 2
 logConfig = (config) ->
     filter = (k, v) -> v unless k in ['message', 'description', 'name']
-
-    log(JSON.stringify(config, filter, 4))
+    log(JSON.stringify(config, filter, jsonIndentation))
 
 # Return the contents of the given file synchronously.
 read = (path) ->
@@ -72,7 +72,10 @@ lintSource = (source, config, literate = false) ->
 
 # Load a config file given a path/filename
 readConfigFile = (path) ->
-    JSON.parse(stripComments(read(path)))
+    text = read(path)
+    try
+        jsonIndentation = text.split('\n')[1].match(/^\s+/)[0].length
+    JSON.parse(stripComments(text))
 
 loadConfig = (options) ->
     config = null
