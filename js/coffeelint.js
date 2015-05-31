@@ -6,7 +6,7 @@ CoffeeLint
 Copyright (c) 2011 Matthew Perpick.
 CoffeeLint is freely distributable under the MIT license.
  */
-var ASTLinter, CoffeeScript, ERROR, ErrorReport, IGNORE, LexicalLinter, LineLinter, RULES, WARN, _rules, cache, coffeelint, defaults, difference, extend, hasSyntaxError, mergeDefaultConfig, nodeRequire, packageJSON,
+var ASTLinter, CoffeeScript, ERROR, ErrorReport, IGNORE, LexicalLinter, LineLinter, RULES, WARN, _rules, cache, coffeelint, defaults, difference, extend, hasSyntaxError, mergeDefaultConfig, nodeRequire, packageJSON, sameJSON,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -78,13 +78,64 @@ ASTLinter = require('./ast_linter.coffee');
 cache = null;
 
 mergeDefaultConfig = function(userConfig) {
-  var config, rule, ruleConfig;
+  var config, rule, ruleConfig, ruleLoader;
+  try {
+    ruleLoader = nodeRequire('./ruleLoader');
+    ruleLoader.loadFromConfig(coffeelint, userConfig);
+  } catch (_error) {}
   config = {};
+  if (userConfig.coffeelint) {
+    config.coffeelint = userConfig.coffeelint;
+  }
   for (rule in RULES) {
     ruleConfig = RULES[rule];
     config[rule] = defaults(userConfig[rule], ruleConfig);
   }
   return config;
+};
+
+sameJSON = function(a, b) {
+  return JSON.stringify(a) === JSON.stringify(b);
+};
+
+coffeelint.trimConfig = function(userConfig) {
+  var config, dConfig, dValue, key, newConfig, ref, rule, value;
+  newConfig = {};
+  userConfig = mergeDefaultConfig(userConfig);
+  for (rule in userConfig) {
+    config = userConfig[rule];
+    dConfig = RULES[rule];
+    if (rule === 'coffeelint') {
+      config.transforms = config._transforms;
+      delete config._transforms;
+      config.coffeescript = config._coffeescript;
+      delete config._coffeescript;
+      newConfig[rule] = config;
+    } else if ((config.level === (ref = dConfig.level) && ref === 'ignore')) {
+      void 0;
+    } else if (config.level === 'ignore') {
+      newConfig[rule] = {
+        level: 'ignore'
+      };
+    } else {
+      config.module = config._module;
+      delete config._module;
+      for (key in config) {
+        value = config[key];
+        if (key === 'message' || key === 'description' || key === 'name') {
+          continue;
+        }
+        dValue = dConfig[key];
+        if (value !== dValue && !sameJSON(value, dValue)) {
+          if (newConfig[rule] == null) {
+            newConfig[rule] = {};
+          }
+          newConfig[rule][key] = value;
+        }
+      }
+    }
+  }
+  return newConfig;
 };
 
 coffeelint.invertLiterate = function(source) {
@@ -221,6 +272,10 @@ coffeelint.registerRule(require('./rules/transform_messes_up_line_numbers.coffee
 
 coffeelint.registerRule(require('./rules/ensure_comprehensions.coffee'));
 
+coffeelint.registerRule(require('./rules/no_this.coffee'));
+
+coffeelint.registerRule(require('./rules/eol_last.coffee'));
+
 hasSyntaxError = function(source) {
   try {
     CoffeeScript.tokens(source);
@@ -244,10 +299,6 @@ coffeelint.lint = function(source, userConfig, literate) {
     literate = false;
   }
   errors = [];
-  try {
-    ruleLoader = nodeRequire('./ruleLoader');
-    ruleLoader.loadFromConfig(this, userConfig);
-  } catch (_error) {}
   if (cache != null) {
     cache.setConfig(userConfig);
   }
@@ -263,15 +314,17 @@ coffeelint.lint = function(source, userConfig, literate) {
     ref2 = userConfig != null ? (ref1 = userConfig.coffeelint) != null ? ref1.transforms : void 0 : void 0;
     for (n = 0, len = ref2.length; n < len; n++) {
       m = ref2[n];
-      transform = ruleLoader.require(m);
-      source = transform(source);
+      try {
+        ruleLoader = nodeRequire('./ruleLoader');
+        transform = ruleLoader.require(m);
+        source = transform(source);
+      } catch (_error) {}
     }
     if (sourceLength !== source.split("\n").length && config.transform_messes_up_line_numbers.level !== 'ignore') {
       errors.push(extend({
         lineNumber: 1,
         context: "File was transformed from " + sourceLength + " lines to " + (source.split("\n").length) + " lines"
       }, config.transform_messes_up_line_numbers));
-      console.log(errors);
     }
   }
   if ((userConfig != null ? (ref3 = userConfig.coffeelint) != null ? ref3.coffeescript : void 0 : void 0) != null) {
@@ -368,11 +421,11 @@ coffeelint.setCache = function(obj) {
 
 
 
-},{"./../package.json":2,"./ast_linter.coffee":3,"./error_report.coffee":5,"./lexical_linter.coffee":6,"./line_linter.coffee":7,"./rules.coffee":8,"./rules/arrow_spacing.coffee":9,"./rules/braces_spacing.coffee":10,"./rules/camel_case_classes.coffee":11,"./rules/colon_assignment_spacing.coffee":12,"./rules/cyclomatic_complexity.coffee":13,"./rules/duplicate_key.coffee":14,"./rules/empty_constructor_needs_parens.coffee":15,"./rules/ensure_comprehensions.coffee":16,"./rules/indentation.coffee":17,"./rules/line_endings.coffee":18,"./rules/max_line_length.coffee":19,"./rules/missing_fat_arrows.coffee":20,"./rules/newlines_after_classes.coffee":21,"./rules/no_backticks.coffee":22,"./rules/no_debugger.coffee":23,"./rules/no_empty_functions.coffee":24,"./rules/no_empty_param_list.coffee":25,"./rules/no_implicit_braces.coffee":26,"./rules/no_implicit_parens.coffee":27,"./rules/no_interpolation_in_single_quotes.coffee":28,"./rules/no_plusplus.coffee":29,"./rules/no_stand_alone_at.coffee":30,"./rules/no_tabs.coffee":31,"./rules/no_throwing_strings.coffee":32,"./rules/no_trailing_semicolons.coffee":33,"./rules/no_trailing_whitespace.coffee":34,"./rules/no_unnecessary_double_quotes.coffee":35,"./rules/no_unnecessary_fat_arrows.coffee":36,"./rules/non_empty_constructor_needs_parens.coffee":37,"./rules/prefer_english_operator.coffee":38,"./rules/space_operators.coffee":39,"./rules/spacing_after_comma.coffee":40,"./rules/transform_messes_up_line_numbers.coffee":41}],2:[function(require,module,exports){
+},{"./../package.json":2,"./ast_linter.coffee":3,"./error_report.coffee":5,"./lexical_linter.coffee":6,"./line_linter.coffee":7,"./rules.coffee":8,"./rules/arrow_spacing.coffee":9,"./rules/braces_spacing.coffee":10,"./rules/camel_case_classes.coffee":11,"./rules/colon_assignment_spacing.coffee":12,"./rules/cyclomatic_complexity.coffee":13,"./rules/duplicate_key.coffee":14,"./rules/empty_constructor_needs_parens.coffee":15,"./rules/ensure_comprehensions.coffee":16,"./rules/eol_last.coffee":17,"./rules/indentation.coffee":18,"./rules/line_endings.coffee":19,"./rules/max_line_length.coffee":20,"./rules/missing_fat_arrows.coffee":21,"./rules/newlines_after_classes.coffee":22,"./rules/no_backticks.coffee":23,"./rules/no_debugger.coffee":24,"./rules/no_empty_functions.coffee":25,"./rules/no_empty_param_list.coffee":26,"./rules/no_implicit_braces.coffee":27,"./rules/no_implicit_parens.coffee":28,"./rules/no_interpolation_in_single_quotes.coffee":29,"./rules/no_plusplus.coffee":30,"./rules/no_stand_alone_at.coffee":31,"./rules/no_tabs.coffee":32,"./rules/no_this.coffee":33,"./rules/no_throwing_strings.coffee":34,"./rules/no_trailing_semicolons.coffee":35,"./rules/no_trailing_whitespace.coffee":36,"./rules/no_unnecessary_double_quotes.coffee":37,"./rules/no_unnecessary_fat_arrows.coffee":38,"./rules/non_empty_constructor_needs_parens.coffee":39,"./rules/prefer_english_operator.coffee":40,"./rules/space_operators.coffee":41,"./rules/spacing_after_comma.coffee":42,"./rules/transform_messes_up_line_numbers.coffee":43}],2:[function(require,module,exports){
 module.exports={
   "name": "coffeelint",
   "description": "Lint your CoffeeScript",
-  "version": "1.9.5",
+  "version": "1.10.0",
   "homepage": "http://www.coffeelint.org",
   "keywords": [
     "lint",
@@ -406,15 +459,11 @@ module.exports={
     "vows": ">=0.6.0",
     "underscore": ">=1.4.4"
   },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "http://github.com/clutchski/coffeelint/raw/master/LICENSE"
-    }
-  ],
+  "license": "MIT",
   "scripts": {
     "pretest": "cake compile",
     "test": "./vowsrunner.js --spec test/*.coffee test/*.litcoffee",
+    "testrule": "npm run compile && ./vowsrunner.js --spec",
     "posttest": "npm run lint",
     "prepublish": "cake prepublish",
     "publish": "cake publish",
@@ -1174,7 +1223,7 @@ module.exports = BracesSpacing = (function() {
 var CamelCaseClasses, regexes;
 
 regexes = {
-  camelCase: /^[A-Z][a-zA-Z\d]*$/
+  camelCase: /^[A-Z_][a-zA-Z\d]*$/
 };
 
 module.exports = CamelCaseClasses = (function() {
@@ -1419,15 +1468,22 @@ module.exports = EmptyConstructorNeedsParens = (function() {
   EmptyConstructorNeedsParens.prototype.tokens = ['UNARY'];
 
   EmptyConstructorNeedsParens.prototype.lintToken = function(token, tokenApi) {
-    var expectedCallStart, expectedIdentifier, identifierIndex;
+    var expectedCallStart, expectedIdentifier, identifierIndex, peek, ref;
     if (token[1] === 'new') {
+      peek = tokenApi.peek.bind(tokenApi);
       identifierIndex = 1;
       while (true) {
-        expectedIdentifier = tokenApi.peek(identifierIndex);
-        expectedCallStart = tokenApi.peek(identifierIndex + 1);
+        expectedIdentifier = peek(identifierIndex);
+        expectedCallStart = peek(identifierIndex + 1);
         if ((expectedIdentifier != null ? expectedIdentifier[0] : void 0) === 'IDENTIFIER') {
           if ((expectedCallStart != null ? expectedCallStart[0] : void 0) === '.') {
             identifierIndex += 2;
+            continue;
+          }
+          if ((expectedCallStart != null ? expectedCallStart[0] : void 0) === 'INDEX_START') {
+            while (((ref = peek(identifierIndex)) != null ? ref[0] : void 0) !== 'INDEX_END') {
+              identifierIndex++;
+            }
             continue;
           }
         }
@@ -1519,6 +1575,34 @@ module.exports = EnsureComprehensions = (function() {
 
 
 },{}],17:[function(require,module,exports){
+var EOLLast;
+
+module.exports = EOLLast = (function() {
+  function EOLLast() {}
+
+  EOLLast.prototype.rule = {
+    name: 'eol_last',
+    level: 'ignore',
+    message: 'File does not end with a single newline',
+    description: "Checks that the file ends with a single newline"
+  };
+
+  EOLLast.prototype.lintLine = function(line, lineApi) {
+    if (!lineApi.isLastLine()) {
+      return null;
+    }
+    if (line.length) {
+      return true;
+    }
+  };
+
+  return EOLLast;
+
+})();
+
+
+
+},{}],18:[function(require,module,exports){
 var Indentation;
 
 module.exports = Indentation = (function() {
@@ -1643,7 +1727,7 @@ module.exports = Indentation = (function() {
 
 
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 var LineEndings;
 
 module.exports = LineEndings = (function() {
@@ -1688,7 +1772,7 @@ module.exports = LineEndings = (function() {
 
 
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 var MaxLineLength, regexes;
 
 regexes = {
@@ -1734,7 +1818,7 @@ module.exports = MaxLineLength = (function() {
 
 
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 var MissingFatArrows, any, containsButIsnt,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
@@ -1840,8 +1924,8 @@ module.exports = MissingFatArrows = (function() {
   };
 
   MissingFatArrows.prototype.isConstructor = function(node) {
-    var ref;
-    return ((ref = node.variable) != null ? ref.base.value : void 0) === 'constructor';
+    var ref, ref1;
+    return ((ref = node.variable) != null ? (ref1 = ref.base) != null ? ref1.value : void 0 : void 0) === 'constructor';
   };
 
   MissingFatArrows.prototype.needsFatArrow = function(node) {
@@ -1871,7 +1955,7 @@ module.exports = MissingFatArrows = (function() {
 
 
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 var NewlinesAfterClasses;
 
 module.exports = NewlinesAfterClasses = (function() {
@@ -1882,7 +1966,7 @@ module.exports = NewlinesAfterClasses = (function() {
     value: 3,
     level: 'ignore',
     message: 'Wrong count of newlines between a class and other code',
-    description: "Checks the number of newlines between classes and other code"
+    description: "<p>Checks the number of newlines between classes and other code.</p>\n\nOptions:\n- <pre><code>value</code></pre> - The number of required newlines\nafter class definitions. Defaults to 3."
   };
 
   NewlinesAfterClasses.prototype.lintLine = function(line, lineApi) {
@@ -1907,7 +1991,7 @@ module.exports = NewlinesAfterClasses = (function() {
 
 
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 var NoBackticks;
 
 module.exports = NoBackticks = (function() {
@@ -1932,7 +2016,7 @@ module.exports = NoBackticks = (function() {
 
 
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 var NoDebugger;
 
 module.exports = NoDebugger = (function() {
@@ -1941,16 +2025,28 @@ module.exports = NoDebugger = (function() {
   NoDebugger.prototype.rule = {
     name: 'no_debugger',
     level: 'warn',
-    message: 'Debugger statements will cause warnings',
-    description: "This rule detects the `debugger` statement.\nThis rule is `warn` by default."
+    message: 'Found debugging code',
+    console: false,
+    description: "This rule detects `debugger` and optionally `console` calls\nThis rule is `warn` by default."
   };
 
-  NoDebugger.prototype.tokens = ["DEBUGGER"];
+  NoDebugger.prototype.tokens = ["DEBUGGER", "IDENTIFIER"];
 
   NoDebugger.prototype.lintToken = function(token, tokenApi) {
-    return {
-      context: "found '" + token[0] + "'"
-    };
+    var method, ref, ref1;
+    if (token[0] === 'DEBUGGER') {
+      return {
+        context: "found '" + token[0] + "'"
+      };
+    }
+    if ((ref = tokenApi.config[this.rule.name]) != null ? ref.console : void 0) {
+      if (token[1] === 'console' && ((ref1 = tokenApi.peek(1)) != null ? ref1[0] : void 0) === '.') {
+        method = tokenApi.peek(2);
+        return {
+          context: "found 'console." + method[1] + "'"
+        };
+      }
+    }
   };
 
   return NoDebugger;
@@ -1959,7 +2055,7 @@ module.exports = NoDebugger = (function() {
 
 
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 var NoEmptyFunctions, isEmptyCode;
 
 isEmptyCode = function(node, astApi) {
@@ -2004,7 +2100,7 @@ module.exports = NoEmptyFunctions = (function() {
 
 
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 var NoEmptyParamList;
 
 module.exports = NoEmptyParamList = (function() {
@@ -2031,7 +2127,7 @@ module.exports = NoEmptyParamList = (function() {
 
 
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 var NoImplicitBraces;
 
 module.exports = NoImplicitBraces = (function() {
@@ -2091,7 +2187,7 @@ module.exports = NoImplicitBraces = (function() {
 
 
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 var NoImplicitParens;
 
 module.exports = NoImplicitParens = (function() {
@@ -2134,7 +2230,7 @@ module.exports = NoImplicitParens = (function() {
 
 
 
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 var NoInterpolationInSingleQuotes;
 
 module.exports = NoInterpolationInSingleQuotes = (function() {
@@ -2162,7 +2258,7 @@ module.exports = NoInterpolationInSingleQuotes = (function() {
 
 
 
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 var NoPlusPlus;
 
 module.exports = NoPlusPlus = (function() {
@@ -2189,7 +2285,7 @@ module.exports = NoPlusPlus = (function() {
 
 
 
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 var NoStandAloneAt;
 
 module.exports = NoStandAloneAt = (function() {
@@ -2226,7 +2322,7 @@ module.exports = NoStandAloneAt = (function() {
 
 
 
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 var NoTabs, indentationRegex,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -2258,7 +2354,32 @@ module.exports = NoTabs = (function() {
 
 
 
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
+var NoThis;
+
+module.exports = NoThis = (function() {
+  function NoThis() {}
+
+  NoThis.prototype.rule = {
+    name: 'no_this',
+    description: 'This rule prohibits \'this\'.\nUse \'@\' instead.',
+    level: 'ignore',
+    message: "Don't use 'this', use '@' instead"
+  };
+
+  NoThis.prototype.tokens = ['THIS'];
+
+  NoThis.prototype.lintToken = function(token, tokenApi) {
+    return true;
+  };
+
+  return NoThis;
+
+})();
+
+
+
+},{}],34:[function(require,module,exports){
 var NoThrowingStrings;
 
 module.exports = NoThrowingStrings = (function() {
@@ -2286,7 +2407,7 @@ module.exports = NoThrowingStrings = (function() {
 
 
 
-},{}],33:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 var NoTrailingSemicolons, regexes,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   slice = [].slice;
@@ -2339,7 +2460,7 @@ module.exports = NoTrailingSemicolons = (function() {
 
 
 
-},{}],34:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 var NoTrailingWhitespace, regexes;
 
 regexes = {
@@ -2403,7 +2524,7 @@ module.exports = NoTrailingWhitespace = (function() {
 
 
 
-},{}],35:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 var NoUnnecessaryDoubleQuotes;
 
 module.exports = NoUnnecessaryDoubleQuotes = (function() {
@@ -2422,13 +2543,16 @@ module.exports = NoUnnecessaryDoubleQuotes = (function() {
   NoUnnecessaryDoubleQuotes.prototype.tokens = ['STRING', 'STRING_START', 'STRING_END'];
 
   NoUnnecessaryDoubleQuotes.prototype.lintToken = function(token, tokenApi) {
-    var hasLegalConstructs, stringValue, tokenValue, type;
+    var hasLegalConstructs, ref, stringValue, tokenValue, type;
     type = token[0], tokenValue = token[1];
     if (type === 'STRING_START' || type === 'STRING_END') {
       return this.trackParens.apply(this, arguments);
     }
     stringValue = tokenValue.match(/^\"(.*)\"$/);
     if (!stringValue) {
+      return false;
+    }
+    if (((ref = tokenApi.peek(2)) != null ? ref[0] : void 0) === 'REGEX_END') {
       return false;
     }
     hasLegalConstructs = this.isInterpolation || this.hasSingleQuote(tokenValue);
@@ -2454,7 +2578,7 @@ module.exports = NoUnnecessaryDoubleQuotes = (function() {
 
 
 
-},{}],36:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 var NoUnnecessaryFatArrows, any,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -2536,7 +2660,7 @@ module.exports = NoUnnecessaryFatArrows = (function() {
 
 
 
-},{}],37:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 var NonEmptyConstructorNeedsParens, ParentClass,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -2569,7 +2693,7 @@ module.exports = NonEmptyConstructorNeedsParens = (function(superClass) {
 
 
 
-},{"./empty_constructor_needs_parens.coffee":15}],38:[function(require,module,exports){
+},{"./empty_constructor_needs_parens.coffee":15}],40:[function(require,module,exports){
 var RuleProcessor;
 
 module.exports = RuleProcessor = (function() {
@@ -2631,7 +2755,7 @@ module.exports = RuleProcessor = (function() {
 
 
 
-},{}],39:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 var SpaceOperators,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -2736,12 +2860,10 @@ module.exports = SpaceOperators = (function() {
 
 
 
-},{}],40:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 var RuleProcessor;
 
 module.exports = RuleProcessor = (function() {
-  function RuleProcessor() {}
-
   RuleProcessor.prototype.rule = {
     name: 'spacing_after_comma',
     description: 'This rule requires a space after commas.',
@@ -2749,14 +2871,37 @@ module.exports = RuleProcessor = (function() {
     message: 'Spaces are required after commas'
   };
 
-  RuleProcessor.prototype.tokens = [','];
+  RuleProcessor.prototype.tokens = [',', 'REGEX_START', 'REGEX_END'];
+
+  function RuleProcessor() {
+    this.inRegex = false;
+  }
 
   RuleProcessor.prototype.lintToken = function(token, tokenApi) {
-    if (!(token.spaced || token.newLine)) {
+    var type;
+    type = token[0];
+    if (type === 'REGEX_START') {
+      this.inRegex = true;
+      return;
+    }
+    if (type === 'REGEX_END') {
+      this.inRegex = false;
+      return;
+    }
+    if (!(token.spaced || token.newLine || token.generated || this.isRegexFlag(token, tokenApi))) {
       return {
         context: token[1]
       };
     }
+  };
+
+  RuleProcessor.prototype.isRegexFlag = function(token, tokenApi) {
+    var maybeEnd;
+    if (!this.inRegex) {
+      return false;
+    }
+    maybeEnd = tokenApi.peek(3);
+    return (maybeEnd != null ? maybeEnd[0] : void 0) === 'REGEX_END';
   };
 
   return RuleProcessor;
@@ -2765,7 +2910,7 @@ module.exports = RuleProcessor = (function() {
 
 
 
-},{}],41:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 var CamelCaseClasses;
 
 module.exports = CamelCaseClasses = (function() {

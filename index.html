@@ -300,6 +300,13 @@ class Cat
 </td>
 </tr>
 <tr>
+<td class="rule">eol_last</td>
+<td class="description">
+    Checks that the file ends with a single newline
+    <p><em>default level: ignore</em></p>
+</td>
+</tr>
+<tr>
 <td class="rule">indentation</td>
 <td class="description">
     This rule imposes a standard number of spaces to be used for
@@ -358,7 +365,11 @@ features like `Function.prototype.call` and
 <tr>
 <td class="rule">newlines_after_classes</td>
 <td class="description">
-    Checks the number of newlines between classes and other code
+    <p>Checks the number of newlines between classes and other code.</p>
+
+Options:
+- <pre><code>value</code></pre> - The number of required newlines
+after class definitions. Defaults to 3.
     <p><em>default level: ignore</em></p>
 </td>
 </tr>
@@ -377,7 +388,7 @@ This rule is enabled by default.
 <tr>
 <td class="rule">no_debugger</td>
 <td class="description">
-    This rule detects the `debugger` statement.
+    This rule detects `debugger` and optionally `console` calls
 This rule is `warn` by default.
     <p><em>default level: warn</em></p>
 </td>
@@ -508,6 +519,14 @@ href="https://github.com/jashkenas/coffee-script/issues/1601">
     This rule forbids tabs in indentation. Enough said. It is enabled by
 default.
     <p><em>default level: error</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">no_this</td>
+<td class="description">
+    This rule prohibits 'this'.
+Use '@' instead.
+    <p><em>default level: ignore</em></p>
 </td>
 </tr>
 <tr>
@@ -829,6 +848,21 @@ and warns that line numbers are probably incorrect.
           </p>
 
           <h2 class="section_title" id="changelog">Change Log</h2>
+
+          <div>
+            <h3 class="changelog_header">1.9.7-1.10.0</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v1.9.7...v1.10.0">2015.5.31<a></a></small>
+          <ul class="changelog_history">
+            <li>New option <tt>--trimconfig</tt>. shows the minimal config to implement your customizations.</li>
+            <li>New rule <tt>eol_last</tt></li>
+            <li>New rule <tt>no_this</tt> (prefer @ instead)</li>
+            <li>New option in <tt>no_debugger</tt> to flag console calls</li>
+
+            <li>Many smal. bug fixes</li>
+          </ul>
+          </div>
+
 
           <div>
             <h3 class="changelog_header">1.9.4-1.9.6</h3>

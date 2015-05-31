@@ -12,6 +12,9 @@ task :update do
   puts "rake updatehtml"
 end
 
+# git checkout master && npm run compile && git checkout gh-pages && cp lib/coffeelint.js js/coffeelint.js
+# git show master:src/htmldoc.coffee > js/htmldoc.coffee && cat index-top.html > new_index.html && coffee js/htmldoc.coffee >> new_index.html && cat index-bottom.html >> new_index.html && mv new_index.html index.html && rm js/htmldoc.coffee
+
 task :updatehtml do
   sh("git show master:src/htmldoc.coffee > js/htmldoc.coffee && cat index-top.html > new_index.html && coffee js/htmldoc.coffee >> new_index.html && cat index-bottom.html >> new_index.html && mv new_index.html index.html && rm js/htmldoc.coffee")
 end
