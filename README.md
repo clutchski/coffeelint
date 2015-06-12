@@ -49,7 +49,7 @@ adding a new rule_ below).
 
 When adding a new rule, its documentation is specified by setting a
 `description` property within its `rule` property:
-```
+```coffeescript
 module.exports = class NoComment
 
     rule:
@@ -67,7 +67,7 @@ module.exports = class NoComment
 ```
 
 The description property is a string that can embed HTML code:
-```
+```html
 description: """
 	Disallows any comment in the code. This code would not pass:
 	<pre>
