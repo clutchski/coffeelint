@@ -67,7 +67,13 @@ vows.describe(ruleName).addBatch({
             for n in nums
               sum += n
 
-            sum = n for n in nums // error triggers without parens
+            sum = n for n in nums # error triggers without parens
+
+            # this triggers for lack of parens as well
+            x = y(food) for food in foods when food isnt 'chocolate'
+
+            # this shouldn't trigger
+            yak(food) for food in foods when food isnt 'chocolate'
 
             newConfig[key] = value for key, value of config
             '''
@@ -76,10 +82,15 @@ vows.describe(ruleName).addBatch({
             config[ruleName] = { level: 'error' }
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
-            assert.lengthOf(errors, 1)
+            assert.lengthOf(errors, 2)
 
             error = errors[0]
             assert.equal(error.lineNumber, 6)
+            assert.equal(error.message, errorMessage)
+            assert.equal(error.rule, ruleName)
+
+            error = errors[1]
+            assert.equal(error.lineNumber, 9)
             assert.equal(error.message, errorMessage)
             assert.equal(error.rule, ruleName)
 
@@ -140,6 +151,16 @@ vows.describe(ruleName).addBatch({
             assert.isArray(errors)
             assert.isEmpty(errors)
 
+    'Comprehensions that are called as a function parameter should not error':
+        topic:
+            '''
+            b = a(food for food in foods when food isnt 'chocolate')
+            '''
 
+        'doesn\'t throw an error': (source) ->
+            config[ruleName] = { level: 'error' }
+            errors = coffeelint.lint(source, config)
+            assert.isArray(errors)
+            assert.isEmpty(errors)
 
 }).export(module)
