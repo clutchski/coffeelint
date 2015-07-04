@@ -90,11 +90,15 @@ vows.describe('spacing').addBatch({
             '''
 
         'are permitted by default' : (source) ->
-            errors = coffeelint.lint(source)
+            config = {no_nested_string_interpolation : {level:'ignore'}}
+            errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 
         'can be forbidden' : (source) ->
-            config = {space_operators : {level:'error'}}
+            config = {
+                space_operators                : {level:'error'},
+                no_nested_string_interpolation : {level:'ignore'}
+            }
             errors = coffeelint.lint(source, config)
             assert.lengthOf(errors, source.split("\n").length)
             error = errors[0]
@@ -166,7 +170,10 @@ vows.describe('spacing').addBatch({
             '''
 
         'are permitted' : (source) ->
-            config = {space_operators : {level:'error'}}
+            config = {
+                space_operators                : {level:'error'},
+                no_nested_string_interpolation : {level:'ignore'}
+            }
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 
@@ -183,10 +190,12 @@ vows.describe('spacing').addBatch({
             assert.isEmpty(errors)
 
         'can be forbidden' : (source) ->
-            config = {space_operators : {level:'error'}}
+            config = {
+                space_operators                : {level:'error'},
+                no_nested_string_interpolation : {level:'ignore'}
+            }
             errors = coffeelint.lint(source, config)
             assert.lengthOf(errors, 2)
             error = errors[0]
 
 }).export(module)
-

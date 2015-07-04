@@ -50,7 +50,6 @@ vows.describe('no_unnecessary_double_quotes').addBatch({
             '''
             interpolation = "inter#{polation}"
             multipleInterpolation = "#{foo}bar#{baz}"
-            nestedInterpolation = "#{"#{a}"} #{b}"
             singleQuote = "single'quote"
             '''
 
