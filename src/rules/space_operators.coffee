@@ -13,7 +13,7 @@ module.exports = class SpaceOperators
     constructor: ->
         @callTokens = []    # A stack tracking the call token pairs.
         @parenTokens = []   # A stack tracking the parens token pairs.
-        @isInterpolation = false
+        @interpolationLevel = 0
 
     lintToken: ([type], tokenApi) ->
 
@@ -34,7 +34,7 @@ module.exports = class SpaceOperators
     lintPlus: (token, tokenApi) ->
         # We can't check this inside of interpolations right now, because the
         # plusses used for the string type co-ercion are marked not spaced.
-        if @isInterpolation or @isInExtendedRegex()
+        if @isInInterpolation() or @isInExtendedRegex()
             return null
 
         p = tokenApi.peek(-1)
@@ -62,6 +62,9 @@ module.exports = class SpaceOperators
             return true if t.isRegex
         return false
 
+    isInInterpolation: () ->
+        @interpolationLevel > 0
+
     trackCall: (token, tokenApi) ->
         if token[0] is 'CALL_START'
             p = tokenApi.peek(-1)
@@ -75,8 +78,8 @@ module.exports = class SpaceOperators
 
     trackParens: (token, tokenApi) ->
         if token[0] is 'STRING_START'
-            @isInterpolation = true
+            @interpolationLevel += 1
         else if token[0] is 'STRING_END'
-            @isInterpolation = false
+            @interpolationLevel -= 1
         # We're not linting, just tracking interpolations.
         null

@@ -138,6 +138,7 @@ vows.describe('spacing').addBatch({
             1 and -1
             1 or -1
             "#{a}#{b}"
+            "#{"#{a}"}#{b}"
             [+1, -1]
             [-1, +1]
             {a: -1}
