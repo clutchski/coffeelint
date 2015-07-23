@@ -80,6 +80,21 @@ expandModuleNames = (dir, config) ->
 
     config
 
+extendConfig = (config) ->
+    unless config.extends
+        return config
+
+    parentConfig = require config.extends
+    extendedConfig = {}
+
+    for ruleName, rule of config
+        extendedConfig[ruleName] = rule
+    for ruleName, rule of parentConfig
+        extendedConfig[ruleName] = config[ruleName] or rule
+
+    return extendedConfig
+
+
 exports.getConfig = (filename = null) ->
     if filename
         dir = path.dirname(path.resolve(filename))
@@ -89,6 +104,7 @@ exports.getConfig = (filename = null) ->
     config = getConfig(dir)
 
     if config
+        config = extendConfig(config)
         config = expandModuleNames(dir, config)
 
     config
