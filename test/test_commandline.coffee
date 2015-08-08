@@ -372,6 +372,36 @@ vows.describe('commandline').addBatch({
                 assert.isNotNull(error)
                 assert.include(stdout.toLowerCase(), 'trailing whitespace')
 
+    'additional file extention':
+
+        'find additional files with --ext key':
+            topic: () ->
+                args = [
+                    '--ext',
+                    'csbx',
+                    'fixtures/custom_extention'
+                    ]
+                commandline args, this.callback
+                return undefined
+
+            'passes': (error, stdout, stderr) ->
+                assert.isNull(error)
+                assert.isEmpty(stderr)
+                assert.isString(stdout)
+                assert.include(stdout, '0 errors and 0 warnings in 1 file')
+
+        'do not find additional files without --ext key':
+            topic: () ->
+                args = ['fixtures/custom_extention']
+                commandline args, this.callback
+                return undefined
+
+            'fails': (error, stdout, stderr) ->
+                assert.isNull(error)
+                assert.isEmpty(stderr)
+                assert.isString(stdout)
+                assert.include(stdout, '0 errors and 0 warnings in 0 file')
+
     'using environment config file':
 
         'with non existing enviroment set config file':

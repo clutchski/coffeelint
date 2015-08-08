@@ -37,13 +37,22 @@ read = (path) ->
     realPath = fs.realpathSync(path)
     return fs.readFileSync(realPath).toString()
 
+# build all extentions to search
+getAllExtention = (extension) ->
+    if extension?
+        extension = ['coffee'].concat(extension?.split(','))
+        "@(#{extension.join('|')})"
+    else
+        'coffee'
+
 # Return a list of CoffeeScript's in the given paths.
-findCoffeeScripts = (paths) ->
+findCoffeeScripts = (paths, extension) ->
     files = []
+    allExtention = getAllExtention(extension)
     for p in paths
         if fs.statSync(p).isDirectory()
             # The glob library only uses forward slashes.
-            files = files.concat(glob.sync("#{p}/**/*.coffee"))
+            files = files.concat(glob.sync("#{p}/**/*.#{allExtention}"))
         else
             files.push(p)
     return files
@@ -188,6 +197,8 @@ options = optimist
             .describe("literate",
                 "Used with --stdin to process as Literate CoffeeScript")
             .describe("c", "Cache linting results")
+            .describe("ext",
+                "Specify an additional file extension, separated by comma.")
             .boolean("csv")
             .boolean("jslint")
             .boolean("checkstyle")
@@ -239,7 +250,7 @@ else
     else
         # Find scripts to lint.
         paths = options.argv._
-        scripts = findCoffeeScripts(paths)
+        scripts = findCoffeeScripts(paths, options.argv.ext)
         scripts = ignore().addIgnoreFile('.coffeelintignore').filter(scripts)
 
         # Lint the code.
