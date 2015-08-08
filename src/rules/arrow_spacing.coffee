@@ -40,8 +40,12 @@ module.exports = class ArrowSpacing
         # e.g. (-> true)()
         #
         # we will accept either having a space or not having a space there.
+        #
+        # Also if the -> is the beginning of the file, then simply just return
 
         pp = tokenApi.peek(-1)
+
+        return unless pp
 
         if not token.spaced and
                 (pp[1] is "(" and not pp.generated?) and
@@ -60,7 +64,7 @@ module.exports = class ArrowSpacing
 
     # Are there any more meaningful tokens following the current one?
     atEof: (tokenApi) ->
-        {tokens, i } = tokenApi
+        { tokens, i } = tokenApi
         for token in tokens.slice(i + 1)
             unless token.generated or token[0] in ['OUTDENT', 'TERMINATOR']
                 return false
