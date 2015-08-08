@@ -5,7 +5,7 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 
 configError = {prefer_english_operator: {level: 'error'}}
 
-vows.describe('PreferEnglishOperatorssemicolons').addBatch({
+vows.describe('PreferEnglishOperators').addBatch({
 
     'non-English operators':
         'should warn when == is used': ->
@@ -33,7 +33,7 @@ vows.describe('PreferEnglishOperatorssemicolons').addBatch({
             result = coffeelint.lint('x = !!y', configError)
             assert.equal(result.length, 0)
 
-        'can be configred at an independent level': ->
+        'can be configured at an independent level': ->
 
             configError = {prefer_english_operator: {
                 level: 'error'
@@ -89,7 +89,3 @@ vows.describe('PreferEnglishOperatorssemicolons').addBatch({
             assert.isEmpty(coffeelint.lint(source, configError))
 
 }).export(module)
-
-
-
-
