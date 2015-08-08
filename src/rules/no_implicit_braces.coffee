@@ -24,31 +24,49 @@ module.exports = class NoImplicitBraces
             idiomatic CoffeeScript.
         '''
 
-    tokens: ['{', 'OUTDENT', 'CLASS']
+    tokens: ['{', 'OUTDENT', 'CLASS', 'IDENTIFIER']
 
     constructor: ->
         @isClass = false
-        @classBrace = false
+        @className = undefined
 
     lintToken: (token, tokenApi) ->
         [type, val, lineNum] = token
 
-        if type is 'OUTDENT' or type is 'CLASS'
+        if type in ['OUTDENT', 'CLASS']
             return @trackClass arguments...
 
-        if token.generated
-            # If we're inside a class but have not yet seen a brace,
-            # allow this generated brace THIS ONE TIME
-            if @classBrace
-                @classBrace = false
-                return
+        # If we're looking at an IDENTIFIER, and we're in a class, and we've not
+        # set a className (or the previous token was 'EXTENDS', set the current
+        # identifier as the class name)
+        if type is 'IDENTIFIER' and @isClass and
+                (not @className? or tokenApi.peek(-1)[0] is 'EXTENDS')
+            @className = val
 
+        if token.generated and type is "{"
             # If strict mode is turned off it allows implicit braces when the
             # object is declared over multiple lines.
             unless tokenApi.config[@rule.name].strict
-                [previousToken] = tokenApi.peek(-1)
-                if previousToken is 'INDENT'
+                [prevToken] = tokenApi.peek(-1)
+                if prevToken in ['INDENT', 'TERMINATOR']
                     return
+
+            if @isClass
+                # The way CoffeeScript generates tokens for classes
+                # is a bit weird. It generates '{' tokens around instance
+                # methods (also known as the prototypes of an Object).
+
+                [prevToken] = tokenApi.peek(-1)
+                # If there is a TERMINATOR token right before the '{' token
+                if prevToken is 'TERMINATOR'
+                    return
+
+                # If we're at a '{' token, and the token 2 before it is the
+                # class name, then ignore
+                peekTwo = tokenApi.peek(-2)
+                if peekTwo[0] is 'IDENTIFIER' and peekTwo[1] is @className
+                    return
+
             return true
 
     trackClass: (token, tokenApi) ->
@@ -56,8 +74,7 @@ module.exports = class NoImplicitBraces
 
         if n0 is 'OUTDENT' and n1 is 'TERMINATOR'
             @isClass = false
-            @classBrace = false
         if n0 is 'CLASS'
             @isClass = true
-            @classBrace = true
+            @className = undefined
         return null
