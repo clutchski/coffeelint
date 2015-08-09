@@ -23,7 +23,7 @@ module.exports = class NoUnnecessaryDoubleQuotes
             '''
     constructor: ->
         @regexps = []
-        @isInterpolation = false
+        @interpolationLevel = 0
 
     tokens: ['STRING', 'STRING_START', 'STRING_END']
 
@@ -42,14 +42,17 @@ module.exports = class NoUnnecessaryDoubleQuotes
         if tokenApi.peek(2)?[0] is 'REGEX_END'
             return false
 
-        hasLegalConstructs = @isInterpolation or @hasSingleQuote(tokenValue)
+        hasLegalConstructs = @isInInterpolation() or @hasSingleQuote(tokenValue)
         return not hasLegalConstructs
+
+    isInInterpolation: () ->
+        @interpolationLevel > 0
 
     trackParens: (token, tokenApi) ->
         if token[0] is 'STRING_START'
-            @isInterpolation = true
+            @interpolationLevel += 1
         else if token[0] is 'STRING_END'
-            @isInterpolation = false
+            @interpolationLevel -= 1
         # We're not linting, just tracking interpolations.
         null
 

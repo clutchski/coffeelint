@@ -112,6 +112,18 @@ vows.describe('commandline').addBatch({
         'works' : (error, stdout, stderr) ->
             assert.isNull(error)
 
+    'with findconfig and local coffeelint.json and extended config' :
+
+        topic : () ->
+            args = [
+                'fixtures/find_extended_test/invalid.coffee'
+            ]
+            commandline args, this.callback
+            return undefined
+
+        'works' : (error, stdout, stderr) ->
+            assert.isNull(error)
+
     'with custom configuration' :
 
         topic : () ->
@@ -201,6 +213,41 @@ vows.describe('commandline').addBatch({
             JSON.parse config
             assert.isNotNull(stdout)
             assert.isNull(error)
+
+    '--trimconfig with default':
+        topic: ->
+            configPath = '../generated_coffeelint.json'
+            args = [
+                '-f'
+                configPath
+                '--trimconfig'
+            ]
+            commandline args, (error, stdout) =>
+                this.callback null, stdout
+
+            return undefined
+
+        'works': (config) ->
+            assert.equal(config, '{}\n')
+
+    "repo's coffeelint.json":
+        topic: ->
+            args = [
+                '-f',
+                '../coffeelint.json',
+                '--trimconfig'
+            ]
+            commandline args, (error, stdout) =>
+                this.callback null, stdout
+
+            return undefined
+
+        'is minimal' : (error, config) ->
+            expected = fs.readFileSync(
+                path.join(__dirname, '..', 'coffeelint.json')
+            ).toString()
+
+            assert.equal(config, expected)
 
     'does not fail on warnings' :
 
@@ -324,6 +371,36 @@ vows.describe('commandline').addBatch({
             'fails': (error, stdout, stderr) ->
                 assert.isNotNull(error)
                 assert.include(stdout.toLowerCase(), 'trailing whitespace')
+
+    'additional file extention':
+
+        'find additional files with --ext key':
+            topic: () ->
+                args = [
+                    '--ext',
+                    'csbx',
+                    'fixtures/custom_extention'
+                    ]
+                commandline args, this.callback
+                return undefined
+
+            'passes': (error, stdout, stderr) ->
+                assert.isNull(error)
+                assert.isEmpty(stderr)
+                assert.isString(stdout)
+                assert.include(stdout, '0 errors and 0 warnings in 1 file')
+
+        'do not find additional files without --ext key':
+            topic: () ->
+                args = ['fixtures/custom_extention']
+                commandline args, this.callback
+                return undefined
+
+            'fails': (error, stdout, stderr) ->
+                assert.isNull(error)
+                assert.isEmpty(stderr)
+                assert.isString(stdout)
+                assert.include(stdout, '0 errors and 0 warnings in 0 file')
 
     'using environment config file':
 

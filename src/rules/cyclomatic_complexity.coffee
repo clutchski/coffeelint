@@ -1,4 +1,4 @@
-module.exports = class NoTabs
+module.exports = class CyclomaticComplexity
 
     rule:
         name: 'cyclomatic_complexity'

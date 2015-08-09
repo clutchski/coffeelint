@@ -1,29 +1,22 @@
 {
-    "no_debugger": {
-        "level": "error",
-        "console": true
-    },
     "arrow_spacing": {
         "level": "error"
     },
-    "indentation" : {
-        "level" : "error",
-        "value" : 4
+    "line_endings": {
+        "level": "error"
     },
-
-    "cyclomatic_complexity" : {
-        "level" : "warn",
-        "value" : 11
+    "indentation": {
+        "value": 4
     },
-
-    "line_endings" : {
-        "value" : "unix",
-        "level" : "error"
+    "space_operators": {
+        "level": "error"
     },
-
-    "space_operators" : {
-        "level" : "error"
+    "cyclomatic_complexity": {
+        "value": 11,
+        "level": "warn"
+    },
+    "no_debugger": {
+        "level": "error",
+        "console": true
     }
-
-
 }

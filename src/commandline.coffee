@@ -27,18 +27,32 @@ log = ->
     console.log(arguments...)
     # coffeelint: enable=no_debugger
 
+jsonIndentation = 2
+logConfig = (config) ->
+    filter = (k, v) -> v unless k in ['message', 'description', 'name']
+    log(JSON.stringify(config, filter, jsonIndentation))
+
 # Return the contents of the given file synchronously.
 read = (path) ->
     realPath = fs.realpathSync(path)
     return fs.readFileSync(realPath).toString()
 
+# build all extentions to search
+getAllExtention = (extension) ->
+    if extension?
+        extension = ['coffee'].concat(extension?.split(','))
+        "@(#{extension.join('|')})"
+    else
+        'coffee'
+
 # Return a list of CoffeeScript's in the given paths.
-findCoffeeScripts = (paths) ->
+findCoffeeScripts = (paths, extension) ->
     files = []
+    allExtention = getAllExtention(extension)
     for p in paths
         if fs.statSync(p).isDirectory()
             # The glob library only uses forward slashes.
-            files = files.concat(glob.sync("#{p}/**/*.coffee"))
+            files = files.concat(glob.sync("#{p}/**/*.#{allExtention}"))
         else
             files.push(p)
     return files
@@ -66,8 +80,25 @@ lintSource = (source, config, literate = false) ->
     return errorReport
 
 # Load a config file given a path/filename
-loadConfig = (path) ->
-    JSON.parse(stripComments(read(path)))
+readConfigFile = (path) ->
+    text = read(path)
+    try
+        jsonIndentation = text.split('\n')[1].match(/^\s+/)[0].length
+    JSON.parse(stripComments(text))
+
+loadConfig = (options) ->
+    config = null
+    unless options.argv.noconfig
+        if options.argv.f
+            config = readConfigFile(options.argv.f)
+
+            # If -f was specifying a package.json, extract the config
+            if config.coffeelintConfig
+                config = config.coffeelintConfig
+        else if (process.env.COFFEELINT_CONFIG and
+                fs.existsSync(process.env.COFFEELINT_CONFIG))
+            config = readConfigFile(process.env.COFFEELINT_CONFIG)
+    config
 
 # Get fallback configuration. With the -F flag found configs in standard places
 # will be used for each file being linted. Standard places are package.json or
@@ -146,6 +177,8 @@ options = optimist
             .describe("f", "Specify a custom configuration file.")
             .describe("rules", "Specify a custom rule or directory of rules.")
             .describe("makeconfig", "Prints a default config file")
+            .describe("trimconfig", "Compares your config with the default and
+                prints a minimal configuration")
             .describe("noconfig", "Ignores any config file.")
             .describe("h", "Print help information.")
             .describe("v", "Print current version number.")
@@ -164,12 +197,15 @@ options = optimist
             .describe("literate",
                 "Used with --stdin to process as Literate CoffeeScript")
             .describe("c", "Cache linting results")
+            .describe("ext",
+                "Specify an additional file extension, separated by comma.")
             .boolean("csv")
             .boolean("jslint")
             .boolean("checkstyle")
             .boolean("nocolor")
             .boolean("noconfig")
             .boolean("makeconfig")
+            .boolean("trimconfig")
             .boolean("literate")
             .boolean("r")
             .boolean("s")
@@ -182,9 +218,12 @@ if options.argv.v
 else if options.argv.h
     options.showHelp()
     process.exit(0)
+else if options.argv.trimconfig
+    userConfig = loadConfig(options) ? getFallbackConfig()
+    logConfig(coffeelint.trimConfig(userConfig))
+
 else if options.argv.makeconfig
-    log JSON.stringify coffeelint.getRules(),
-        ((k,v) -> v unless k in ['message', 'description', 'name']), 4
+    logConfig(coffeelint.getRules())
 else if options.argv._.length < 1 and not options.argv.s
     options.showHelp()
     process.exit(1)
@@ -195,18 +234,7 @@ else
         coffeelint.setCache new Cache(path.join(os.tmpdir(), 'coffeelint'))
 
     # Load configuration.
-    config = null
-    unless options.argv.noconfig
-        if options.argv.f
-            config = loadConfig(options.argv.f)
-
-            # If -f was specifying a package.json, extract the config
-            if config.coffeelintConfig
-                config =  config.coffeelintConfig
-
-        else if (process.env.COFFEELINT_CONFIG and
-        fs.existsSync(process.env.COFFEELINT_CONFIG))
-            config = loadConfig(process.env.COFFEELINT_CONFIG)
+    config = loadConfig(options)
 
     ruleLoader.loadRule(coffeelint, options.argv.rules) if options.argv.rules
 
@@ -222,7 +250,7 @@ else
     else
         # Find scripts to lint.
         paths = options.argv._
-        scripts = findCoffeeScripts(paths)
+        scripts = findCoffeeScripts(paths, options.argv.ext)
         scripts = ignore().addIgnoreFile('.coffeelintignore').filter(scripts)
 
         # Lint the code.

@@ -1,5 +1,5 @@
 
-module.exports = class CamelCaseClasses
+module.exports = class TransformMessesUpLineNumbers
 
     rule:
         name: 'transform_messes_up_line_numbers'

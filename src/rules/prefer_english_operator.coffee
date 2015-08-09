@@ -1,5 +1,5 @@
 
-module.exports = class RuleProcessor
+module.exports = class PreferEnglishOperator
     rule:
         name: 'prefer_english_operator'
         description: '''

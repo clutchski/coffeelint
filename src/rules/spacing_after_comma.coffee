@@ -1,5 +1,5 @@
 
-module.exports = class RuleProcessor
+module.exports = class SpacingAfterComma
     rule:
         name: 'spacing_after_comma'
         description: 'This rule requires a space after commas.'
