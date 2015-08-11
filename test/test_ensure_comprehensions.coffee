@@ -163,4 +163,28 @@ vows.describe(ruleName).addBatch({
             assert.isArray(errors)
             assert.isEmpty(errors)
 
+    "Nested loops don't trigger errors unless set to something":
+        topic:
+            '''
+            # FINE
+            ((transform(col) for cols, col of rows) for rows in mtx)
+            matrix = ((col for cols, col of rows) for rows in mtx)
+            matrix2 = (col for cols, col of rows for rows in mtx)
+            ((nobj[key] = val for own key, val of obj) for obj in objects)
+
+            # BAD
+            matrix3 = k for k,v in mtx
+            '''
+
+        'doesn\'t throw an error': (source) ->
+            config[ruleName] = { level: 'error' }
+            errors = coffeelint.lint(source, config)
+            assert.isArray(errors)
+            assert.lengthOf(errors, 1)
+
+            error = errors[0]
+            assert.equal(error.lineNumber, 8)
+            assert.equal(error.message, errorMessage)
+            assert.equal(error.rule, ruleName)
+
 }).export(module)

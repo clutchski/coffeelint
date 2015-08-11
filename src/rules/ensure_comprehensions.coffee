@@ -29,11 +29,17 @@ module.exports = class EnsureComprehensions
         atEqual = false
         numCallEnds = 0
         numCallStarts = 0
+        numParenStarts = 0
+        numParenEnds = 0
         prevIdents = []
+
         while (prevToken = tokenApi.peek(peeker))
 
             numCallEnds++ if prevToken[0] is 'CALL_END'
             numCallStarts++ if prevToken[0] is 'CALL_START'
+
+            numParenStarts++ if prevToken[0] is '('
+            numParenEnds++ if prevToken[0] is ')'
 
             if prevToken[0] is 'IDENTIFIER'
                 if not atEqual
@@ -43,8 +49,10 @@ module.exports = class EnsureComprehensions
 
             if prevToken[0] in ['(', '->', 'TERMINATOR'] or prevToken.newLine?
                 break
-            if prevToken[0] is '='
+
+            if prevToken[0] is '=' and numParenEnds is numParenStarts
                 atEqual = true
+
             peeker--
 
         # If we hit a terminal node (TERMINATOR token or w/ property newLine)
@@ -52,7 +60,7 @@ module.exports = class EnsureComprehensions
         # any identifiers that are part of the for-loop, and there is an equal
         # amount of CALL_START/CALL_END tokens. An unequal number means the list
         # comprehension is inside of a function call
-        if atEqual and prevIdents.length > 0 and numCallStarts is numCallEnds
+        if atEqual and numCallStarts is numCallEnds
             return { context: '' }
 
     findIdents: (tokenApi) ->
