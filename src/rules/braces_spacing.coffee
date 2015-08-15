@@ -47,10 +47,10 @@ module.exports = class BracesSpacing
 
     findNearestToken: (token, tokenApi, difference) ->
         totalDifference = 0
-        while true
+        loop
             totalDifference += difference
             nearestToken = tokenApi.peek(totalDifference)
-            continue if nearestToken[0] is 'OUTDENT'
+            continue if nearestToken[0] is 'OUTDENT' or nearestToken.generated?
             return nearestToken
 
     tokensOnSameLine: (firstToken, secondToken) ->

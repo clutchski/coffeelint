@@ -35,6 +35,18 @@ sources =
         noSpaces: "\"\#{foo}\""
         oneSpace: "\"\#{ foo }\""
 
+    fnImplicitParens:
+        '''
+        [
+          {
+            foo: ->
+              bar ->
+                1
+          }
+        ]
+        '''
+
+
 configs =
     oneEmptyObjectSpace:
         braces_spacing: {level: 'error', empty_object_spaces: 1}
@@ -199,5 +211,13 @@ vows.describe('braces_spacing').addBatch({
                        ['There should be 1 space inside "{"',
                         'There should be 1 space inside "}"'])
 
+    'handles generated tokens being on the same line (in outputted code)':
+        'no spaces inside both braces':
+            shouldPass(sources.fnImplicitParens,
+                       configs.zeroSpaces)
+
+        'should pass with one space on both braces':
+            shouldPass(sources.fnImplicitParens,
+                       configs.oneSpace)
 
 }).export(module)
