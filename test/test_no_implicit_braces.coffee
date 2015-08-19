@@ -88,9 +88,43 @@ vows.describe('no_implicit_braces').addBatch({
             assert.isArray(errors)
             assert.isEmpty(errors)
 
+    'Test against use of implicit braces in loop with conditional (#459)':
+        topic: () ->
+            '''
+
+            list =
+              count: 10
+              items:
+                for item in items
+                  if not item
+                    throw new Error 'Unexpected: falsy item in list!'
+
+                  name: item.Name
+                  age: item.Age
+            '''
+
+        'throws no errors for this when strict is false': (source) ->
+            config =
+                no_implicit_braces:
+                    level: 'error'
+                    strict: false
+            errors = coffeelint.lint(source, config)
+            assert.isArray(errors)
+            assert.lengthOf(errors, 0)
+
+        'throws 2 errors when strict is true': (source) ->
+            config =
+                no_implicit_braces:
+                    level: 'error'
+                    strict: true
+            errors = coffeelint.lint(source, config)
+            assert.isArray(errors)
+            assert.lengthOf(errors, 2)
+
+
     'Test that any implicit braces inside classes are caught':
         topic: () ->
-            """
+            '''
             class ABC
               @CONST = 'DEF'
 
@@ -122,7 +156,20 @@ vows.describe('no_implicit_braces').addBatch({
                 g = @B * f
                 return [@A, g]
 
-            """
+            class Foo
+              Object.defineProperty @::, 'bar', # err on strict: true
+                enumerable: true
+                get: ->
+                  false
+
+              toString: ->
+                'foo'
+
+            class X extends Y # this one should return no errors
+              toString: ->
+                'foo'
+
+            '''
 
         'throws no errors for this when strict is false': (source) ->
             config =
@@ -133,15 +180,22 @@ vows.describe('no_implicit_braces').addBatch({
             assert.isArray(errors)
             assert.lengthOf(errors, 0)
 
-        'throws 2 errors for this when strict is true': (source) ->
+        'throws 3 errors for this when strict is true': (source) ->
             config =
                 no_implicit_braces:
                     level: 'error'
                     strict: true
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
-            assert.lengthOf(errors, 2)
+            assert.lengthOf(errors, 3)
+
             assert.equal(errors[0].lineNumber, 6)
+            assert.equal(errors[0].line, '      t: 3')
+
             assert.equal(errors[1].lineNumber, 10)
+            assert.equal(errors[1].line, '      v: \'a\'')
+
+            assert.equal(errors[2].lineNumber, 34)
+            assert.equal(errors[2].line, '    enumerable: true')
 
 }).export(module)
