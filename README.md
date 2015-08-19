@@ -14,10 +14,11 @@ To suggest a feature, report a bug, or general discussion, head over
 
 Current:
 
-- [Asa Ayers](https://github.com/AsaAyers)
+- [Shuan Wang](https://github.com/swang)
 
 Past:
 
+- [Asa Ayers](https://github.com/AsaAyers)
 - [Matt Perpick](https://github.com/clutchski)
 
 ## Contributing
