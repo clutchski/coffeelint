@@ -228,6 +228,8 @@ coffeelint.registerRule(require('./rules/colon_assignment_spacing.coffee'));
 
 coffeelint.registerRule(require('./rules/no_implicit_braces.coffee'));
 
+coffeelint.registerRule(require('./rules/no_nested_string_interpolation.coffee'));
+
 coffeelint.registerRule(require('./rules/no_plusplus.coffee'));
 
 coffeelint.registerRule(require('./rules/no_throwing_strings.coffee'));
@@ -275,6 +277,8 @@ coffeelint.registerRule(require('./rules/ensure_comprehensions.coffee'));
 coffeelint.registerRule(require('./rules/no_this.coffee'));
 
 coffeelint.registerRule(require('./rules/eol_last.coffee'));
+
+coffeelint.registerRule(require('./rules/no_private_function_fat_arrows.coffee'));
 
 hasSyntaxError = function(source) {
   try {
@@ -421,11 +425,11 @@ coffeelint.setCache = function(obj) {
 
 
 
-},{"./../package.json":2,"./ast_linter.coffee":3,"./error_report.coffee":5,"./lexical_linter.coffee":6,"./line_linter.coffee":7,"./rules.coffee":8,"./rules/arrow_spacing.coffee":9,"./rules/braces_spacing.coffee":10,"./rules/camel_case_classes.coffee":11,"./rules/colon_assignment_spacing.coffee":12,"./rules/cyclomatic_complexity.coffee":13,"./rules/duplicate_key.coffee":14,"./rules/empty_constructor_needs_parens.coffee":15,"./rules/ensure_comprehensions.coffee":16,"./rules/eol_last.coffee":17,"./rules/indentation.coffee":18,"./rules/line_endings.coffee":19,"./rules/max_line_length.coffee":20,"./rules/missing_fat_arrows.coffee":21,"./rules/newlines_after_classes.coffee":22,"./rules/no_backticks.coffee":23,"./rules/no_debugger.coffee":24,"./rules/no_empty_functions.coffee":25,"./rules/no_empty_param_list.coffee":26,"./rules/no_implicit_braces.coffee":27,"./rules/no_implicit_parens.coffee":28,"./rules/no_interpolation_in_single_quotes.coffee":29,"./rules/no_plusplus.coffee":30,"./rules/no_stand_alone_at.coffee":31,"./rules/no_tabs.coffee":32,"./rules/no_this.coffee":33,"./rules/no_throwing_strings.coffee":34,"./rules/no_trailing_semicolons.coffee":35,"./rules/no_trailing_whitespace.coffee":36,"./rules/no_unnecessary_double_quotes.coffee":37,"./rules/no_unnecessary_fat_arrows.coffee":38,"./rules/non_empty_constructor_needs_parens.coffee":39,"./rules/prefer_english_operator.coffee":40,"./rules/space_operators.coffee":41,"./rules/spacing_after_comma.coffee":42,"./rules/transform_messes_up_line_numbers.coffee":43}],2:[function(require,module,exports){
+},{"./../package.json":2,"./ast_linter.coffee":3,"./error_report.coffee":5,"./lexical_linter.coffee":6,"./line_linter.coffee":7,"./rules.coffee":8,"./rules/arrow_spacing.coffee":9,"./rules/braces_spacing.coffee":10,"./rules/camel_case_classes.coffee":11,"./rules/colon_assignment_spacing.coffee":12,"./rules/cyclomatic_complexity.coffee":13,"./rules/duplicate_key.coffee":14,"./rules/empty_constructor_needs_parens.coffee":15,"./rules/ensure_comprehensions.coffee":16,"./rules/eol_last.coffee":17,"./rules/indentation.coffee":18,"./rules/line_endings.coffee":19,"./rules/max_line_length.coffee":20,"./rules/missing_fat_arrows.coffee":21,"./rules/newlines_after_classes.coffee":22,"./rules/no_backticks.coffee":23,"./rules/no_debugger.coffee":24,"./rules/no_empty_functions.coffee":25,"./rules/no_empty_param_list.coffee":26,"./rules/no_implicit_braces.coffee":27,"./rules/no_implicit_parens.coffee":28,"./rules/no_interpolation_in_single_quotes.coffee":29,"./rules/no_nested_string_interpolation.coffee":30,"./rules/no_plusplus.coffee":31,"./rules/no_private_function_fat_arrows.coffee":32,"./rules/no_stand_alone_at.coffee":33,"./rules/no_tabs.coffee":34,"./rules/no_this.coffee":35,"./rules/no_throwing_strings.coffee":36,"./rules/no_trailing_semicolons.coffee":37,"./rules/no_trailing_whitespace.coffee":38,"./rules/no_unnecessary_double_quotes.coffee":39,"./rules/no_unnecessary_fat_arrows.coffee":40,"./rules/non_empty_constructor_needs_parens.coffee":41,"./rules/prefer_english_operator.coffee":42,"./rules/space_operators.coffee":43,"./rules/spacing_after_comma.coffee":44,"./rules/transform_messes_up_line_numbers.coffee":45}],2:[function(require,module,exports){
 module.exports={
   "name": "coffeelint",
   "description": "Lint your CoffeeScript",
-  "version": "1.10.0",
+  "version": "1.11.0",
   "homepage": "http://www.coffeelint.org",
   "keywords": [
     "lint",
@@ -1112,6 +1116,9 @@ module.exports = ArrowSpacing = (function() {
   ArrowSpacing.prototype.lintToken = function(token, tokenApi) {
     var pp;
     pp = tokenApi.peek(-1);
+    if (!pp) {
+      return;
+    }
     if (!token.spaced && (pp[1] === "(" && (pp.generated == null)) && tokenApi.peek(1)[0] === 'INDENT' && tokenApi.peek(2)[0] === 'OUTDENT') {
       return null;
     } else if (!(((token.spaced != null) || (token.newLine != null) || this.atEof(tokenApi)) && (((pp.spaced != null) || pp[0] === 'TERMINATOR') || (pp.generated != null) || pp[0] === "INDENT" || (pp[1] === "(" && (pp.generated == null))))) {
@@ -1323,12 +1330,12 @@ module.exports = ColonAssignmentSpacing = (function() {
 
 
 },{}],13:[function(require,module,exports){
-var NoTabs;
+var CyclomaticComplexity;
 
-module.exports = NoTabs = (function() {
-  function NoTabs() {}
+module.exports = CyclomaticComplexity = (function() {
+  function CyclomaticComplexity() {}
 
-  NoTabs.prototype.rule = {
+  CyclomaticComplexity.prototype.rule = {
     name: 'cyclomatic_complexity',
     value: 10,
     level: 'ignore',
@@ -1336,20 +1343,20 @@ module.exports = NoTabs = (function() {
     description: 'Examine the complexity of your application.'
   };
 
-  NoTabs.prototype.getComplexity = function(node) {
+  CyclomaticComplexity.prototype.getComplexity = function(node) {
     var complexity, name, ref;
     name = this.astApi.getNodeName(node);
     complexity = name === 'If' || name === 'While' || name === 'For' || name === 'Try' ? 1 : name === 'Op' && ((ref = node.operator) === '&&' || ref === '||') ? 1 : name === 'Switch' ? node.cases.length : 0;
     return complexity;
   };
 
-  NoTabs.prototype.lintAST = function(node, astApi) {
+  CyclomaticComplexity.prototype.lintAST = function(node, astApi) {
     this.astApi = astApi;
     this.lintNode(node);
     return void 0;
   };
 
-  NoTabs.prototype.lintNode = function(node, line) {
+  CyclomaticComplexity.prototype.lintNode = function(node, line) {
     var complexity, error, name, ref, rule;
     name = (ref = this.astApi) != null ? ref.getNodeName(node) : void 0;
     complexity = this.getComplexity(node);
@@ -1376,7 +1383,7 @@ module.exports = NoTabs = (function() {
     return complexity;
   };
 
-  return NoTabs;
+  return CyclomaticComplexity;
 
 })();
 
@@ -1523,13 +1530,27 @@ module.exports = EnsureComprehensions = (function() {
 
   EnsureComprehensions.prototype.tokens = ['FOR'];
 
+  EnsureComprehensions.prototype.forBlock = false;
+
   EnsureComprehensions.prototype.lintToken = function(token, tokenApi) {
-    var atEqual, idents, peeker, prevIdents, prevToken, ref, ref1;
+    var atEqual, idents, numCallEnds, numCallStarts, peeker, prevIdents, prevToken, ref, ref1;
     idents = this.findIdents(tokenApi);
+    if (this.forBlock) {
+      this.forBlock = false;
+      return;
+    }
     peeker = -1;
     atEqual = false;
+    numCallEnds = 0;
+    numCallStarts = 0;
     prevIdents = [];
     while ((prevToken = tokenApi.peek(peeker))) {
+      if (prevToken[0] === 'CALL_END') {
+        numCallEnds++;
+      }
+      if (prevToken[0] === 'CALL_START') {
+        numCallStarts++;
+      }
       if (prevToken[0] === 'IDENTIFIER') {
         if (!atEqual) {
           prevIdents.push(prevToken[1]);
@@ -1545,7 +1566,7 @@ module.exports = EnsureComprehensions = (function() {
       }
       peeker--;
     }
-    if (atEqual && prevIdents.length > 0) {
+    if (atEqual && prevIdents.length > 0 && numCallStarts === numCallEnds) {
       return {
         context: ''
       };
@@ -1561,6 +1582,16 @@ module.exports = EnsureComprehensions = (function() {
         idents.push(nextToken[1]);
       }
       if ((ref = nextToken[0]) === 'FORIN' || ref === 'FOROF') {
+        break;
+      }
+      peeker++;
+    }
+    while ((nextToken = tokenApi.peek(peeker))) {
+      if (nextToken[0] === 'TERMINATOR') {
+        break;
+      }
+      if (nextToken[0] === 'INDENT') {
+        this.forBlock = true;
         break;
       }
       peeker++;
@@ -2259,6 +2290,56 @@ module.exports = NoInterpolationInSingleQuotes = (function() {
 
 
 },{}],30:[function(require,module,exports){
+var NoNestedStringInterpolation;
+
+module.exports = NoNestedStringInterpolation = (function() {
+  NoNestedStringInterpolation.prototype.rule = {
+    name: 'no_nested_string_interpolation',
+    level: 'warn',
+    message: 'Nested string interpolation is forbidden',
+    description: 'This rule warns about nested string interpolation,\nas it tends to make code harder to read and understand.\n<pre>\n<code># Good!\nstr = "Book by #{firstName.toUpperCase()} #{lastName.toUpperCase()}"\n\n# Bad!\nstr = "Book by #{"#{firstName} #{lastName}".toUpperCase()}"\n</code>\n</pre>'
+  };
+
+  NoNestedStringInterpolation.prototype.tokens = ['STRING_START', 'STRING_END'];
+
+  function NoNestedStringInterpolation() {
+    this.startedStrings = 0;
+    this.generatedError = false;
+  }
+
+  NoNestedStringInterpolation.prototype.lintToken = function(arg, tokenApi) {
+    var type;
+    type = arg[0];
+    if (type === 'STRING_START') {
+      return this.trackStringStart();
+    } else {
+      return this.trackStringEnd();
+    }
+  };
+
+  NoNestedStringInterpolation.prototype.trackStringStart = function() {
+    this.startedStrings += 1;
+    if (this.startedStrings <= 1 || this.generatedError) {
+      return;
+    }
+    this.generatedError = true;
+    return true;
+  };
+
+  NoNestedStringInterpolation.prototype.trackStringEnd = function() {
+    this.startedStrings -= 1;
+    if (this.startedStrings === 1) {
+      return this.generatedError = false;
+    }
+  };
+
+  return NoNestedStringInterpolation;
+
+})();
+
+
+
+},{}],31:[function(require,module,exports){
 var NoPlusPlus;
 
 module.exports = NoPlusPlus = (function() {
@@ -2285,7 +2366,105 @@ module.exports = NoPlusPlus = (function() {
 
 
 
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
+var NoPrivateFunctionFatArrows,
+  bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+  indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+module.exports = NoPrivateFunctionFatArrows = (function() {
+  function NoPrivateFunctionFatArrows() {
+    this.isFatArrowCode = bind(this.isFatArrowCode, this);
+    this.isObject = bind(this.isObject, this);
+    this.isValue = bind(this.isValue, this);
+    this.isClass = bind(this.isClass, this);
+    this.isCode = bind(this.isCode, this);
+  }
+
+  NoPrivateFunctionFatArrows.prototype.rule = {
+    name: 'no_private_function_fat_arrows',
+    level: 'warn',
+    message: 'Used the fat arrow for a private function',
+    description: "Warns when you use the fat arrow for a private function\ninside a class defintion scope. It is not necessary and\nit does not do anything."
+  };
+
+  NoPrivateFunctionFatArrows.prototype.lintAST = function(node, astApi) {
+    this.astApi = astApi;
+    this.lintNode(node);
+    return void 0;
+  };
+
+  NoPrivateFunctionFatArrows.prototype.lintNode = function(node, functions) {
+    var error;
+    if (functions == null) {
+      functions = [];
+    }
+    if (this.isFatArrowCode(node) && indexOf.call(functions, node) >= 0) {
+      error = this.astApi.createError({
+        lineNumber: node.locationData.first_line + 1
+      });
+      this.errors.push(error);
+    }
+    return node.eachChild((function(_this) {
+      return function(child) {
+        return _this.lintNode(child, (function() {
+          switch (false) {
+            case !this.isClass(node):
+              return this.functionsOfClass(node);
+            case !this.isCode(node):
+              return [];
+            default:
+              return functions;
+          }
+        }).call(_this));
+      };
+    })(this));
+  };
+
+  NoPrivateFunctionFatArrows.prototype.isCode = function(node) {
+    return this.astApi.getNodeName(node) === 'Code';
+  };
+
+  NoPrivateFunctionFatArrows.prototype.isClass = function(node) {
+    return this.astApi.getNodeName(node) === 'Class';
+  };
+
+  NoPrivateFunctionFatArrows.prototype.isValue = function(node) {
+    return this.astApi.getNodeName(node) === 'Value';
+  };
+
+  NoPrivateFunctionFatArrows.prototype.isObject = function(node) {
+    return this.astApi.getNodeName(node) === 'Obj';
+  };
+
+  NoPrivateFunctionFatArrows.prototype.isFatArrowCode = function(node) {
+    return this.isCode(node) && node.bound;
+  };
+
+  NoPrivateFunctionFatArrows.prototype.functionsOfClass = function(classNode) {
+    var bodyNode, bodyValues;
+    bodyValues = (function() {
+      var i, len, ref, results;
+      ref = classNode.body.expressions;
+      results = [];
+      for (i = 0, len = ref.length; i < len; i++) {
+        bodyNode = ref[i];
+        if (this.isValue(bodyNode) && this.isObject(bodyNode.base)) {
+          continue;
+        }
+        results.push(bodyNode.value);
+      }
+      return results;
+    }).call(this);
+    return bodyValues.filter(this.isCode);
+  };
+
+  return NoPrivateFunctionFatArrows;
+
+})();
+
+
+
+},{}],33:[function(require,module,exports){
 var NoStandAloneAt;
 
 module.exports = NoStandAloneAt = (function() {
@@ -2322,7 +2501,7 @@ module.exports = NoStandAloneAt = (function() {
 
 
 
-},{}],32:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 var NoTabs, indentationRegex,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -2354,7 +2533,7 @@ module.exports = NoTabs = (function() {
 
 
 
-},{}],33:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 var NoThis;
 
 module.exports = NoThis = (function() {
@@ -2379,7 +2558,7 @@ module.exports = NoThis = (function() {
 
 
 
-},{}],34:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 var NoThrowingStrings;
 
 module.exports = NoThrowingStrings = (function() {
@@ -2407,7 +2586,7 @@ module.exports = NoThrowingStrings = (function() {
 
 
 
-},{}],35:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 var NoTrailingSemicolons, regexes,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   slice = [].slice;
@@ -2460,7 +2639,7 @@ module.exports = NoTrailingSemicolons = (function() {
 
 
 
-},{}],36:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 var NoTrailingWhitespace, regexes;
 
 regexes = {
@@ -2524,7 +2703,7 @@ module.exports = NoTrailingWhitespace = (function() {
 
 
 
-},{}],37:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 var NoUnnecessaryDoubleQuotes;
 
 module.exports = NoUnnecessaryDoubleQuotes = (function() {
@@ -2537,7 +2716,7 @@ module.exports = NoUnnecessaryDoubleQuotes = (function() {
 
   function NoUnnecessaryDoubleQuotes() {
     this.regexps = [];
-    this.isInterpolation = false;
+    this.interpolationLevel = 0;
   }
 
   NoUnnecessaryDoubleQuotes.prototype.tokens = ['STRING', 'STRING_START', 'STRING_END'];
@@ -2555,15 +2734,19 @@ module.exports = NoUnnecessaryDoubleQuotes = (function() {
     if (((ref = tokenApi.peek(2)) != null ? ref[0] : void 0) === 'REGEX_END') {
       return false;
     }
-    hasLegalConstructs = this.isInterpolation || this.hasSingleQuote(tokenValue);
+    hasLegalConstructs = this.isInInterpolation() || this.hasSingleQuote(tokenValue);
     return !hasLegalConstructs;
+  };
+
+  NoUnnecessaryDoubleQuotes.prototype.isInInterpolation = function() {
+    return this.interpolationLevel > 0;
   };
 
   NoUnnecessaryDoubleQuotes.prototype.trackParens = function(token, tokenApi) {
     if (token[0] === 'STRING_START') {
-      this.isInterpolation = true;
+      this.interpolationLevel += 1;
     } else if (token[0] === 'STRING_END') {
-      this.isInterpolation = false;
+      this.interpolationLevel -= 1;
     }
     return null;
   };
@@ -2578,7 +2761,7 @@ module.exports = NoUnnecessaryDoubleQuotes = (function() {
 
 
 
-},{}],38:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 var NoUnnecessaryFatArrows, any,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -2660,7 +2843,7 @@ module.exports = NoUnnecessaryFatArrows = (function() {
 
 
 
-},{}],39:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 var NonEmptyConstructorNeedsParens, ParentClass,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -2693,13 +2876,13 @@ module.exports = NonEmptyConstructorNeedsParens = (function(superClass) {
 
 
 
-},{"./empty_constructor_needs_parens.coffee":15}],40:[function(require,module,exports){
-var RuleProcessor;
+},{"./empty_constructor_needs_parens.coffee":15}],42:[function(require,module,exports){
+var PreferEnglishOperator;
 
-module.exports = RuleProcessor = (function() {
-  function RuleProcessor() {}
+module.exports = PreferEnglishOperator = (function() {
+  function PreferEnglishOperator() {}
 
-  RuleProcessor.prototype.rule = {
+  PreferEnglishOperator.prototype.rule = {
     name: 'prefer_english_operator',
     description: 'This rule prohibits &&, ||, ==, != and !.\nUse and, or, is, isnt, and not instead.\n!! for converting to a boolean is ignored.',
     level: 'ignore',
@@ -2707,9 +2890,9 @@ module.exports = RuleProcessor = (function() {
     message: 'Don\'t use &&, ||, ==, !=, or !'
   };
 
-  RuleProcessor.prototype.tokens = ['COMPARE', 'UNARY_MATH', 'LOGIC'];
+  PreferEnglishOperator.prototype.tokens = ['COMPARE', 'UNARY_MATH', 'LOGIC'];
 
-  RuleProcessor.prototype.lintToken = function(token, tokenApi) {
+  PreferEnglishOperator.prototype.lintToken = function(token, tokenApi) {
     var actual_token, config, context, first_column, last_column, level, line, ref;
     config = tokenApi.config[this.rule.name];
     level = config.level;
@@ -2749,13 +2932,13 @@ module.exports = RuleProcessor = (function() {
     }
   };
 
-  return RuleProcessor;
+  return PreferEnglishOperator;
 
 })();
 
 
 
-},{}],41:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 var SpaceOperators,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -2772,7 +2955,7 @@ module.exports = SpaceOperators = (function() {
   function SpaceOperators() {
     this.callTokens = [];
     this.parenTokens = [];
-    this.isInterpolation = false;
+    this.interpolationLevel = 0;
   }
 
   SpaceOperators.prototype.lintToken = function(arg, tokenApi) {
@@ -2794,7 +2977,7 @@ module.exports = SpaceOperators = (function() {
 
   SpaceOperators.prototype.lintPlus = function(token, tokenApi) {
     var isUnary, p, ref, unaries;
-    if (this.isInterpolation || this.isInExtendedRegex()) {
+    if (this.isInInterpolation() || this.isInExtendedRegex()) {
       return null;
     }
     p = tokenApi.peek(-1);
@@ -2833,6 +3016,10 @@ module.exports = SpaceOperators = (function() {
     return false;
   };
 
+  SpaceOperators.prototype.isInInterpolation = function() {
+    return this.interpolationLevel > 0;
+  };
+
   SpaceOperators.prototype.trackCall = function(token, tokenApi) {
     var p;
     if (token[0] === 'CALL_START') {
@@ -2847,9 +3034,9 @@ module.exports = SpaceOperators = (function() {
 
   SpaceOperators.prototype.trackParens = function(token, tokenApi) {
     if (token[0] === 'STRING_START') {
-      this.isInterpolation = true;
+      this.interpolationLevel += 1;
     } else if (token[0] === 'STRING_END') {
-      this.isInterpolation = false;
+      this.interpolationLevel -= 1;
     }
     return null;
   };
@@ -2860,24 +3047,24 @@ module.exports = SpaceOperators = (function() {
 
 
 
-},{}],42:[function(require,module,exports){
-var RuleProcessor;
+},{}],44:[function(require,module,exports){
+var SpacingAfterComma;
 
-module.exports = RuleProcessor = (function() {
-  RuleProcessor.prototype.rule = {
+module.exports = SpacingAfterComma = (function() {
+  SpacingAfterComma.prototype.rule = {
     name: 'spacing_after_comma',
     description: 'This rule requires a space after commas.',
     level: 'ignore',
     message: 'Spaces are required after commas'
   };
 
-  RuleProcessor.prototype.tokens = [',', 'REGEX_START', 'REGEX_END'];
+  SpacingAfterComma.prototype.tokens = [',', 'REGEX_START', 'REGEX_END'];
 
-  function RuleProcessor() {
+  function SpacingAfterComma() {
     this.inRegex = false;
   }
 
-  RuleProcessor.prototype.lintToken = function(token, tokenApi) {
+  SpacingAfterComma.prototype.lintToken = function(token, tokenApi) {
     var type;
     type = token[0];
     if (type === 'REGEX_START') {
@@ -2895,7 +3082,7 @@ module.exports = RuleProcessor = (function() {
     }
   };
 
-  RuleProcessor.prototype.isRegexFlag = function(token, tokenApi) {
+  SpacingAfterComma.prototype.isRegexFlag = function(token, tokenApi) {
     var maybeEnd;
     if (!this.inRegex) {
       return false;
@@ -2904,30 +3091,30 @@ module.exports = RuleProcessor = (function() {
     return (maybeEnd != null ? maybeEnd[0] : void 0) === 'REGEX_END';
   };
 
-  return RuleProcessor;
+  return SpacingAfterComma;
 
 })();
 
 
 
-},{}],43:[function(require,module,exports){
-var CamelCaseClasses;
+},{}],45:[function(require,module,exports){
+var TransformMessesUpLineNumbers;
 
-module.exports = CamelCaseClasses = (function() {
-  function CamelCaseClasses() {}
+module.exports = TransformMessesUpLineNumbers = (function() {
+  function TransformMessesUpLineNumbers() {}
 
-  CamelCaseClasses.prototype.rule = {
+  TransformMessesUpLineNumbers.prototype.rule = {
     name: 'transform_messes_up_line_numbers',
     level: 'warn',
     message: 'Transforming source messes up line numbers',
     description: "This rule detects when changes are made by transform function,\nand warns that line numbers are probably incorrect."
   };
 
-  CamelCaseClasses.prototype.tokens = [];
+  TransformMessesUpLineNumbers.prototype.tokens = [];
 
-  CamelCaseClasses.prototype.lintToken = function(token, tokenApi) {};
+  TransformMessesUpLineNumbers.prototype.lintToken = function(token, tokenApi) {};
 
-  return CamelCaseClasses;
+  return TransformMessesUpLineNumbers;
 
 })();
 

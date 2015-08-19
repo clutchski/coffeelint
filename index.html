@@ -493,6 +493,22 @@ default.
 </td>
 </tr>
 <tr>
+<td class="rule">no_nested_string_interpolation</td>
+<td class="description">
+    This rule warns about nested string interpolation,
+as it tends to make code harder to read and understand.
+<pre>
+<code># Good!
+str = "Book by #{firstName.toUpperCase()} #{lastName.toUpperCase()}"
+
+# Bad!
+str = "Book by #{"#{firstName} #{lastName}".toUpperCase()}"
+</code>
+</pre>
+    <p><em>default level: warn</em></p>
+</td>
+</tr>
+<tr>
 <td class="rule">no_plusplus</td>
 <td class="description">
     This rule forbids the increment and decrement arithmetic operators.
@@ -501,6 +517,15 @@ and the cause of bugs due to misunderstandings of their precedence
 rules.
 This rule is disabled by default.
     <p><em>default level: ignore</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">no_private_function_fat_arrows</td>
+<td class="description">
+    Warns when you use the fat arrow for a private function
+inside a class defintion scope. It is not necessary and
+it does not do anything.
+    <p><em>default level: warn</em></p>
 </td>
 </tr>
 <tr>
@@ -849,6 +874,20 @@ and warns that line numbers are probably incorrect.
 
           <h2 class="section_title" id="changelog">Change Log</h2>
 
+
+          <div>
+            <h3 class="changelog_header">1.10.0-1.11.0</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v1.10.0...v1.11.0">2015.8.19<a></a></small>
+          <ul class="changelog_history">
+            <li>New config option <tt>{ "extends": "coffeelint-config-myconfig" } based on <a href="http://eslint.org/docs/developer-guide/shareable-configs">eslint's shareable configs</a></tt></li>
+            <li>New rule <tt>no_nested_string_interpolation</tt></li>
+            <li>New rule <tt>no_private_function_fat_arrows</tt></li>
+            <li>New CLI option <tt>--ext</tt> to specify alternate file extensions to check</li>
+            <li>Bugfixes including tracking nested string interpolation which eleminates some misleading warnings</li>
+          </ul>
+          </div>
+
           <div>
             <h3 class="changelog_header">1.9.7-1.10.0</h3>
             <small class="changelog_date">- <a
@@ -859,7 +898,7 @@ and warns that line numbers are probably incorrect.
             <li>New rule <tt>no_this</tt> (prefer @ instead)</li>
             <li>New option in <tt>no_debugger</tt> to flag console calls</li>
 
-            <li>Many smal. bug fixes</li>
+            <li>Many small bug fixes</li>
           </ul>
           </div>
 
