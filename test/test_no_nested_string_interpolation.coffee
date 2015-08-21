@@ -39,7 +39,7 @@ vows.describe('no_nested_string_interpolation').addBatch({
             assert.isArray(errors)
             assert.isEmpty(errors)
 
-      'Deeply nested string interpolation' :
+    'Deeply nested string interpolation' :
 
         topic : '''
         str1 = "string #{"interpolation #{"inception"}"}"

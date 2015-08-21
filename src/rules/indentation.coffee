@@ -40,7 +40,6 @@ module.exports = class Indentation
             # Keep this if statement separately, since we still need to let
             # the linting pass if the '.' token is not at the beginning of
             # the line
-
             currentLine = lines[lineNumber]
 
             if currentLine.match(/\S/)?[0] is '.'
