@@ -128,13 +128,7 @@ vows.describe('indent').addBatch({
 
         'is ignored. Issue #4' : (source) ->
             errors = coffeelint.lint(source)
-            errors = coffeelint.lint(source)
-            assert.equal(errors.length, 1)
-            error = errors[0]
-
-            assert.equal(error.rule, 'indentation')
-            assert.equal(error.lineNumber, 7)
-            assert.equal(error.context, 'Expected 2 got 10')
+            assert.isEmpty(errors)
 
     'Consecutive indented chained invocations' :
 
@@ -403,6 +397,7 @@ vows.describe('indent').addBatch({
         'is permitted': (source) ->
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
+
     'Make sure indentation check is not affected outside proper scope' :
         topic : """
             a
@@ -418,6 +413,131 @@ vows.describe('indent').addBatch({
                 @foo()
             """
         'returns no errors outside scope': (source) ->
+            errors = coffeelint.lint(source)
+            assert.isEmpty(errors)
+
+    'Handle edge-case weirdness with strings in objects':
+        # see test_no_empty_functions to understand why i needed to add this
+        # and to add the code to handle it
+        topic:
+            '''
+            call(
+              "aaaaaaaaaaaaaaaaaaaaaaaaaaa
+              bbbbbbbbbbbbbbbbbbbbbbb"      : first(
+                'x = (@y) ->')
+            )
+            '''
+
+        'is permitted': (source) ->
+            errors = coffeelint.lint(source)
+            assert.isEmpty(errors)
+
+    # Fixes people wanted to heavily indent if statements attached to assignment
+    # See: #468, #345
+    'Handle different if statements indentations' :
+        topic : '''
+            r = unless p1
+              if p2
+                1
+              else
+                2
+            else
+              3
+
+            s = unless p1
+                  if p2
+                    1
+                  else
+                    2
+                else
+                  3
+
+            t =
+              if z
+                true
+              else
+                true
+
+            u = if p1
+                  if p2
+                    1
+                  else
+                    2
+                else
+                  3
+
+            ->
+              x = unless y1
+                if y2
+                  1
+                else
+                  y2
+              else
+                3
+        '''
+
+        'is permitted': (source) ->
+            errors = coffeelint.lint(source)
+            assert.isEmpty(errors)
+
+    # See #469
+    'Handle paren alignment issues' :
+        topic:
+            '''
+            foo
+              .bar (
+                baz
+              ) ->
+                return
+
+            foo
+              .bar (baz) ->
+                return
+
+            bar (
+              baz
+            ) ->
+              return
+            '''
+
+        'is permitted': (source) ->
+            errors = coffeelint.lint(source)
+            assert.isEmpty(errors)
+
+    # Fixes #312
+    'Handles empty if statements':
+        topic:
+            '''
+              x = ->
+                for a in tokens
+                  if a.type is "image"
+                    "image"
+                  else if a.type is "video" # ignore video for now!
+                  else
+                    "unknown"
+            '''
+
+        'is permitted': (source) ->
+            errors = coffeelint.lint(source)
+            assert.isEmpty(errors)
+
+    # Fix #348
+    'Handle off-indentation bug from arguments that should be ignored':
+        topic:
+            '''
+            angular.module('app', ['abc']).run([
+              '$a'
+              '$b'
+              ($xyz
+               $tuv
+               $qrs) ->
+                $http
+                  .get '/'
+                  .respond -> []
+            ])
+            '''
+
+        'is permitted': (source) ->
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
 
