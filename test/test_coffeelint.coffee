@@ -43,9 +43,9 @@ vows.describe('coffeelint').addBatch({
             assert.equal(error.rule, 'coffeescript_error')
             assert.equal(error.lineNumber, 3)
 
-            if error.message.indexOf('on line') != -1
+            if error.message.indexOf('on line') isnt -1
                 m = "Error: Parse error on line 3: Unexpected 'RELATION'"
-            else if error.message.indexOf('SyntaxError:') != -1
+            else if error.message.indexOf('SyntaxError:') isnt -1
                 m = "SyntaxError: unexpected RELATION"
             else
                 # CoffeeLint changed the format to be more complex.  I don't

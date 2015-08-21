@@ -63,7 +63,7 @@ module.exports = class Reporter
             pathReport += "  #{overall} #{@stylize(path, color, 'bold')}\n"
 
         for e in errors
-            continue if @quiet and e.level != 'error'
+            continue if @quiet and e.level isnt 'error'
             o = if e.level is 'error' then @err else @warn
             lineEnd = ""
             lineEnd = "-#{e.lineNumberEnd}" if e.lineNumberEnd?

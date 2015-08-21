@@ -21,7 +21,7 @@ module.exports = class LineEndings
         valid = if ending is 'windows'
             lastChar is '\r'
         else if ending is 'unix'
-            lastChar != '\r'
+            lastChar isnt '\r'
         else
             throw new Error("unknown line ending type: #{ending}")
         if not valid
