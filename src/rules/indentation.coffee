@@ -1,4 +1,3 @@
-
 module.exports = class Indentation
 
     rule:
@@ -44,7 +43,7 @@ module.exports = class Indentation
 
             currentLine = lines[lineNumber]
 
-            if currentLine.match(/\S/i)?[0] is '.'
+            if currentLine.match(/\S/)?[0] is '.'
                 return @handleChain(tokenApi, expected)
             return undefined
 
@@ -131,9 +130,9 @@ module.exports = class Indentation
             # If this is just a one-chain function, or the "corrected"
             # previous line begins with a '.', check for correct
             # indentation
-            if prevLine.match(/\S/i)[0] is '.' or checkNum is lastCheck
-                currentSpaces = currentLine.match(/\S/i)?.index
-                prevSpaces = prevLine.match(/\S/i)?.index
+            if prevLine.match(/\S/)[0] is '.' or checkNum is lastCheck
+                currentSpaces = currentLine.match(/\S/)?.index
+                prevSpaces = prevLine.match(/\S/)?.index
                 numIndents = currentSpaces - prevSpaces
 
                 # If both prev and current lines have uneven spacing,
