@@ -96,7 +96,7 @@ module.exports = class LineLinter extends BaseLinter
         errors = []
         for line, lineNumber in @lineApi.lines
             @lineApi.lineNumber = @lineNumber = lineNumber
-
+            @lineApi.line = @lineApi.lines[lineNumber]
             @lineApi.maintainClassContext line
             @collectInlineConfig line
 
