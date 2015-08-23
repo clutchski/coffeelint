@@ -58,7 +58,7 @@ module.exports = class LexicalLinter extends BaseLinter
         @tokenApi.lineNumber = @lineNumber
 
         # Multiple rules might run against the same token to build context.
-        # Every every rule should run even if something has already produced an
+        # Every rule should run even if something has already produced an
         # error for the same token.
         errors = []
         for rule in @rules when token[0] in rule.tokens
