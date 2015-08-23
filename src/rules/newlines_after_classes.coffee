@@ -1,4 +1,3 @@
-
 module.exports = class NewlinesAfterClasses
 
     rule:
