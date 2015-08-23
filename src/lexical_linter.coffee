@@ -67,7 +67,7 @@ module.exports = class LexicalLinter extends BaseLinter
         errors
 
     createError: (ruleName, attrs = {}) ->
-        attrs.lineNumber = @lineNumber + 1
-        attrs.line = @tokenApi.lines[@lineNumber]
+        attrs.lineNumber ?= @lineNumber
+        attrs.lineNumber += 1
+        attrs.line = @tokenApi.lines[attrs.lineNumber - 1]
         super ruleName, attrs
-
