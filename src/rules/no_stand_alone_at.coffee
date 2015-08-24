@@ -1,21 +1,21 @@
-
 module.exports = class NoStandAloneAt
 
     rule:
         name: 'no_stand_alone_at'
-        level : 'ignore'
-        message : '@ must not be used stand alone'
-        description: """
+        level: 'ignore'
+        message: '@ must not be used stand alone'
+        description:
+            '''
             This rule checks that no stand alone @ are in use, they are
             discouraged. Further information in CoffeScript issue <a
             href="https://github.com/jashkenas/coffee-script/issues/1601">
             #1601</a>
-            """
+            '''
 
 
-    tokens: [ '@' ]
+    tokens: ['@']
 
-    lintToken : (token, tokenApi) ->
+    lintToken: (token, tokenApi) ->
         nextToken = tokenApi.peek()
         spaced = token.spaced
         isIdentifier = nextToken[0] is 'IDENTIFIER'
@@ -31,7 +31,7 @@ module.exports = class NoStandAloneAt
             isValidProtoProperty = protoProperty[0] is 'IDENTIFIER'
 
         if spaced or (not isIdentifier and not isIndexStart and
-        not isDot and not isValidProtoProperty)
+                not isDot and not isValidProtoProperty)
             return true
 
 
