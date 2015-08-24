@@ -1,7 +1,7 @@
 path = require 'path'
 vows = require 'vows'
 assert = require 'assert'
-{inspect} = require 'util'
+{ inspect } = require 'util'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
 RULE = 'missing_fat_arrows'
@@ -52,133 +52,133 @@ vows.describe(RULE).addBatch({
         'with fat arrow'      : shouldPass '-> -> -> -> => this'
         'with wrong fat arrow': shouldError '-> -> => -> -> this'
 
-    'functions with multiple statements' : shouldError """
+    'functions with multiple statements': shouldError '''
         f = ->
             this.x = 2
             z ((a) -> a; this.x)
-        """, 2
+        ''', 2
 
     'functions with parameters'                        : shouldPass '(a) ->'
     'functions with parameter assignment'              : shouldError '(@a) ->'
     'functions with destructuring parameter assignment': shouldError '({@a}) ->'
 
     'class instance method':
-        'without this': shouldPass """
+        'without this': shouldPass '''
             class A
                 @m: -> 1
-            """
-        'with this': shouldPass """
+            '''
+        'with this': shouldPass '''
             class A
                 @m: -> this
-            """
+            '''
 
     'class instance method in strict mode':
-        'without this': shouldPass """
+        'without this': shouldPass '''
             class A
                 @m: -> 1
-            """, true
-        'with this': shouldError """
+            ''', true
+        'with this': shouldError '''
             class A
                 @m: -> this
-            """, null, true
+            ''', null, true
 
     # https://github.com/clutchski/coffeelint/issues/412
-    'do methods should not error': shouldPass """
+    'do methods should not error': shouldPass '''
         do -> 1
-        """
+        '''
 
     'class method':
-        'without this': shouldPass """
+        'without this': shouldPass '''
             class A
                 m: -> 1
-            """
-        'with this': shouldPass """
+            '''
+        'with this': shouldPass '''
             class A
                 m: -> this
-            """
+            '''
 
     'class method in strict mode':
-        'without this': shouldPass """
+        'without this': shouldPass '''
             class A
                 m: -> 1
-            """, true
-        'with this': shouldError """
+            ''', true
+        'with this': shouldError '''
             class A
                 m: -> this
-            """, null, true
+            ''', null, true
 
     'class constructor in strict mode':
-        'without this': shouldPass """
+        'without this': shouldPass '''
             class A
                 constructor: -> 1
-            """, true
-        'with this': shouldPass """
+            ''', true
+        'with this': shouldPass '''
             class A
                 constructor: -> this
                 dd: 'constructor'
                 xx: -> 'constructor'
-            """, true
+            ''', true
 
     'function in class body':
-        'without this': shouldPass """
+        'without this': shouldPass '''
             class A
                 f = -> 1
                 x: 2
-            """
-        'with this': shouldError """
+            '''
+        'with this': shouldError '''
             class A
                 f = -> this
                 x: 2
-            """
+            '''
 
     'function inside class instance method':
-        'without this': shouldPass """
+        'without this': shouldPass '''
             class A
                 m: -> -> 1
-            """
-        'with this': shouldError """
+            '''
+        'with this': shouldError '''
             class A
                 m: -> -> @a
-            """
+            '''
 
     'mixture of class methods and function in class body':
-        'with this': shouldPass """
+        'with this': shouldPass '''
             class A
                 f = => this
                 m: -> this
                 @n: -> this
                 o: -> this
                 @p: -> this
-            """
+            '''
 
     'mixture of class methods and function in class body in strict mode':
-        'with this': shouldPass """
+        'with this': shouldPass '''
             class A
                 f = => this
                 m: => this
                 @n: => this
                 o: => this
                 @p: => this
-            """, true
+            ''', true
 
     'https://github.com/clutchski/coffeelint/issues/215':
-        'method with block comment': shouldPass """
+        'method with block comment': shouldPass '''
             class SimpleClass
 
                 ###
                 A block comment
                 ###
                 doNothing: () ->
-        """
-    'function ouside class instance method':
-        'without this': shouldPass """
+            '''
+    'function outside class instance method':
+        'without this': shouldPass '''
             ->
                 class A
                     m: ->
-                """
-        'with this': shouldPass """
+            '''
+        'with this': shouldPass '''
             ->
                 class A
                     @m: ->
-                """
+            '''
 }).export(module)

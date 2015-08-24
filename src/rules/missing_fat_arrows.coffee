@@ -17,7 +17,8 @@ module.exports = class MissingFatArrows
         level: 'ignore'
         is_strict: false
         message: 'Used `this` in a function without a fat arrow'
-        description: """
+        description:
+            '''
             Warns when you use `this` inside a function that wasn't defined
             with a fat arrow. This rule does not apply to methods defined in a
             class, since they have `this` bound to the class instance (or the
@@ -28,20 +29,21 @@ module.exports = class MissingFatArrows
             `this` will be bound with the correct `this` value due to language
             features like `Function.prototype.call` and
             `Function.prototype.bind`, so this rule may produce false positives.
-            """
+            '''
 
     lintAST: (node, @astApi) ->
         @lintNode node
         undefined
 
     lintNode: (node, methods = []) ->
-        is_strict = @astApi.config[@rule.name]?.is_strict
+        isStrict = @astApi.config[@rule.name]?.is_strict
+
         if @isConstructor node
             return
 
         if (not @isFatArrowCode node) and
                 # Ignore any nodes we know to be methods
-                (if is_strict then true else node not in methods) and
+                (if isStrict then true else node not in methods) and
                 (@needsFatArrow node)
             error = @astApi.createError
                 lineNumber: node.locationData.first_line + 1
