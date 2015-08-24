@@ -1,4 +1,3 @@
-
 module.exports = class Indentation
 
     rule:
@@ -25,6 +24,13 @@ module.exports = class Indentation
 
     tokens: ['INDENT', '[', ']', '.']
 
+    keywords: [
+      '->', '=>', '@', 'CATCH', 'CLASS', 'ELSE', 'FINALLY', 'FOR',
+      'FORIN', 'FOROF', 'IDENTIFIER', 'IF', 'LEADING_WHEN', 'LOOP',
+      'RETURN', 'SWITCH', 'THROW', 'TRY', 'UNTIL', 'WHEN', 'WHILE',
+      'YIELD'
+    ]
+
     constructor: ->
         @arrayTokens = []   # A stack tracking the array token pairs.
 
@@ -41,10 +47,9 @@ module.exports = class Indentation
             # Keep this if statement separately, since we still need to let
             # the linting pass if the '.' token is not at the beginning of
             # the line
-
             currentLine = lines[lineNumber]
 
-            if currentLine.match(/\S/i)?[0] is '.'
+            if currentLine.match(/\S/)?[0] is '.'
                 return @handleChain(tokenApi, expected)
             return undefined
 
@@ -84,8 +89,8 @@ module.exports = class Indentation
         numIndents = @getCorrectIndent(tokenApi)
 
         # Now check the indentation.
-        if not ignoreIndent and numIndents isnt expected
-            return { context: "Expected #{expected} got #{numIndents}" }
+        if not ignoreIndent and not (expected in numIndents)
+            return { context: "Expected #{expected} got #{numIndents[0]}" }
 
     # Return true if the current token is inside of an array.
     inArray: () ->
@@ -113,8 +118,10 @@ module.exports = class Indentation
         # Traverse up the token list until we see a CALL_START token.
         # Don't scan above this line
         findCallStart = tokenApi.peek(-callStart)
-        while (findCallStart and findCallStart[0] isnt 'TERMINATOR')
+        while (findCallStart and (findCallStart[0] isnt 'TERMINATOR' or
+                not findCallStart.newLine?))
             { first_line: lastCheck } = findCallStart[2]
+
             callStart += 1
             findCallStart = tokenApi.peek(-callStart)
 
@@ -131,9 +138,9 @@ module.exports = class Indentation
             # If this is just a one-chain function, or the "corrected"
             # previous line begins with a '.', check for correct
             # indentation
-            if prevLine.match(/\S/i)[0] is '.' or checkNum is lastCheck
-                currentSpaces = currentLine.match(/\S/i)?.index
-                prevSpaces = prevLine.match(/\S/i)?.index
+            if prevLine.match(/\S/)[0] is '.' or checkNum is lastCheck
+                currentSpaces = currentLine.match(/\S/)?.index
+                prevSpaces = prevLine.match(/\S/)?.index
                 numIndents = currentSpaces - prevSpaces
 
                 # If both prev and current lines have uneven spacing,
@@ -149,20 +156,117 @@ module.exports = class Indentation
                 if numIndents % expected isnt 0
                     return { context: "Expected #{expected} got #{numIndents}" }
 
+    grabLineTokens: (tokenApi, lineNumber, all = false) ->
+        { tokensByLine } = tokenApi
+        lineNumber-- until tokensByLine[lineNumber]? or lineNumber is 0
+
+        if all
+            (tok for tok in tokensByLine[lineNumber])
+        else
+            (tok for tok in tokensByLine[lineNumber] when not
+                tok.generated? and tok[0] isnt 'OUTDENT')
+
     # Returns a corrected INDENT value if the current line is part of
     # a chained call. Otherwise returns original INDENT value.
     getCorrectIndent: (tokenApi) ->
-        { lineNumber, lines, tokens, i } = tokenApi
+        { lineNumber, lines, tokens } = tokenApi
 
         curIndent = lines[lineNumber].match(/\S/)?.index
 
         prevNum = 1
         prevNum += 1 while (/^\s*(#|$)/.test(lines[lineNumber - prevNum]))
 
-        prevLine = lines[lineNumber - prevNum]
-        prevIndent = prevLine.match(/^(\s*)\./)?[1].length
+        prevTokens = @grabLineTokens tokenApi, lineNumber - prevNum
 
-        if prevIndent > 0
-            return curIndent - prevLine.match(/\S/)?.index
+        if prevTokens[0]?[0] is 'INDENT'
+            # Pass both the INDENT value and the location of the first token
+            # after the INDENT because sometimes CoffeeScript doesn't return
+            # the correct INDENT if there is something like an if/else
+            # inside an if/else inside of a -> function definition: e.g.
+            #
+            # ->
+            #   r = if a
+            #     if b
+            #       2
+            #     else
+            #       3
+            #   else
+            #     4
+            #
+            # will error without: curIndent - prevTokens[1]?[2].first_column
+
+            return [curIndent - prevTokens[1]?[2].first_column,
+                curIndent - prevTokens[0][1]]
         else
-            return tokens[i][1]
+            prevIndent = prevTokens[0]?[2].first_column
+            # This is a scan to handle extra indentation from if/else
+            # statements to make them look nicer: e.g.
+            #
+            # r = if a
+            #   true
+            # else
+            #   false
+            #
+            # is valid.
+            #
+            # r = if a
+            #       true
+            #     else
+            #       false
+            #
+            # is also valid.
+            for _, j in prevTokens when prevTokens[j][0] is '=' and
+                    prevTokens[j + 1]?[0] is 'IF'
+                skipAssign = curIndent - prevTokens[j + 1][2].first_column
+                ret = curIndent - prevIndent
+                return [ret] if skipAssign < 0
+                return [skipAssign, ret]
+
+            # This happens when there is an extra indent to maintain long
+            # conditional statements (IF/UNLESS): e.g.
+            #
+            # ->
+            #   if a is c and
+            #     (false or
+            #       long.expression.that.necessitates(linebreak))
+            #     @foo()
+            #
+            # is valid (note that there an only an extra indent in the last
+            # statement is required and not the line above it
+            #
+            # ->
+            #   if a is c and
+            #       (false or
+            #       long.expression.that.necessitates(linebreak))
+            #     @foo()
+            # is also OK.
+            while prevIndent > curIndent
+                tryLine = lineNumber - prevNum
+                prevTokens = @grabLineTokens tokenApi, tryLine, true
+
+                # This is to handle weird object/string indentation.
+                # See: 'Handle edge-case weirdness with strings in objects'
+                #   test case in test_indentation.coffee or in the file,
+                #   test_no_empty_functions.coffee, which is why/how I
+                #   caught this.
+                if prevTokens[0]?[0] is 'INDENT'
+                    prevIndent = prevTokens[0][1]
+                    prevTokens = prevTokens[1..]
+
+                t = 0
+                # keep looping prevTokens until we find a token in @keywords
+                # or we just run out of tokens in prevTokens
+                until not prevTokens[t]? or prevTokens[t][0] in @keywords
+                    t++
+
+                # slice off everything before 't'
+                prevTokens = prevTokens[t..]
+                prevNum++
+
+                # if there isn't a valid token, restart the while loop
+                continue unless prevTokens[0]?
+
+                # set new "prevIndent"
+                prevIndent = prevTokens[0]?[2].first_column
+
+        return [curIndent - prevIndent]
