@@ -181,4 +181,10 @@ vows.describe(RULE).addBatch({
                 class A
                     @m: ->
             '''
+    'do not require fat arrows in prototype (::) methods':
+        'method declared by :: (Fixes #296)': shouldPass '''
+            X::getName = ->
+                @name
+            '''
+
 }).export(module)

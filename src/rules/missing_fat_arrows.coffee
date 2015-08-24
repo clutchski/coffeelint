@@ -38,6 +38,9 @@ module.exports = class MissingFatArrows
     lintNode: (node, methods = []) ->
         isStrict = @astApi.config[@rule.name]?.is_strict
 
+        if @isPrototype(node)
+            return
+
         if @isConstructor node
             return
 
@@ -62,6 +65,11 @@ module.exports = class MissingFatArrows
     isClass: (node) => @astApi.getNodeName(node) is 'Class'
     isValue: (node) => @astApi.getNodeName(node) is 'Value'
     isObject: (node) => @astApi.getNodeName(node) is 'Obj'
+    isPrototype: (node) =>
+        props = node?.variable?.properties or []
+        for ident in props when ident.name?.value is 'prototype'
+            return true
+        false
     isThis: (node) => @isValue(node) and node.base.value is 'this'
     isFatArrowCode: (node) => @isCode(node) and node.bound
     isConstructor: (node) -> node.variable?.base?.value is 'constructor'
