@@ -63,10 +63,6 @@ module.exports = class MissingFatArrows
     isThis: (node) => @isValue(node) and node.base.value is 'this'
     isFatArrowCode: (node) => @isCode(node) and node.bound
     isConstructor: (node) -> node.variable?.base?.value is 'constructor'
-
-
-
-
     needsFatArrow: (node) ->
         @isCode(node) and (
             any(node.params, (param) => param.contains(@isThis)?) or

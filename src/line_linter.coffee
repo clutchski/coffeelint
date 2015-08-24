@@ -32,8 +32,7 @@ class LineApi
                 if @context.class.classIndents is 0
                     @context.class.inClass = false
                     @context.class.classIndents = null
-
-            if @context.class.inClass and not line.match( /^\s*$/ )
+            if not line.match(/^\s*$/)
                 @context.class.lastUnemptyLineInClass = @lineNumber
         else
             unless line.match(/\\s*/)
@@ -97,7 +96,7 @@ module.exports = class LineLinter extends BaseLinter
         errors = []
         for line, lineNumber in @lineApi.lines
             @lineApi.lineNumber = @lineNumber = lineNumber
-
+            @lineApi.line = @lineApi.lines[lineNumber]
             @lineApi.maintainClassContext line
             @collectInlineConfig line
 
