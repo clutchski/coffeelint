@@ -1,5 +1,3 @@
-_ = require 'underscore'
-
 module.exports = class AlphabetizeKeys
 
     rule:
