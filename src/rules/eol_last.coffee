@@ -15,6 +15,6 @@ module.exports = class EOLLast
         previousIsNewline = if lineApi.lineCount > 1
             lineApi.lines[lineApi.lineNumber - 1].length is 0
         else
-            no
+            false
 
-        return true unless isNewline && !previousIsNewline
+        return true unless isNewline and not previousIsNewline
