@@ -17,6 +17,12 @@ vows.describe('eol_last').addBatch({
             assert.equal(result[0].level, 'error')
             assert.equal(result[0].rule,  'eol_last')
 
+        'should warn when enabled with multiple newlines': ->
+            result = coffeelint.lint('foobar\n\n', configError)
+            assert.equal(result.length, 1)
+            assert.equal(result[0].level, 'error')
+            assert.equal(result[0].rule,  'eol_last')
+
         'should not warn with newline': ->
             assert.isEmpty(coffeelint.lint('foobar\n', configError))
 

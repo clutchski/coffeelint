@@ -10,4 +10,11 @@ module.exports = class EOLLast
     lintLine: (line, lineApi) ->
         return null unless lineApi.isLastLine()
 
-        return true if line.length
+        isNewline = line.length is 0
+
+        previousIsNewline = if lineApi.lineCount > 1
+            lineApi.lines[lineApi.lineNumber - 1].length is 0
+        else
+            false
+
+        return true unless isNewline and not previousIsNewline
