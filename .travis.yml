@@ -10,7 +10,7 @@ node_js:
 # before_install: "npm install -g npm" in .travis.yml #outdated
 #
 # Retweeted by @travisci
-before_install: "npm update -g npm"
+before_install: "if [ `node -v` = 'v0.8.28' ]; then npm install -g npm@1.3.7; fi"
 
 branches:
   only:
