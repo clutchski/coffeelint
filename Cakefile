@@ -3,7 +3,7 @@ glob = require 'glob'
 path = require 'path'
 browserify = require 'browserify'
 CoffeeScript = require 'coffee-script'
-
+{ exec } = require 'child_process'
 
 copySync = (src, dest) ->
     fs.writeFileSync dest, fs.readFileSync(src)
@@ -11,7 +11,6 @@ copySync = (src, dest) ->
 coffeeSync = (input, output) ->
     coffee = fs.readFileSync(input).toString()
     fs.writeFileSync output, CoffeeScript.compile(coffee)
-
 
 task 'compile', 'Compile Coffeelint', ->
     console.log 'Compiling Coffeelint...'
@@ -54,11 +53,15 @@ task 'prepublish', 'Prepublish', ->
 
     invoke 'compile'
 
+task 'postpublish', 'Postpublish', ->
+    # Revert the package.json back to it's original state
+    exec 'git checkout ./package.json', (err) ->
+      if err
+        console.error('Error reverting package.json: ' + err)
+
 task 'publish', 'publish', ->
     copySync '.package.json', 'package.json'
 
 task 'install', 'Install', ->
     unless require("fs").existsSync("lib/commandline.js")
         invoke 'compile'
-
-

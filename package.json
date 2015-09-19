@@ -42,6 +42,7 @@
     "testrule": "npm run compile && ./vowsrunner.js --spec",
     "posttest": "npm run lint",
     "prepublish": "cake prepublish",
+    "postpublish": "cake postpublish",
     "publish": "cake publish",
     "install": "cake install",
     "lint": "cake compile && ./bin/coffeelint .",
