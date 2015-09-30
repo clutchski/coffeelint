@@ -48,7 +48,6 @@ module.exports = class Indentation
             # the linting pass if the '.' token is not at the beginning of
             # the line
             currentLine = lines[lineNumber]
-
             if currentLine.match(/\S/)?[0] is '.'
                 return @handleChain(tokenApi, expected)
             return undefined
@@ -118,8 +117,7 @@ module.exports = class Indentation
         # Traverse up the token list until we see a CALL_START token.
         # Don't scan above this line
         findCallStart = tokenApi.peek(-callStart)
-        while (findCallStart and (findCallStart[0] isnt 'TERMINATOR' or
-                not findCallStart.newLine?))
+        while (findCallStart and findCallStart[0] isnt 'TERMINATOR')
             { first_line: lastCheck } = findCallStart[2]
 
             callStart += 1

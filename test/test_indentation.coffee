@@ -3,7 +3,6 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
-
 vows.describe('indent').addBatch({
 
     'Indentation' :
@@ -521,20 +520,19 @@ vows.describe('indent').addBatch({
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
 
-    # Fix #348
-    'Handle off-indentation bug from arguments that should be ignored':
+    # Fix #504, a regression caused by bffa2532efd8bcca5d9c1b3a9d3b5914e882dd5f
+    # Reverted test for now that fixed #348, since the alignment was a bit
+    # unorthodox
+    'Handle leakage of (.) chained calls':
         topic:
             '''
-            angular.module('app', ['abc']).run([
-              '$a'
-              '$b'
-              ($xyz
-               $tuv
-               $qrs) ->
-                $http
-                  .get '/'
-                  .respond -> []
-            ])
+            func = ->
+              """
+                multiline string
+                 .looksLikeAFunc 'but its just a string, man!'
+              """
+            func()
+              .length
             '''
 
         'is permitted': (source) ->
