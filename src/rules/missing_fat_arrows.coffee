@@ -65,7 +65,7 @@ module.exports = class MissingFatArrows
     isClass: (node) => @astApi.getNodeName(node) is 'Class'
     isValue: (node) => @astApi.getNodeName(node) is 'Value'
     isObject: (node) => @astApi.getNodeName(node) is 'Obj'
-    isPrototype: (node) =>
+    isPrototype: (node) ->
         props = node?.variable?.properties or []
         for ident in props when ident.name?.value is 'prototype'
             return true
