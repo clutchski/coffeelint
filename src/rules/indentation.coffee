@@ -56,7 +56,7 @@ module.exports = class Indentation
             @lintArray(token)
             return undefined
 
-        return null if token.generated?
+        return null if token.generated? or token.explicit?
 
         # HACK: CoffeeScript's lexer insert indentation in string
         # interpolations that start with spaces e.g. "#{ 123 }"

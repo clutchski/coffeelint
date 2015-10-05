@@ -539,4 +539,33 @@ vows.describe('indent').addBatch({
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
 
+    # Fix #511 by ignoring explicitly generated indentation tabs.
+    'Handle empty try/catch/finally':
+        topic:
+            '''
+            try
+              a
+            catch
+              # catch but do nothing
+
+            try
+            catch
+            finally
+
+            try a catch b finally
+
+            try
+              a
+            catch
+              # nothing
+            finally
+              c
+              d
+            '''
+
+        'is permitted': (source) ->
+            errors = coffeelint.lint(source)
+            assert.isEmpty(errors)
+
+
 }).export(module)
