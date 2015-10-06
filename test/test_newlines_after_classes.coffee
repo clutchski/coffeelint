@@ -70,7 +70,7 @@ vows.describe(rule).addBatch({
             msg = 'Wrong count of newlines between a class and other code'
             assert.equal(error.message, msg)
             assert.equal(error.rule, 'newlines_after_classes')
-            assert.equal(error.lineNumber, 10)
+            assert.equal(error.lineNumber, 8)
             assert.equal(error.context, 'Expected 4 got 3')
 
         'has too many newlines after class': (source) ->
@@ -87,7 +87,7 @@ vows.describe(rule).addBatch({
             msg = 'Wrong count of newlines between a class and other code'
             assert.equal(error.message, msg)
             assert.equal(error.rule, 'newlines_after_classes')
-            assert.equal(error.lineNumber, 10)
+            assert.equal(error.lineNumber, 8)
             assert.equal(error.context, 'Expected 2 got 3')
 
         'has no errors': (source) ->
@@ -240,6 +240,89 @@ vows.describe(rule).addBatch({
 
             errors = coffeelint.lint(source, config)
             error = errors[0]
+            assert.equal(errors.length, 0)
+
+    'Handles same line class declarations':
+        topic:
+            '''
+            hello = 'world'
+
+            A = class extends B
+              C: ->
+                'ABC'
+
+            Z = {}
+            '''
+
+        'passes when value is set to 1': (source) ->
+            config =
+                newlines_after_classes:
+                    level: 'error'
+                    value: 1
+            errors = coffeelint.lint(source, config)
+            assert.equal(errors.length, 0)
+
+        'fails when value is set to 2': (source) ->
+            config =
+                newlines_after_classes:
+                    level: 'error'
+                    value: 2
+            errors = coffeelint.lint(source, config)
+
+            assert.equal(errors.length, 1)
+            assert.equal(errors[0].lineNumber, 6)
+            assert.equal(errors[0].line, '')
+            assert.equal(errors[0].rule, rule)
+            assert.equal(errors[0].context, 'Expected 2 got 1')
+
+    'Handle comments out after a class':
+        topic:
+            '''
+            class Bar extends Foo
+              constructor: () ->
+                bla()
+
+            # a: 'b'
+            # c: 'd'
+            # r = {}
+            #  b
+
+            s = 3
+            '''
+
+        'throws error when newlines_after_classes is set to 0': (source) ->
+            config =
+                newlines_after_classes:
+                    level: 'error'
+                    value: 0
+
+            errors = coffeelint.lint(source, config)
+            assert.equal(errors.length, 1)
+            assert.equal(errors[0].lineNumber, 4)
+            assert.equal(errors[0].line, '')
+            assert.equal(errors[0].rule, rule)
+            assert.equal(errors[0].context, 'Expected 0 got 2')
+
+        'throws error when newlines_after_classes is set to 1': (source) ->
+            config =
+                newlines_after_classes:
+                    level: 'error'
+                    value: 1
+
+            errors = coffeelint.lint(source, config)
+            assert.equal(errors.length, 1)
+            assert.equal(errors[0].lineNumber, 4)
+            assert.equal(errors[0].line, '')
+            assert.equal(errors[0].rule, rule)
+            assert.equal(errors[0].context, 'Expected 1 got 2')
+
+        'passes when newlines_after_classes is set to 2': (source) ->
+            config =
+                newlines_after_classes:
+                    level: 'error'
+                    value: 2
+
+            errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 0)
 
     'Fix #375, comments should not count as an empty line':
