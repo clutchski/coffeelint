@@ -58,13 +58,6 @@ module.exports = class Indentation
 
         return null if token.generated? or token.explicit?
 
-        # HACK: CoffeeScript's lexer insert indentation in string
-        # interpolations that start with spaces e.g. "#{ 123 }"
-        # so ignore such cases. Are there other times an indentation
-        # could possibly follow a '+'?
-        previous = tokenApi.peek(-2)
-        isInterpIndent = previous and previous[0] is '+'
-
         # Ignore the indentation inside of an array, so that
         # we can allow things like:
         #   x = ["foo",
@@ -80,7 +73,7 @@ module.exports = class Indentation
         isMultiline = previousSymbol in ['=', ',']
 
         # Summarize the indentation conditions we'd like to ignore
-        ignoreIndent = isInterpIndent or isArrayIndent or isMultiline
+        ignoreIndent = isArrayIndent or isMultiline
 
         # Correct CoffeeScript's incorrect INDENT token value when functions
         # get chained. See https://github.com/jashkenas/coffeescript/issues/3137
