@@ -523,7 +523,7 @@ This rule is disabled by default.
 <td class="rule">no_private_function_fat_arrows</td>
 <td class="description">
     Warns when you use the fat arrow for a private function
-inside a class defintion scope. It is not necessary and
+inside a class definition scope. It is not necessary and
 it does not do anything.
     <p><em>default level: warn</em></p>
 </td>
@@ -874,6 +874,28 @@ and warns that line numbers are probably incorrect.
 
           <h2 class="section_title" id="changelog">Change Log</h2>
 
+          <div>
+            <h3 class="changelog_header">1.11.0-1.13.0</h3>
+            <small class="changelog_date">- <a
+            href="https://github.com/clutchski/coffeelint/compare/v1.11.0...v1.13.0">2015.10.7<a></a></small>
+            <p>The v1.12.x versions are considered buggy and you should upgrade to v1.13.x if you experience problems</p>
+            <strong>These releases were largely for bugfixes!</strong>
+          <ul class="changelog_history">
+            <li>Bugfix for <tt>no_implicit_braces</tt> causing errors in classes and other edge cases</li>
+            <li>Bugfix for <tt>ensure_comprehensions</tt> where it failed if a nested loop had an equal sign</li>
+            <li>Bugfix for <tt>braces_spacing</tt> failing over generated curly braces</li>
+            <li>Several changes to <tt>indentation</tt> See <a href="https://github.com/clutchski/coffeelint/commit/bffa2532efd8bcca5d9c1b3a9d3b5914e882dd5f">bffa25</a>
+              for the full list of changes. However between the release of v1.12.0 and v1.13.0, a regression was caused by fixing one of the indentation requests and
+              as a result the change was reverted. The revert will most likely not affect too many users
+            <li>Bugfix for <tt>newlines_after_classes</tt>, also fixed regressions caused between v1.12.0 and v1.13.0. If you have v1.12.x and are experiencing problems, please upgrade.
+              Also note nested classes are now ignored completely
+            </li>
+            <li><tt>no_this</tt> is now compatible with <tt>no_stand_alone_at</tt> and will make checks against singular `this`</li>
+            <li>Bugfix for <tt>missing_fat_arrows</tt>, declaring a class prototype (via '::' operator) no longer fail if they don't use a fat arrow</li>
+            <li>Bugfix for <tt>eol_last</tt>, it now fails if there are multiple newlines at the end of a file (thanks <a href="https://github.com/charlierudolph">charlierudolph</a>)<li>
+            <li>Bugfix for <tt>arrow_spacing</tt>, now ignores arrow spacing in empty functions (thanks <a href="https://github.com/sgentle">sgentle</a>)</li>
+          </ul>
+          </div>
 
           <div>
             <h3 class="changelog_header">1.10.0-1.11.0</h3>

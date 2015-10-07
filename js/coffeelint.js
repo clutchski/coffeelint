@@ -82,7 +82,7 @@ mergeDefaultConfig = function(userConfig) {
   try {
     ruleLoader = nodeRequire('./ruleLoader');
     ruleLoader.loadFromConfig(coffeelint, userConfig);
-  } catch (_error) {}
+  } catch (undefined) {}
   config = {};
   if (userConfig.coffeelint) {
     config.coffeelint = userConfig.coffeelint;
@@ -284,7 +284,7 @@ hasSyntaxError = function(source) {
   try {
     CoffeeScript.tokens(source);
     return false;
-  } catch (_error) {}
+  } catch (undefined) {}
   return true;
 };
 
@@ -322,7 +322,7 @@ coffeelint.lint = function(source, userConfig, literate) {
         ruleLoader = nodeRequire('./ruleLoader');
         transform = ruleLoader.require(m);
         source = transform(source);
-      } catch (_error) {}
+      } catch (undefined) {}
     }
     if (sourceLength !== source.split("\n").length && config.transform_messes_up_line_numbers.level !== 'ignore') {
       errors.push(extend({
@@ -429,7 +429,7 @@ coffeelint.setCache = function(obj) {
 module.exports={
   "name": "coffeelint",
   "description": "Lint your CoffeeScript",
-  "version": "1.11.0",
+  "version": "1.13.0",
   "homepage": "http://www.coffeelint.org",
   "keywords": [
     "lint",
@@ -470,6 +470,7 @@ module.exports={
     "testrule": "npm run compile && ./vowsrunner.js --spec",
     "posttest": "npm run lint",
     "prepublish": "cake prepublish",
+    "postpublish": "cake postpublish",
     "publish": "cake publish",
     "install": "cake install",
     "lint": "cake compile && ./bin/coffeelint .",
@@ -545,12 +546,12 @@ module.exports = ASTLinter = (function(superClass) {
   };
 
   ASTLinter.prototype.lint = function() {
-    var coffeeError, err, errors, j, len, ref, rule, v;
+    var coffeeError, err, error, errors, j, len, ref, rule, v;
     errors = [];
     try {
       this.node = this.CoffeeScript.nodes(this.source);
-    } catch (_error) {
-      coffeeError = _error;
+    } catch (error) {
+      coffeeError = error;
       err = this._parseCoffeeScriptError(coffeeError);
       if (err != null) {
         errors.push(err);
@@ -885,8 +886,11 @@ module.exports = LexicalLinter = (function(superClass) {
     if (attrs == null) {
       attrs = {};
     }
-    attrs.lineNumber = this.lineNumber + 1;
-    attrs.line = this.tokenApi.lines[this.lineNumber];
+    if (attrs.lineNumber == null) {
+      attrs.lineNumber = this.lineNumber;
+    }
+    attrs.lineNumber += 1;
+    attrs.line = this.tokenApi.lines[attrs.lineNumber - 1];
     return LexicalLinter.__super__.createError.call(this, ruleName, attrs);
   };
 
@@ -935,7 +939,7 @@ LineApi = (function() {
           this.context["class"].classIndents = null;
         }
       }
-      if (this.context["class"].inClass && !line.match(/^\s*$/)) {
+      if (!line.match(/^\s*$/)) {
         this.context["class"].lastUnemptyLineInClass = this.lineNumber;
       }
     } else {
@@ -1021,6 +1025,7 @@ module.exports = LineLinter = (function(superClass) {
     for (lineNumber = i = 0, len = ref.length; i < len; lineNumber = ++i) {
       line = ref[lineNumber];
       this.lineApi.lineNumber = this.lineNumber = lineNumber;
+      this.lineApi.line = this.lineApi.lines[lineNumber];
       this.lineApi.maintainClassContext(line);
       this.collectInlineConfig(line);
       ref1 = this.lintLine(line);
@@ -1119,26 +1124,13 @@ module.exports = ArrowSpacing = (function() {
     if (!pp) {
       return;
     }
-    if (!token.spaced && (pp[1] === "(" && (pp.generated == null)) && tokenApi.peek(1)[0] === 'INDENT' && tokenApi.peek(2)[0] === 'OUTDENT') {
+    if (!token.spaced && tokenApi.peek(1)[0] === 'INDENT' && tokenApi.peek(2)[0] === 'OUTDENT') {
       return null;
-    } else if (!(((token.spaced != null) || (token.newLine != null) || this.atEof(tokenApi)) && (((pp.spaced != null) || pp[0] === 'TERMINATOR') || (pp.generated != null) || pp[0] === "INDENT" || (pp[1] === "(" && (pp.generated == null))))) {
+    } else if (!(((token.spaced != null) || (token.newLine != null)) && (((pp.spaced != null) || pp[0] === 'TERMINATOR') || (pp.generated != null) || pp[0] === "INDENT" || (pp[1] === "(" && (pp.generated == null))))) {
       return true;
     } else {
       return null;
     }
-  };
-
-  ArrowSpacing.prototype.atEof = function(tokenApi) {
-    var i, j, len, ref, ref1, token, tokens;
-    tokens = tokenApi.tokens, i = tokenApi.i;
-    ref = tokens.slice(i + 1);
-    for (j = 0, len = ref.length; j < len; j++) {
-      token = ref[j];
-      if (!(token.generated || ((ref1 = token[0]) === 'OUTDENT' || ref1 === 'TERMINATOR'))) {
-        return false;
-      }
-    }
-    return true;
   };
 
   return ArrowSpacing;
@@ -1174,7 +1166,7 @@ module.exports = BracesSpacing = (function() {
     while (true) {
       totalDifference += difference;
       nearestToken = tokenApi.peek(totalDifference);
-      if (nearestToken[0] === 'OUTDENT') {
+      if (nearestToken[0] === 'OUTDENT' || (nearestToken.generated != null)) {
         continue;
       }
       return nearestToken;
@@ -1533,7 +1525,7 @@ module.exports = EnsureComprehensions = (function() {
   EnsureComprehensions.prototype.forBlock = false;
 
   EnsureComprehensions.prototype.lintToken = function(token, tokenApi) {
-    var atEqual, idents, numCallEnds, numCallStarts, peeker, prevIdents, prevToken, ref, ref1;
+    var atEqual, idents, numCallEnds, numCallStarts, numParenEnds, numParenStarts, peeker, prevIdents, prevToken, ref, ref1;
     idents = this.findIdents(tokenApi);
     if (this.forBlock) {
       this.forBlock = false;
@@ -1543,6 +1535,8 @@ module.exports = EnsureComprehensions = (function() {
     atEqual = false;
     numCallEnds = 0;
     numCallStarts = 0;
+    numParenStarts = 0;
+    numParenEnds = 0;
     prevIdents = [];
     while ((prevToken = tokenApi.peek(peeker))) {
       if (prevToken[0] === 'CALL_END') {
@@ -1550,6 +1544,12 @@ module.exports = EnsureComprehensions = (function() {
       }
       if (prevToken[0] === 'CALL_START') {
         numCallStarts++;
+      }
+      if (prevToken[0] === '(') {
+        numParenStarts++;
+      }
+      if (prevToken[0] === ')') {
+        numParenEnds++;
       }
       if (prevToken[0] === 'IDENTIFIER') {
         if (!atEqual) {
@@ -1561,12 +1561,12 @@ module.exports = EnsureComprehensions = (function() {
       if (((ref1 = prevToken[0]) === '(' || ref1 === '->' || ref1 === 'TERMINATOR') || (prevToken.newLine != null)) {
         break;
       }
-      if (prevToken[0] === '=') {
+      if (prevToken[0] === '=' && numParenEnds === numParenStarts) {
         atEqual = true;
       }
       peeker--;
     }
-    if (atEqual && prevIdents.length > 0 && numCallStarts === numCallEnds) {
+    if (atEqual && numCallStarts === numCallEnds) {
       return {
         context: ''
       };
@@ -1619,10 +1619,13 @@ module.exports = EOLLast = (function() {
   };
 
   EOLLast.prototype.lintLine = function(line, lineApi) {
+    var isNewline, previousIsNewline;
     if (!lineApi.isLastLine()) {
       return null;
     }
-    if (line.length) {
+    isNewline = line.length === 0;
+    previousIsNewline = lineApi.lineCount > 1 ? lineApi.lines[lineApi.lineNumber - 1].length === 0 : false;
+    if (!(isNewline && !previousIsNewline)) {
       return true;
     }
   };
@@ -1634,7 +1637,8 @@ module.exports = EOLLast = (function() {
 
 
 },{}],18:[function(require,module,exports){
-var Indentation;
+var Indentation,
+  indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 module.exports = Indentation = (function() {
   Indentation.prototype.rule = {
@@ -1647,18 +1651,20 @@ module.exports = Indentation = (function() {
 
   Indentation.prototype.tokens = ['INDENT', '[', ']', '.'];
 
+  Indentation.prototype.keywords = ['->', '=>', '@', 'CATCH', 'CLASS', 'ELSE', 'FINALLY', 'FOR', 'FORIN', 'FOROF', 'IDENTIFIER', 'IF', 'LEADING_WHEN', 'LOOP', 'RETURN', 'SWITCH', 'THROW', 'TRY', 'UNTIL', 'WHEN', 'WHILE', 'YIELD'];
+
   function Indentation() {
     this.arrayTokens = [];
   }
 
   Indentation.prototype.lintToken = function(token, tokenApi) {
-    var currentLine, expected, ignoreIndent, isArrayIndent, isInterpIndent, isMultiline, lineNumber, lines, numIndents, previous, previousSymbol, ref, ref1, ref2, type;
+    var currentLine, expected, ignoreIndent, isArrayIndent, isMultiline, lineNumber, lines, numIndents, previous, previousSymbol, ref, ref1, ref2, type;
     type = token[0], numIndents = token[1], (ref = token[2], lineNumber = ref.first_line);
     lines = tokenApi.lines, lineNumber = tokenApi.lineNumber;
     expected = tokenApi.config[this.rule.name].value;
     if (type === '.') {
       currentLine = lines[lineNumber];
-      if (((ref1 = currentLine.match(/\S/i)) != null ? ref1[0] : void 0) === '.') {
+      if (((ref1 = currentLine.match(/\S/)) != null ? ref1[0] : void 0) === '.') {
         return this.handleChain(tokenApi, expected);
       }
       return void 0;
@@ -1667,20 +1673,18 @@ module.exports = Indentation = (function() {
       this.lintArray(token);
       return void 0;
     }
-    if (token.generated != null) {
+    if ((token.generated != null) || (token.explicit != null)) {
       return null;
     }
-    previous = tokenApi.peek(-2);
-    isInterpIndent = previous && previous[0] === '+';
     previous = tokenApi.peek(-1);
     isArrayIndent = this.inArray() && (previous != null ? previous.newLine : void 0);
     previousSymbol = (ref2 = tokenApi.peek(-1)) != null ? ref2[0] : void 0;
     isMultiline = previousSymbol === '=' || previousSymbol === ',';
-    ignoreIndent = isInterpIndent || isArrayIndent || isMultiline;
+    ignoreIndent = isArrayIndent || isMultiline;
     numIndents = this.getCorrectIndent(tokenApi);
-    if (!ignoreIndent && numIndents !== expected) {
+    if (!ignoreIndent && !(indexOf.call(numIndents, expected) >= 0)) {
       return {
-        context: "Expected " + expected + " got " + numIndents
+        context: "Expected " + expected + " got " + numIndents[0]
       };
     }
   };
@@ -1717,9 +1721,9 @@ module.exports = Indentation = (function() {
     checkNum = lineNumber - prevNum;
     if (checkNum >= 0) {
       prevLine = lines[checkNum];
-      if (prevLine.match(/\S/i)[0] === '.' || checkNum === lastCheck) {
-        currentSpaces = (ref = currentLine.match(/\S/i)) != null ? ref.index : void 0;
-        prevSpaces = (ref1 = prevLine.match(/\S/i)) != null ? ref1.index : void 0;
+      if (prevLine.match(/\S/)[0] === '.' || checkNum === lastCheck) {
+        currentSpaces = (ref = currentLine.match(/\S/)) != null ? ref.index : void 0;
+        prevSpaces = (ref1 = prevLine.match(/\S/)) != null ? ref1.index : void 0;
         numIndents = currentSpaces - prevSpaces;
         prevIsIndent = prevSpaces % expected !== 0;
         currIsIndent = currentSpaces % expected !== 0;
@@ -1735,21 +1739,81 @@ module.exports = Indentation = (function() {
     }
   };
 
+  Indentation.prototype.grabLineTokens = function(tokenApi, lineNumber, all) {
+    var i, k, len, len1, ref, ref1, results, results1, tok, tokensByLine;
+    if (all == null) {
+      all = false;
+    }
+    tokensByLine = tokenApi.tokensByLine;
+    while (!((tokensByLine[lineNumber] != null) || lineNumber === 0)) {
+      lineNumber--;
+    }
+    if (all) {
+      ref = tokensByLine[lineNumber];
+      results = [];
+      for (i = 0, len = ref.length; i < len; i++) {
+        tok = ref[i];
+        results.push(tok);
+      }
+      return results;
+    } else {
+      ref1 = tokensByLine[lineNumber];
+      results1 = [];
+      for (k = 0, len1 = ref1.length; k < len1; k++) {
+        tok = ref1[k];
+        if ((tok.generated == null) && tok[0] !== 'OUTDENT') {
+          results1.push(tok);
+        }
+      }
+      return results1;
+    }
+  };
+
   Indentation.prototype.getCorrectIndent = function(tokenApi) {
-    var curIndent, i, lineNumber, lines, prevIndent, prevLine, prevNum, ref, ref1, ref2, tokens;
-    lineNumber = tokenApi.lineNumber, lines = tokenApi.lines, tokens = tokenApi.tokens, i = tokenApi.i;
+    var _, curIndent, i, j, len, lineNumber, lines, prevIndent, prevNum, prevTokens, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ret, skipAssign, t, tokens, tryLine;
+    lineNumber = tokenApi.lineNumber, lines = tokenApi.lines, tokens = tokenApi.tokens;
     curIndent = (ref = lines[lineNumber].match(/\S/)) != null ? ref.index : void 0;
     prevNum = 1;
     while (/^\s*(#|$)/.test(lines[lineNumber - prevNum])) {
       prevNum += 1;
     }
-    prevLine = lines[lineNumber - prevNum];
-    prevIndent = (ref1 = prevLine.match(/^(\s*)\./)) != null ? ref1[1].length : void 0;
-    if (prevIndent > 0) {
-      return curIndent - ((ref2 = prevLine.match(/\S/)) != null ? ref2.index : void 0);
+    prevTokens = this.grabLineTokens(tokenApi, lineNumber - prevNum);
+    if (((ref1 = prevTokens[0]) != null ? ref1[0] : void 0) === 'INDENT') {
+      return [curIndent - ((ref2 = prevTokens[1]) != null ? ref2[2].first_column : void 0), curIndent - prevTokens[0][1]];
     } else {
-      return tokens[i][1];
+      prevIndent = (ref3 = prevTokens[0]) != null ? ref3[2].first_column : void 0;
+      for (j = i = 0, len = prevTokens.length; i < len; j = ++i) {
+        _ = prevTokens[j];
+        if (!(prevTokens[j][0] === '=' && ((ref4 = prevTokens[j + 1]) != null ? ref4[0] : void 0) === 'IF')) {
+          continue;
+        }
+        skipAssign = curIndent - prevTokens[j + 1][2].first_column;
+        ret = curIndent - prevIndent;
+        if (skipAssign < 0) {
+          return [ret];
+        }
+        return [skipAssign, ret];
+      }
+      while (prevIndent > curIndent) {
+        tryLine = lineNumber - prevNum;
+        prevTokens = this.grabLineTokens(tokenApi, tryLine, true);
+        if (((ref5 = prevTokens[0]) != null ? ref5[0] : void 0) === 'INDENT') {
+          prevIndent = prevTokens[0][1];
+          prevTokens = prevTokens.slice(1);
+        }
+        t = 0;
+        while (!((prevTokens[t] == null) || (ref6 = prevTokens[t][0], indexOf.call(this.keywords, ref6) >= 0))) {
+          t++;
+        }
+        prevTokens = prevTokens.slice(t);
+        prevNum++;
+        if (prevTokens[0] == null) {
+          continue;
+        }
+        prevIndent = (ref7 = prevTokens[0]) != null ? ref7[2].first_column : void 0;
+      }
     }
+    return [curIndent - prevIndent];
   };
 
   return Indentation;
@@ -1890,7 +1954,7 @@ module.exports = MissingFatArrows = (function() {
     level: 'ignore',
     is_strict: false,
     message: 'Used `this` in a function without a fat arrow',
-    description: "Warns when you use `this` inside a function that wasn't defined\nwith a fat arrow. This rule does not apply to methods defined in a\nclass, since they have `this` bound to the class instance (or the\nclass itself, for class methods). The option `is_strict` is\navailable for checking bindings of class methods.\n\nIt is impossible to statically determine whether a function using\n`this` will be bound with the correct `this` value due to language\nfeatures like `Function.prototype.call` and\n`Function.prototype.bind`, so this rule may produce false positives."
+    description: 'Warns when you use `this` inside a function that wasn\'t defined\nwith a fat arrow. This rule does not apply to methods defined in a\nclass, since they have `this` bound to the class instance (or the\nclass itself, for class methods). The option `is_strict` is\navailable for checking bindings of class methods.\n\nIt is impossible to statically determine whether a function using\n`this` will be bound with the correct `this` value due to language\nfeatures like `Function.prototype.call` and\n`Function.prototype.bind`, so this rule may produce false positives.'
   };
 
   MissingFatArrows.prototype.lintAST = function(node, astApi) {
@@ -1900,15 +1964,18 @@ module.exports = MissingFatArrows = (function() {
   };
 
   MissingFatArrows.prototype.lintNode = function(node, methods) {
-    var error, is_strict, ref;
+    var error, isStrict, ref;
     if (methods == null) {
       methods = [];
     }
-    is_strict = (ref = this.astApi.config[this.rule.name]) != null ? ref.is_strict : void 0;
+    isStrict = (ref = this.astApi.config[this.rule.name]) != null ? ref.is_strict : void 0;
+    if (this.isPrototype(node)) {
+      return;
+    }
     if (this.isConstructor(node)) {
       return;
     }
-    if ((!this.isFatArrowCode(node)) && (is_strict ? true : indexOf.call(methods, node) < 0) && (this.needsFatArrow(node))) {
+    if ((!this.isFatArrowCode(node)) && (isStrict ? true : indexOf.call(methods, node) < 0) && (this.needsFatArrow(node))) {
       error = this.astApi.createError({
         lineNumber: node.locationData.first_line + 1
       });
@@ -1944,6 +2011,18 @@ module.exports = MissingFatArrows = (function() {
 
   MissingFatArrows.prototype.isObject = function(node) {
     return this.astApi.getNodeName(node) === 'Obj';
+  };
+
+  MissingFatArrows.prototype.isPrototype = function(node) {
+    var i, ident, len, props, ref, ref1;
+    props = (node != null ? (ref = node.variable) != null ? ref.properties : void 0 : void 0) || [];
+    for (i = 0, len = props.length; i < len; i++) {
+      ident = props[i];
+      if (((ref1 = ident.name) != null ? ref1.value : void 0) === 'prototype') {
+        return true;
+      }
+    }
+    return false;
   };
 
   MissingFatArrows.prototype.isThis = function(node) {
@@ -2000,20 +2079,60 @@ module.exports = NewlinesAfterClasses = (function() {
     description: "<p>Checks the number of newlines between classes and other code.</p>\n\nOptions:\n- <pre><code>value</code></pre> - The number of required newlines\nafter class definitions. Defaults to 3."
   };
 
-  NewlinesAfterClasses.prototype.lintLine = function(line, lineApi) {
-    var context, ending, got, lineNumber;
-    ending = lineApi.config[this.rule.name].value;
-    if (!ending || lineApi.isLastLine()) {
-      return null;
+  NewlinesAfterClasses.prototype.tokens = ['CLASS', '}', '{'];
+
+  NewlinesAfterClasses.prototype.classBracesCount = 0;
+
+  NewlinesAfterClasses.prototype.classCount = 0;
+
+  NewlinesAfterClasses.prototype.lintToken = function(token, tokenApi) {
+    var afters, befores, comment, ending, got, lineNumber, lines, numIndents, outdent, ref, ref1, ref2, start, trueLine, type;
+    type = token[0], numIndents = token[1], (ref = token[2], lineNumber = ref.first_line);
+    lines = tokenApi.lines;
+    ending = tokenApi.config[this.rule.name].value;
+    if (type === 'CLASS') {
+      this.classCount++;
     }
-    lineNumber = lineApi.lineNumber, context = lineApi.context;
-    if (!context["class"].inClass && (context["class"].lastUnemptyLineInClass != null) && (lineNumber - context["class"].lastUnemptyLineInClass) !== ending) {
-      got = lineNumber - context["class"].lastUnemptyLineInClass;
-      return {
-        context: "Expected " + ending + " got " + got
-      };
+    if (this.classCount > 0 && (token.generated != null)) {
+      if (type === '{' && ((ref1 = token.origin) != null ? ref1[0] : void 0) === ':') {
+        this.classBracesCount++;
+      }
+      if (type === '}' && ((ref2 = token.origin) != null ? ref2[0] : void 0) === 'OUTDENT') {
+        this.classBracesCount--;
+        this.classCount--;
+        if (this.classCount === 0 && this.classBracesCount === 0) {
+          befores = 1;
+          afters = 1;
+          comment = 0;
+          outdent = token.origin[2].first_line;
+          start = Math.min(lineNumber, outdent);
+          trueLine = Infinity;
+          while (/^\s*(#|$)/.test(lines[start + afters])) {
+            if (/^\s*#/.test(lines[start + afters])) {
+              comment += 1;
+            } else {
+              trueLine = Math.min(trueLine, start + afters);
+            }
+            afters += 1;
+          }
+          while (/^\s*(#|$)/.test(lines[start - befores])) {
+            if (/^\s*#/.test(lines[start - befores])) {
+              comment += 1;
+            } else {
+              trueLine = Math.min(trueLine, start - befores);
+            }
+            befores += 1;
+          }
+          got = afters + befores - comment - 2;
+          if (got !== ending && trueLine + ending <= lines.length) {
+            return {
+              context: "Expected " + ending + " got " + got,
+              lineNumber: trueLine
+            };
+          }
+        }
+      }
     }
-    return null;
   };
 
   return NewlinesAfterClasses;
@@ -2170,27 +2289,36 @@ module.exports = NoImplicitBraces = (function() {
     description: 'This rule prohibits implicit braces when declaring object literals.\nImplicit braces can make code more difficult to understand,\nespecially when used in combination with optional parenthesis.\n<pre>\n<code># Do you find this code ambiguous? Is it a\n# function call with three arguments or four?\nmyFunction a, b, 1:2, 3:4\n\n# While the same code written in a more\n# explicit manner has no ambiguity.\nmyFunction(a, b, {1:2, 3:4})\n</code>\n</pre>\nImplicit braces are permitted by default, since their use is\nidiomatic CoffeeScript.'
   };
 
-  NoImplicitBraces.prototype.tokens = ['{', 'OUTDENT', 'CLASS'];
+  NoImplicitBraces.prototype.tokens = ['{', 'OUTDENT', 'CLASS', 'IDENTIFIER'];
 
   function NoImplicitBraces() {
     this.isClass = false;
-    this.classBrace = false;
+    this.className = void 0;
   }
 
   NoImplicitBraces.prototype.lintToken = function(token, tokenApi) {
-    var lineNum, previousToken, type, val;
+    var lineNum, peekTwo, prevToken, type, val;
     type = token[0], val = token[1], lineNum = token[2];
     if (type === 'OUTDENT' || type === 'CLASS') {
       return this.trackClass.apply(this, arguments);
     }
-    if (token.generated) {
-      if (this.classBrace) {
-        this.classBrace = false;
-        return;
-      }
+    if (type === 'IDENTIFIER' && this.isClass && ((this.className == null) || tokenApi.peek(-1)[0] === 'EXTENDS')) {
+      this.className = val;
+    }
+    if (token.generated && type === "{") {
       if (!tokenApi.config[this.rule.name].strict) {
-        previousToken = tokenApi.peek(-1)[0];
-        if (previousToken === 'INDENT') {
+        prevToken = tokenApi.peek(-1)[0];
+        if (prevToken === 'INDENT' || prevToken === 'TERMINATOR') {
+          return;
+        }
+      }
+      if (this.isClass) {
+        prevToken = tokenApi.peek(-1)[0];
+        if (prevToken === 'TERMINATOR') {
+          return;
+        }
+        peekTwo = tokenApi.peek(-2);
+        if (peekTwo[0] === 'IDENTIFIER' && peekTwo[1] === this.className) {
           return;
         }
       }
@@ -2203,11 +2331,10 @@ module.exports = NoImplicitBraces = (function() {
     ref = [token, tokenApi.peek()], (ref1 = ref[0], n0 = ref1[0], ln = ref1[ref1.length - 1]), (ref2 = ref[1], n1 = ref2[0]);
     if (n0 === 'OUTDENT' && n1 === 'TERMINATOR') {
       this.isClass = false;
-      this.classBrace = false;
     }
     if (n0 === 'CLASS') {
       this.isClass = true;
-      this.classBrace = true;
+      this.className = void 0;
     }
     return null;
   };
@@ -2384,7 +2511,7 @@ module.exports = NoPrivateFunctionFatArrows = (function() {
     name: 'no_private_function_fat_arrows',
     level: 'warn',
     message: 'Used the fat arrow for a private function',
-    description: "Warns when you use the fat arrow for a private function\ninside a class defintion scope. It is not necessary and\nit does not do anything."
+    description: "Warns when you use the fat arrow for a private function\ninside a class definition scope. It is not necessary and\nit does not do anything."
   };
 
   NoPrivateFunctionFatArrows.prototype.lintAST = function(node, astApi) {
@@ -2474,7 +2601,7 @@ module.exports = NoStandAloneAt = (function() {
     name: 'no_stand_alone_at',
     level: 'ignore',
     message: '@ must not be used stand alone',
-    description: "This rule checks that no stand alone @ are in use, they are\ndiscouraged. Further information in CoffeScript issue <a\nhref=\"https://github.com/jashkenas/coffee-script/issues/1601\">\n#1601</a>"
+    description: 'This rule checks that no stand alone @ are in use, they are\ndiscouraged. Further information in CoffeScript issue <a\nhref="https://github.com/jashkenas/coffee-script/issues/1601">\n#1601</a>'
   };
 
   NoStandAloneAt.prototype.tokens = ['@'];
@@ -2541,15 +2668,20 @@ module.exports = NoThis = (function() {
 
   NoThis.prototype.rule = {
     name: 'no_this',
-    description: 'This rule prohibits \'this\'.\nUse \'@\' instead.',
     level: 'ignore',
-    message: "Don't use 'this', use '@' instead"
+    message: "Don't use 'this', use '@' instead",
+    description: 'This rule prohibits \'this\'.\nUse \'@\' instead.'
   };
 
   NoThis.prototype.tokens = ['THIS'];
 
   NoThis.prototype.lintToken = function(token, tokenApi) {
-    return true;
+    var level, nextToken, ref;
+    level = tokenApi.config.no_stand_alone_at.level;
+    nextToken = (ref = tokenApi.peek(1)) != null ? ref[0] : void 0;
+    if (!(level !== 'ignore' && nextToken !== '.')) {
+      return true;
+    }
   };
 
   return NoThis;
