@@ -5,10 +5,10 @@ module.exports = class NoTabs
         name: 'no_tabs'
         level: 'error'
         message: 'Line contains tab indentation'
-        description: """
+        description: '''
             This rule forbids tabs in indentation. Enough said. It is enabled by
             default.
-            """
+            '''
 
     lintLine: (line, lineApi) ->
         # Only check lines that have compiled tokens. This helps

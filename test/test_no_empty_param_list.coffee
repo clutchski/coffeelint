@@ -7,7 +7,7 @@ vows.describe('params').addBatch({
 
     'Empty param list':
 
-        topic: () ->
+        topic:
             '''
             blah = () ->
             '''

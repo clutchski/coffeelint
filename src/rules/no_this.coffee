@@ -3,8 +3,7 @@ module.exports = class NoThis
         name: 'no_this'
         level: 'ignore'
         message: "Don't use 'this', use '@' instead"
-        description:
-            '''
+        description: '''
             This rule prohibits 'this'.
             Use '@' instead.
             '''

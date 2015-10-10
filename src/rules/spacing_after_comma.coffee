@@ -2,9 +2,11 @@
 module.exports = class SpacingAfterComma
     rule:
         name: 'spacing_after_comma'
-        description: 'This rule requires a space after commas.'
         level: 'ignore'
-        message: 'Spaces are required after commas'
+        message: 'a space is required after commas'
+        description: '''
+            This rule checks to make sure you have a space after commas.
+            '''
 
     tokens: [',', 'REGEX_START', 'REGEX_END']
 

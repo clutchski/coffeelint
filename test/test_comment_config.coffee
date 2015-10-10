@@ -7,13 +7,13 @@ vows.describe('comment config').addBatch({
 
     'Disable statements':
         topic: () ->
-            """
+            '''
             # coffeelint: disable=no_trailing_semicolons
             a 'you get a semi-colon';
             b 'you get a semi-colon';
             # coffeelint: enable=no_trailing_semicolons
             c 'everybody gets a semi-colon';
-            """
+            '''
 
         'can disable rules in your config': (source) ->
             config =
@@ -23,13 +23,13 @@ vows.describe('comment config').addBatch({
 
     'Enable statements':
         topic: () ->
-            """
+            '''
             # coffeelint: enable=no_implicit_parens
             a 'implicit parens here'
             b 'implicit parens', 'also here'
             # coffeelint: disable=no_implicit_parens
             c 'implicit parens allowed here'
-            """
+            '''
 
         'can enable rules not in your config': (source) ->
             errors = coffeelint.lint(source)
@@ -37,13 +37,13 @@ vows.describe('comment config').addBatch({
 
     'Enable all statements':
         topic: () ->
-            """
+            '''
             # coffeelint: disable=no_trailing_semicolons,no_implicit_parens
             a 'you get a semi-colon';
             b 'you get a semi-colon';
             # coffeelint: enable
             c 'everybody gets a semi-colon';
-            """
+            '''
 
         'will re-enable all rules in your config': (source) ->
             config =

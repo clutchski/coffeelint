@@ -7,8 +7,10 @@ vows.describe('trailing').addBatch({
 
     'Trailing whitespace':
 
-        topic: () ->
-            "x = 1234      \ny = 1"
+        topic:
+            '''
+            x = 1234      \ny = 1
+            '''
 
         'is forbidden by default': (source) ->
             errors = coffeelint.lint(source)
@@ -16,7 +18,7 @@ vows.describe('trailing').addBatch({
             error = errors[0]
             assert.isObject(error)
             assert.equal(error.lineNumber, 1)
-            assert.equal(error.message, "Line ends with trailing whitespace")
+            assert.equal(error.message, 'Line ends with trailing whitespace')
             assert.equal(error.rule, 'no_trailing_whitespace')
 
         'can be permitted': (source) ->
@@ -25,7 +27,10 @@ vows.describe('trailing').addBatch({
             assert.equal(errors.length, 0)
 
     'Trailing whitespace in comments':
-        topic: "x = 1234  # markdown comment    \ny=1"
+        topic:
+            '''
+            x = 1234  # markdown comment    \ny=1
+            '''
 
         'is forbidden by default': (source) ->
             errors = coffeelint.lint(source)
@@ -33,7 +38,7 @@ vows.describe('trailing').addBatch({
             error = errors[0]
             assert.isObject(error)
             assert.equal(error.lineNumber, 1)
-            assert.equal(error.message, "Line ends with trailing whitespace")
+            assert.equal(error.message, 'Line ends with trailing whitespace')
             assert.equal(error.rule, 'no_trailing_whitespace')
 
         'can be permitted': (source) ->
@@ -41,15 +46,18 @@ vows.describe('trailing').addBatch({
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 0)
 
-    "a # in a string":
+    'a # in a string':
         topic: "x = 'some # string'   "
-        "does not confuse trailing_whitespace": (source) ->
+        'does not confuse trailing_whitespace': (source) ->
             config = {no_trailing_whitespace: {allowed_in_comments: true}}
             errors = coffeelint.lint(source, config)
             assert.isNotEmpty(errors)
 
-    "Trailing whitespace in block comments":
-        topic: "###\nblock comment with trailing space:   \n###"
+    'Trailing whitespace in block comments':
+        topic:
+            '''
+            ###\nblock comment with trailing space:   \n###
+            '''
 
         'is forbidden by default': (source) ->
             errors = coffeelint.lint(source)
@@ -57,7 +65,7 @@ vows.describe('trailing').addBatch({
             error = errors[0]
             assert.isObject(error)
             assert.equal(error.lineNumber, 2)
-            assert.equal(error.message, "Line ends with trailing whitespace")
+            assert.equal(error.message, 'Line ends with trailing whitespace')
             assert.equal(error.rule, 'no_trailing_whitespace')
 
         'can be permitted': (source) ->
@@ -65,8 +73,11 @@ vows.describe('trailing').addBatch({
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 0)
 
-    "On empty lines": # https://github.com/clutchski/coffeelint/issues/39
-        topic: "x = 1234\n     \n"
+    'On empty lines': # https://github.com/clutchski/coffeelint/issues/39
+        topic:
+            '''
+            x = 1234\n     \n
+            '''
 
         'allowed by default': (source) ->
             errors = coffeelint.lint(source)
@@ -80,20 +91,24 @@ vows.describe('trailing').addBatch({
             error = errors[0]
             assert.isObject(error)
             assert.equal(error.lineNumber, 2)
-            assert.equal(error.message, "Line ends with trailing whitespace")
+            assert.equal(error.message, 'Line ends with trailing whitespace')
             assert.equal(error.rule, 'no_trailing_whitespace')
 
     'Trailing tabs':
-
-        topic: () ->
-            "x = 1234\t"
+        topic:
+            '''
+            x = 1234\t
+            '''
 
         'are forbidden as well': (source) ->
             errors = coffeelint.lint(source, {})
             assert.equal(errors.length, 1)
 
     'Windows line endings':
-        topic: 'x = 1234\r\ny = 5678'
+        topic:
+            '''
+            x = 1234\r\ny = 5678
+            '''
 
         'are permitted': (source) ->
             assert.isEmpty(coffeelint.lint(source))

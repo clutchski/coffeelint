@@ -34,7 +34,7 @@ module.exports = class BaseLinter
             null
 
     acceptRule: (rule) ->
-        throw new Error "acceptRule needs to be overridden in the subclass"
+        throw new Error 'acceptRule needs to be overridden in the subclass'
 
     # Only rules that have a level of error or warn will even get constructed.
     setupRules: (rules) ->

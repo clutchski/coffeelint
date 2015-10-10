@@ -123,7 +123,7 @@ module.exports = class LineLinter extends BaseLinter
             rules = []
             if result[2]?
                 for r in result[2].split(',')
-                    rules.push r.replace(/^\s+|\s+$/g, "")
+                    rules.push r.replace(/^\s+|\s+$/g, '')
             @block_config[cmd][@lineNumber] = rules
         return null
 

@@ -5,7 +5,7 @@ module.exports = class NoImplicitParens
         level: 'ignore'
         message: 'Implicit parens are forbidden'
         strict: true
-        description: """
+        description: '''
             This rule prohibits implicit parens on function calls.
             <pre>
             <code># Some folks don't like this style of coding.
@@ -17,7 +17,7 @@ module.exports = class NoImplicitParens
             </pre>
             Implicit parens are permitted by default, since their use is
             idiomatic CoffeeScript.
-            """
+            '''
 
 
     tokens: ['CALL_END']

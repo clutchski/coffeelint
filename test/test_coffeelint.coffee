@@ -13,10 +13,10 @@ vows.describe('coffeelint').addBatch({
             assert.isString(version)
 
     "CoffeeLint's errors":
-        topic: () -> coffeelint.lint """
+        topic: () -> coffeelint.lint '''
             a = () ->\t
                 1234
-            """
+            '''
 
         'are sorted by line number': (errors) ->
             assert.isArray(errors)
@@ -25,12 +25,13 @@ vows.describe('coffeelint').addBatch({
             assert.equal(errors[0].lineNumber, 1)
 
     'Errors in the source':
-        topic: '''
+        topic:
+            '''
             fruits = [orange, apple, banana]
             switch 'a'
               when in fruits
                 something
-        '''
+            '''
 
         'are reported': (source) ->
             errors = coffeelint.lint(source)
@@ -43,7 +44,7 @@ vows.describe('coffeelint').addBatch({
             if error.message.indexOf('on line') isnt -1
                 m = "Error: Parse error on line 3: Unexpected 'RELATION'"
             else if error.message.indexOf('SyntaxError:') isnt -1
-                m = "SyntaxError: unexpected RELATION"
+                m = 'SyntaxError: unexpected RELATION'
             else
                 # CoffeeLint changed the format to be more complex.  I don't
                 # think an exact match really needs to be verified.

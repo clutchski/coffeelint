@@ -17,13 +17,14 @@ getComplexity = (source) ->
 vows.describe('cyclomatic complexity').addBatch({
 
     'Cyclomatic complexity':
-        topic: """
+        topic:
+            '''
             x = ->
               1 and 2 and 3 and
               4 and 5 and 6 and
               7 and 8 and 9 and
               10 and 11
-            """
+            '''
 
         'defaults to ignore': (source) ->
             errors = coffeelint.lint(source)
@@ -48,14 +49,20 @@ vows.describe('cyclomatic complexity').addBatch({
             assert.isEmpty(errors)
 
     'An empty function':
-        topic: "x = () -> 1234"
+        topic:
+            '''
+            x = () -> 1234
+            '''
 
         'has a complexity of one': (source) ->
             complexity = getComplexity(source)
             assert.equal(complexity, 1)
 
     'If statement':
-        topic: "x = () -> 2 if $ == true"
+        topic:
+            '''
+            x = () -> 2 if $ == true
+            '''
 
         'increments the complexity': (source) ->
             complexity = getComplexity(source)
@@ -64,27 +71,32 @@ vows.describe('cyclomatic complexity').addBatch({
 
 
     'If Else statement':
-        topic: 'y = -> if $ then 1 else 3'
+        topic:
+            '''
+            y = -> if $ then 1 else 3
+            '''
 
         'increments the complexity': (source) ->
             complexity = getComplexity(source)
             assert.equal(complexity, 2)
 
     'If ElseIf statement':
-        topic: """
+        topic:
+            '''
             x = ->
               if 1233
                 'abc'
               else if 456
                 'xyz'
-            """
+            '''
 
         'has a complexity of three': (source) ->
             complexity = getComplexity(source)
             assert.equal(complexity, 3)
 
     'If If-Else Else statement':
-        topic: """
+        topic:
+            '''
             z = () ->
               if x
                 1
@@ -92,7 +104,7 @@ vows.describe('cyclomatic complexity').addBatch({
                 2
               else
                 3
-            """
+            '''
 
         'has a complexity of three': (source) ->
             complexity = getComplexity(source)
@@ -100,12 +112,13 @@ vows.describe('cyclomatic complexity').addBatch({
 
 
     'Nested if statements':
-        topic: """
+        topic:
+            '''
             z = () ->
               if abc?
                 if other?
                   123
-            """
+            '''
 
         'has a complexity of three': (source) ->
             complexity = getComplexity(source)
@@ -114,18 +127,22 @@ vows.describe('cyclomatic complexity').addBatch({
 
 
     'A while loop':
-        topic: """
+        topic:
+            '''
             x = () ->
               while 1
                 'asdf'
-            """
+            '''
         'increments complexity': (source) ->
             complexity = getComplexity(source)
             assert.equal(complexity, 2)
 
 
     'An until loop':
-        topic: "x = () -> log 'a' until $?"
+        topic:
+            '''
+            x = () -> log 'a' until $?
+            '''
 
         'increments complexity': (source) ->
             complexity = getComplexity(source)
@@ -133,18 +150,22 @@ vows.describe('cyclomatic complexity').addBatch({
 
 
     'A for loop':
-        topic: """
+        topic:
+            '''
             x = () ->
               for i in window
                 log i
-            """
+            '''
 
         'increments complexity': (source) ->
             complexity = getComplexity(source)
             assert.equal(complexity, 2)
 
     'A list comprehension':
-        topic: "x = -> [a for a in window]"
+        topic:
+            '''
+            x = -> [a for a in window]
+            '''
 
         'increments complexity': (source) ->
             complexity = getComplexity(source)
@@ -152,20 +173,22 @@ vows.describe('cyclomatic complexity').addBatch({
 
 
     'Try / Catch blocks':
-        topic: """
+        topic:
+            '''
             x = () ->
               try
                 divide("byZero")
               catch error
                 log("uh oh")
-            """
+            '''
 
         'increments complexity': (source) ->
             assert.equal(getComplexity(source), 2)
 
 
     'Try / Catch / Finally blocks':
-        topic: """
+        topic:
+            '''
             x = () ->
               try
                 divide("byZero")
@@ -173,14 +196,15 @@ vows.describe('cyclomatic complexity').addBatch({
                 log("uh oh")
               finally
                 clean()
-            """
+            '''
 
         'increments complexity': (source) ->
             assert.equal(getComplexity(source), 2)
 
 
     'Switch statements without an else':
-        topic: '''
+        topic:
+            '''
             x = () ->
               switch a
                 when "b" then "b"
@@ -194,7 +218,8 @@ vows.describe('cyclomatic complexity').addBatch({
 
 
     'Switch statements with an else':
-        topic: '''
+        topic:
+            '''
             x = () ->
               switch a
                 when "b" then "b"
@@ -209,15 +234,20 @@ vows.describe('cyclomatic complexity').addBatch({
 
 
     'And operators':
-        topic: 'x = () -> $ and window'
+        topic:
+            '''
+            x = () -> $ and window
+            '''
 
         'increments the complexity': (source) ->
             complexity = getComplexity(source)
             assert.equal(complexity, 2)
 
     'Or operators':
-
-        topic: 'x = () -> $ or window'
+        topic:
+            '''
+            x = () -> $ or window
+            '''
 
         'increments the complexity': (source) ->
             complexity = getComplexity(source)
@@ -225,7 +255,8 @@ vows.describe('cyclomatic complexity').addBatch({
 
 
     'A complicated example':
-        topic: """
+        topic:
+            '''
             x = () ->
               if a and b and c or d and c or e
                 if x or d or e of f
@@ -236,7 +267,7 @@ vows.describe('cyclomatic complexity').addBatch({
               while false
                 y
               return false
-            """
+            '''
 
         'works': (source) ->
             config = {cyclomatic_complexity: {level: 'error'}}

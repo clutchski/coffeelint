@@ -7,7 +7,7 @@ vows.describe('colon_assignment_spacing').addBatch({
 
 
     'Equal spacing around assignment':
-        topic: ->
+        topic:
             '''
             object = {spacing : true}
             class Dog
@@ -27,7 +27,7 @@ vows.describe('colon_assignment_spacing').addBatch({
             assert.isEmpty(errors)
 
     'No space before assignment':
-        topic: ->
+        topic:
             '''
             object = {spacing: true}
             object =
@@ -49,12 +49,12 @@ vows.describe('colon_assignment_spacing').addBatch({
             assert.isEmpty(errors)
 
     'Newline to the right of assignment':
-        topic: ->
-            """
+        topic:
+            '''
             query:
               method: 'GET'
               isArray: false
-            """
+            '''
 
         'will not return an error': (source) ->
             config =
@@ -67,7 +67,7 @@ vows.describe('colon_assignment_spacing').addBatch({
             assert.isEmpty(errors)
 
     'Improper spacing around assignment':
-        topic: ->
+        topic:
             '''
             object = {spacing: false}
             class Cat
@@ -97,7 +97,7 @@ vows.describe('colon_assignment_spacing').addBatch({
             assert.isEmpty(errors)
 
     'Should not complain about strings':
-        topic: ->
+        topic:
             '''
             foo = (stuff) ->
               throw new Error("Error: stuff required") unless stuff?

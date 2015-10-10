@@ -7,18 +7,18 @@ CoffeeLint is freely distributable under the MIT license.
 
 
 resolve = require('resolve').sync
-path = require("path")
-fs   = require("fs")
-os   = require("os")
-glob = require("glob")
-optimist = require("optimist")
+path = require('path')
+fs   = require('fs')
+os   = require('os')
+glob = require('glob')
+optimist = require('optimist')
 ignore = require('ignore')
 stripComments = require('strip-json-comments')
 thisdir = path.dirname(fs.realpathSync(__filename))
-coffeelint = require(path.join(thisdir, "coffeelint"))
-configfinder = require(path.join(thisdir, "configfinder"))
+coffeelint = require(path.join(thisdir, 'coffeelint'))
+configfinder = require(path.join(thisdir, 'configfinder'))
 ruleLoader = require(path.join(thisdir, 'ruleLoader'))
-Cache = require(path.join(thisdir, "cache"))
+Cache = require(path.join(thisdir, 'cache'))
 CoffeeScript = require 'coffee-script'
 CoffeeScript.register()
 
@@ -76,7 +76,7 @@ lintSource = (source, config, literate = false) ->
     errorReport = new coffeelint.getErrorReport()
     config or= getFallbackConfig()
 
-    errorReport.lint("stdin", source, config, literate)
+    errorReport.lint('stdin', source, config, literate)
     return errorReport
 
 # Load a config file given a path/filename
@@ -112,11 +112,11 @@ getFallbackConfig = (filename = null) ->
 deprecatedReporter = (errorReport, reporter) ->
     errorReport.paths['coffeelint_fake_file.coffee'] ?= []
     errorReport.paths['coffeelint_fake_file.coffee'].push {
-        "level": "warn"
-        "rule": "commandline"
-        "message": "parameter --#{reporter} is deprecated.
+        'level': 'warn'
+        'rule': 'commandline'
+        'message': "parameter --#{reporter} is deprecated.
             Use --reporter #{reporter} instead"
-        "lineNumber": 0
+        'lineNumber': 0
     }
     return reporter
 
@@ -149,11 +149,11 @@ reportAndExit = (errorReport, options) ->
             reporterPath = strReporter
         require reporterPath
 
-    options.argv.color ?= if options.argv.nocolor then "never" else "auto"
+    options.argv.color ?= if options.argv.nocolor then 'never' else 'auto'
 
     colorize = switch options.argv.color
-        when "always" then true
-        when "never" then false
+        when 'always' then true
+        when 'never' then false
         else process.stdout.isTTY
 
     reporter = new SelectedReporter errorReport, {
@@ -167,50 +167,50 @@ reportAndExit = (errorReport, options) ->
 
 # Declare command line options.
 options = optimist
-            .usage("Usage: coffeelint [options] source [...]")
-            .alias("f", "file")
-            .alias("h", "help")
-            .alias("v", "version")
-            .alias("s", "stdin")
-            .alias("q", "quiet")
-            .alias("c", "cache")
-            .describe("f", "Specify a custom configuration file.")
-            .describe("rules", "Specify a custom rule or directory of rules.")
-            .describe("makeconfig", "Prints a default config file")
-            .describe("trimconfig", "Compares your config with the default and
-                prints a minimal configuration")
-            .describe("noconfig", "Ignores any config file.")
-            .describe("h", "Print help information.")
-            .describe("v", "Print current version number.")
-            .describe("r", "(not used, but left for backward compatibility)")
+            .usage('Usage: coffeelint [options] source [...]')
+            .alias('f', 'file')
+            .alias('h', 'help')
+            .alias('v', 'version')
+            .alias('s', 'stdin')
+            .alias('q', 'quiet')
+            .alias('c', 'cache')
+            .describe('f', 'Specify a custom configuration file.')
+            .describe('rules', 'Specify a custom rule or directory of rules.')
+            .describe('makeconfig', 'Prints a default config file')
+            .describe('trimconfig', 'Compares your config with the default and
+                prints a minimal configuration')
+            .describe('noconfig', 'Ignores any config file.')
+            .describe('h', 'Print help information.')
+            .describe('v', 'Print current version number.')
+            .describe('r', '(not used, but left for backward compatibility)')
             .describe('reporter', 'built in reporter (default, csv, jslint,
                 checkstyle, raw), or module, or path to reporter file.')
-            .describe("csv", "[deprecated] use --reporter csv")
-            .describe("jslint", "[deprecated] use --reporter jslint")
-            .describe("nocolor", "[deprecated] use --color=never")
-            .describe("checkstyle", "[deprecated] use --reporter checkstyle")
-            .describe("color=<when>",
-              "When to colorize the output. <when> can be one of always, never\
-              , or auto.")
-            .describe("s", "Lint the source from stdin")
-            .describe("q", "Only print errors.")
-            .describe("literate",
-                "Used with --stdin to process as Literate CoffeeScript")
-            .describe("c", "Cache linting results")
-            .describe("ext",
-                "Specify an additional file extension, separated by comma.")
-            .boolean("csv")
-            .boolean("jslint")
-            .boolean("checkstyle")
-            .boolean("nocolor")
-            .boolean("noconfig")
-            .boolean("makeconfig")
-            .boolean("trimconfig")
-            .boolean("literate")
-            .boolean("r")
-            .boolean("s")
-            .boolean("q", "Print errors only.")
-            .boolean("c")
+            .describe('csv', '[deprecated] use --reporter csv')
+            .describe('jslint', '[deprecated] use --reporter jslint')
+            .describe('nocolor', '[deprecated] use --color=never')
+            .describe('checkstyle', '[deprecated] use --reporter checkstyle')
+            .describe('color=<when>',
+              'When to colorize the output. <when> can be one of always, never \
+              , or auto.')
+            .describe('s', 'Lint the source from stdin')
+            .describe('q', 'Only print errors.')
+            .describe('literate',
+                'Used with --stdin to process as Literate CoffeeScript')
+            .describe('c', 'Cache linting results')
+            .describe('ext',
+                'Specify an additional file extension, separated by comma.')
+            .boolean('csv')
+            .boolean('jslint')
+            .boolean('checkstyle')
+            .boolean('nocolor')
+            .boolean('noconfig')
+            .boolean('makeconfig')
+            .boolean('trimconfig')
+            .boolean('literate')
+            .boolean('r')
+            .boolean('s')
+            .boolean('q', 'Print errors only.')
+            .boolean('c')
 
 if options.argv.v
     log coffeelint.VERSION

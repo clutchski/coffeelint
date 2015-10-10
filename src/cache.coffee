@@ -1,8 +1,8 @@
-fs = require "fs"
-path = require "path"
-crypto = require "crypto"
+fs = require 'fs'
+path = require 'path'
+crypto = require 'crypto'
 
-ltVer = require("./../package.json").version
+ltVer = require('./../package.json').version
 csVer = (window?.CoffeeScript or require 'coffee-script').VERSION
 
 

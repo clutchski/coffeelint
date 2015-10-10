@@ -6,8 +6,10 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 vows.describe('levels').addBatch({
 
     'CoffeeLint':
-
-        topic: "abc = 123;",
+        topic:
+            '''
+            abc = 123;
+            '''
 
         'can ignore errors': (source) ->
             config =

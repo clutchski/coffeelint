@@ -13,8 +13,8 @@ module.exports = class CheckstyleReporter
     escape: JsLintReporter::escape
 
     publish: () ->
-        @print "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
-        @print "<checkstyle version=\"4.3\">"
+        @print '<?xml version="1.0" encoding="utf-8"?>'
+        @print '<checkstyle version="4.3">'
 
         for path, errors of @errorReport.paths
             if errors.length
@@ -26,13 +26,13 @@ module.exports = class CheckstyleReporter
 
                     # context is optional, this avoids generating the string
                     # "context: undefined"
-                    context = e.context ? ""
-                    @print """
+                    context = e.context ? ''
+                    @print '''
                     <error line="#{e.lineNumber}"
                         severity="#{@escape(level)}"
                         message="#{@escape(e.message+'; context: '+context)}"
                         source="coffeelint"/>
-                    """
-                @print "</file>"
+                    '''
+                @print '</file>'
 
-        @print "</checkstyle>"
+        @print '</checkstyle>'

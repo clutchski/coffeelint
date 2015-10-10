@@ -8,8 +8,8 @@ module.exports = class CSVReporter
         # coffeelint: enable=no_debugger
 
     publish: () ->
-        header = ["path","lineNumber", "lineNumberEnd", "level", "message"]
-        @print header.join(",")
+        header = ['path', 'lineNumber', 'lineNumberEnd', 'level', 'message']
+        @print header.join(',')
         for path, errors of @errorReport.paths
             for e in errors
                 # Having the context is useful for the cyclomatic_complexity
@@ -22,4 +22,4 @@ module.exports = class CSVReporter
                     e.level
                     e.message
                 ]
-                @print f.join(",")
+                @print f.join(',')

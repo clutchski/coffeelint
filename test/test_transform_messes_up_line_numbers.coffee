@@ -11,7 +11,10 @@ cloud = path.join(thisdir, 'fixtures', 'cloud_transform.coffee')
 
 vows.describe('transform_messes_up_line_numbers').addBatch({
     'transform_messes_up_line_numbers':
-        'topic': '''console.log('Hello cloud')'''
+        topic:
+            '''
+            console.log('Hello cloud')
+            '''
 
         'will warn if the number of lines changes': (source) ->
             config =

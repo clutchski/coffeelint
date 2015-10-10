@@ -7,7 +7,7 @@ vows.describe('parens').addBatch({
 
 
     'Implicit parens':
-        topic: () ->
+        topic:
             '''
             console.log 'implict parens'
             blah = (a, b) ->
@@ -41,7 +41,8 @@ vows.describe('parens').addBatch({
             assert.equal(error.rule, 'no_implicit_parens')
 
     'No implicit parens strict':
-        topic: """
+        topic:
+            '''
             blah = (a) ->
             blah
               foo: 'bar'
@@ -49,7 +50,7 @@ vows.describe('parens').addBatch({
             blah = (a, b) ->
             blah 'a'
             , 'b'
-        """
+            '''
 
         'blocks all implicit parens by default': (source) ->
             config = {no_implicit_parens: {level: 'error'}}
@@ -68,7 +69,8 @@ vows.describe('parens').addBatch({
             assert.isEmpty(errors)
 
     'Nested no implicit parens strict':
-        topic: """
+        topic:
+            '''
             blah = (a) ->
             blah
               foo: blah('a')
@@ -81,7 +83,7 @@ vows.describe('parens').addBatch({
             blah 'a'
             , (blah 'c'
             , 'd')
-        """
+            '''
 
         'blocks all implicit parens by default': (source) ->
             config = {no_implicit_parens: {level: 'error'}}
@@ -100,7 +102,8 @@ vows.describe('parens').addBatch({
             assert.isEmpty(errors)
 
     'Test for when implicit parens are on the last line':
-        topic: """
+        topic:
+            '''
             class Something
               constructor: ->
                 return $ '#something'
@@ -113,8 +116,8 @@ vows.describe('parens').addBatch({
 
             blah 'a'
             , blah('c', 'd')
+            '''
 
-        """
         'throws three errors when strict is true': (source) ->
             config =
                 no_implicit_parens:

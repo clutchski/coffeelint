@@ -7,7 +7,7 @@ vows.describe('spacing').addBatch({
 
     'No spaces around binary operators':
 
-        topic: ->
+        topic:
             '''
             x= 1
             1+ 1
@@ -100,15 +100,14 @@ vows.describe('spacing').addBatch({
                 no_nested_string_interpolation: {level: 'ignore'}
             }
             errors = coffeelint.lint(source, config)
-            assert.lengthOf(errors, source.split("\n").length)
+            assert.lengthOf(errors, source.split('\n').length)
             error = errors[0]
             assert.equal(error.rule, 'space_operators')
             assert.equal(error.lineNumber, 1)
-            assert.equal(error.message, "Operators must be spaced properly")
+            assert.equal(error.message, 'Operators must be spaced properly')
 
     'Correctly spaced operators':
-
-        topic: ->
+        topic:
             '''
             x = 1
             1 + 1
@@ -178,8 +177,7 @@ vows.describe('spacing').addBatch({
             assert.isEmpty(errors)
 
     'Spaces around unary operators':
-
-        topic: ->
+        topic:
             '''
             + 1
             - - 1

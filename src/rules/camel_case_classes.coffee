@@ -8,7 +8,7 @@ module.exports = class CamelCaseClasses
         name: 'camel_case_classes'
         level: 'error'
         message: 'Class name should be UpperCamelCased'
-        description: """
+        description: '''
             This rule mandates that all class names are UpperCamelCased.
             Camel casing class names is a generally accepted way of
             distinguishing constructor functions - which require the 'new'
@@ -22,7 +22,7 @@ module.exports = class CamelCaseClasses
             </code>
             </pre>
             This rule is enabled by default.
-            """
+            '''
 
     tokens: [ 'CLASS' ]
 

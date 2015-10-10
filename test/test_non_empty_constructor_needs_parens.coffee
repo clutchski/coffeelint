@@ -7,8 +7,8 @@ vows.describe('non_empty_constructor_needs_parens').addBatch({
 
 
     'Missing Parentheses on "new Foo 1, 2"':
-        topic: () ->
-            """
+        topic:
+            '''
             class Foo
 
             a = new Foo
@@ -29,7 +29,7 @@ vows.describe('non_empty_constructor_needs_parens').addBatch({
             j = new bar.foo.Foo(
               config: 'parameter'
             )
-            """
+            '''
 
         'warns about missing parens': (source) ->
             config =

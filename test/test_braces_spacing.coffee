@@ -32,8 +32,8 @@ sources =
                       bar  } = x
                    '''
     stringInterpolation:
-        noSpaces: "\"\#{foo}\""
-        oneSpace: "\"\#{ foo }\""
+        noSpaces: '"\#{foo}"'
+        oneSpace: '"\#{ foo }"'
 
     fnImplicitParens:
         '''
@@ -49,9 +49,9 @@ sources =
 
 configs =
     oneEmptyObjectSpace:
-        braces_spacing: {level: 'error', empty_object_spaces: 1}
+        braces_spacing: { level: 'error', empty_object_spaces: 1 }
     oneSpace:
-        braces_spacing: {level: 'error', spaces: 1}
+        braces_spacing: { level: 'error', spaces: 1 }
     zeroEmptyObjectSpaces:
         braces_spacing: {level: 'error', empty_object_spaces: 0}
     zeroSpaces:

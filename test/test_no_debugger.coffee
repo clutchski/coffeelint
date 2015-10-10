@@ -7,21 +7,22 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 vows.describe('no_debugger').addBatch({
 
     'console calls':
-        topic: '''
-        console.log("hello world")
-        '''
+        topic:
+            '''
+            console.log("hello world")
+            '''
 
         'causes a warning when present': (source) ->
             errors = coffeelint.lint(source, {
                 no_debugger:
-                    'level': 'error'
-                    "console": true
+                    level: 'error'
+                    console: true
             })
             assert.isArray(errors)
             assert.lengthOf(errors, 1)
 
     'The debugger statement':
-        topic: ->
+        topic:
             '''
             debugger
             '''

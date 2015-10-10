@@ -6,12 +6,12 @@ module.exports = class NoDebugger
         level: 'warn'
         message: 'Found debugging code'
         console: false
-        description: """
+        description: '''
             This rule detects `debugger` and optionally `console` calls
             This rule is `warn` by default.
-            """
+            '''
 
-    tokens: [ "DEBUGGER", "IDENTIFIER" ]
+    tokens: [ 'DEBUGGER', 'IDENTIFIER' ]
 
     lintToken: (token, tokenApi) ->
         if token[0] is 'DEBUGGER'

@@ -5,12 +5,14 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 
 vows.describe('empty_constructor_needs_parens').addBatch({
 
-    '#421':
-        topic: '''
-        new OPERATIONS[operationSpec.type] operationSpec.field
 
-        new Foo[bar].baz[qux] param1
-        '''
+    'Make sure no errors if constructors are indexed (#421)':
+        topic:
+            '''
+            new OPERATIONS[operationSpec.type] operationSpec.field
+
+            new Foo[bar].baz[qux] param1
+            '''
 
         'should pass': (source) ->
             config =
@@ -20,8 +22,8 @@ vows.describe('empty_constructor_needs_parens').addBatch({
             assert.equal(errors.length, 0)
 
     'Missing Parentheses on "new Foo"':
-        topic: () ->
-            """
+        topic:
+            '''
             class Foo
 
             # Warn about missing parens here
@@ -35,7 +37,7 @@ vows.describe('empty_constructor_needs_parens').addBatch({
             # Since this does have a parameter it should not require parens
             g = new bar.foo.Foo
               config: 'parameter'
-            """
+            '''
 
         'warns about missing parens': (source) ->
             config =

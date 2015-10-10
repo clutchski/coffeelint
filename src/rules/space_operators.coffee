@@ -5,7 +5,9 @@ module.exports = class SpaceOperators
         name: 'space_operators'
         level: 'ignore'
         message: 'Operators must be spaced properly'
-        description: "This rule enforces that operators have space around them."
+        description: '''
+            This rule enforces that operators have spaces around them.
+            '''
 
     tokens: ['+', '-', '=', '**', 'MATH', 'COMPARE', 'LOGIC', 'COMPOUND_ASSIGN',
         'STRING_START', 'STRING_END', 'CALL_START', 'CALL_END']

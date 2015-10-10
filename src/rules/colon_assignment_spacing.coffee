@@ -6,7 +6,7 @@ module.exports = class ColonAssignmentSpacing
         spacing:
             left: 0
             right: 0
-        description: """
+        description: '''
             <p>This rule checks to see that there is spacing before and
             after the colon in a colon assignment (i.e., classes, objects).
             The spacing amount is specified by
@@ -28,7 +28,7 @@ module.exports = class ColonAssignmentSpacing
             class Cat
               canBark: false
             </code></pre>
-            """
+            '''
 
     tokens: [':']
 

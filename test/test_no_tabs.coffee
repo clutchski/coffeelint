@@ -12,12 +12,12 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 vows.describe('tabs').addBatch({
 
     'Tabs':
-        topic: () ->
-            """
+        topic:
+            '''
             x = () ->
             \ty = () ->
             \t\treturn 1234
-            """
+            '''
 
         'can be forbidden': (source) ->
             config = {}
@@ -25,7 +25,7 @@ vows.describe('tabs').addBatch({
             assert.equal(errors.length, 4)
             error = errors[1]
             assert.equal(error.lineNumber, 2)
-            assert.equal("Line contains tab indentation", error.message)
+            assert.equal(error.message, 'Line contains tab indentation')
             assert.equal(error.rule, 'no_tabs')
 
         'can be permitted': (source) ->
@@ -48,7 +48,8 @@ vows.describe('tabs').addBatch({
             assert.equal(errors.length, 0)
 
     'Tabs in multi-line strings':
-        topic: '''
+        topic:
+            '''
             x = 1234
             y = """
             \t\tasdf
@@ -60,7 +61,8 @@ vows.describe('tabs').addBatch({
             assert.isEmpty(errors)
 
     'Tabs in Heredocs':
-        topic: '''
+        topic:
+            '''
             ###
             \t\tMy Heredoc
             ###
@@ -71,7 +73,8 @@ vows.describe('tabs').addBatch({
             assert.isEmpty(errors)
 
     'Tabs in multi line regular expressions':
-        topic: '''
+        topic:
+            '''
             ///
             \t\tMy Heredoc
             ///

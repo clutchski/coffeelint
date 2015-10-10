@@ -19,27 +19,27 @@ module.exports = class Reporter
             red: [31, 39]
         }
         return styles.reduce (m, s)  ->
-            return "\u001b[" + map[s][0] + "m" + m + "\u001b[" + map[s][1] + "m"
+            return '\u001b[' + map[s][0] + 'm' + m + '\u001b[' + map[s][1] + 'm'
         , message
 
     publish: () ->
         paths = @errorReport.paths
 
-        report  = ""
+        report  = ''
         report += @reportPath(path, errors) for path, errors of paths
         report += @reportSummary(@errorReport.getSummary())
-        report += ""
+        report += ''
 
         @print report if not @quiet or @errorReport.hasError()
         return this
 
     reportSummary: (s) ->
         start = if s.errorCount > 0
-            "#{@err} #{@stylize("Lint!", 'red', 'bold')}"
+            "#{@err} #{@stylize('Lint!', 'red', 'bold')}"
         else if s.warningCount > 0
-            "#{@warn} #{@stylize("Warning!", 'yellow', 'bold')}"
+            "#{@warn} #{@stylize('Warning!', 'yellow', 'bold')}"
         else
-            "#{@ok} #{@stylize("Ok!", 'green', 'bold')}"
+            "#{@ok} #{@stylize('Ok!', 'green', 'bold')}"
         e = s.errorCount
         w = s.warningCount
         p = s.pathCount
@@ -47,7 +47,7 @@ module.exports = class Reporter
         warn = @plural('warning', w)
         file = @plural('file', p)
         msg = "#{start} » #{e} #{err} and #{w} #{warn} in #{p} #{file}"
-        return "\n" + @stylize(msg) + "\n"
+        return '\n' + @stylize(msg) + '\n'
 
     reportPath: (path, errors) ->
         [overall, color] = if hasError = @errorReport.pathHasError(path)
@@ -57,21 +57,21 @@ module.exports = class Reporter
         else
             [@ok, 'green']
 
-        pathReport = ""
+        pathReport = ''
         if not @quiet or hasError
             pathReport += "  #{overall} #{@stylize(path, color, 'bold')}\n"
 
         for e in errors
             continue if @quiet and e.level isnt 'error'
             o = if e.level is 'error' then @err else @warn
-            lineEnd = ""
+            lineEnd = ''
             lineEnd = "-#{e.lineNumberEnd}" if e.lineNumberEnd?
-            output = "#" + e.lineNumber + lineEnd
+            output = '#' + e.lineNumber + lineEnd
 
-            pathReport += "     " +
+            pathReport += '     ' +
                 "#{o} #{@stylize(output, color)}: #{e.message}."
             pathReport += " #{e.context}." if e.context
-            pathReport += "\n"
+            pathReport += '\n'
 
         pathReport
 

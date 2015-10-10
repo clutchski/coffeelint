@@ -6,9 +6,8 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 vows.describe('stand alone @').addBatch({
 
     'Stand alone @':
-
-        topic: () ->
-            """
+        topic:
+            '''
             @alright
             @   .error
             @ok()
@@ -18,7 +17,7 @@ vows.describe('stand alone @').addBatch({
             not(@).ok
             @::ok
             @:: #notok
-            """
+            '''
 
         'are allowed by default': (source) ->
             errors = coffeelint.lint(source)

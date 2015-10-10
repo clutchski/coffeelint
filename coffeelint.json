@@ -25,5 +25,8 @@
     "no_debugger": {
         "level": "error",
         "console": true
+    },
+    "no_unnecessary_double_quotes": {
+        "level": "error"
     }
 }

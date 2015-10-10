@@ -5,11 +5,10 @@ module.exports = class TransformMessesUpLineNumbers
         name: 'transform_messes_up_line_numbers'
         level: 'warn'
         message: 'Transforming source messes up line numbers'
-        description:
-            """
+        description: '''
             This rule detects when changes are made by transform function,
             and warns that line numbers are probably incorrect.
-            """
+            '''
 
     tokens: []
 

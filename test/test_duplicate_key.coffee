@@ -29,7 +29,7 @@ vows.describe(RULE).addBatch({
 
         'should error by default': (source) ->
             # Moved to a variable to avoid lines being too long.
-            message = "Duplicate key defined in object or class"
+            message = 'Duplicate key defined in object or class'
             errors = coffeelint.lint(source)
             # Verify the two actual duplicate keys are found and it is not
             # mistaking @getConfig as a duplicate key
