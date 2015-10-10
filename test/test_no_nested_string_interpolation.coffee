@@ -3,7 +3,9 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
-vows.describe('no_nested_string_interpolation').addBatch({
+RULE = 'no_nested_string_interpolation'
+
+vows.describe(RULE).addBatch({
 
     'Non-nested string interpolation':
         topic:
@@ -27,7 +29,7 @@ vows.describe('no_nested_string_interpolation').addBatch({
             assert.isArray(errors)
             assert.lengthOf(errors, 1)
             error = errors[0]
-            assert.equal(error.rule, 'no_nested_string_interpolation')
+            assert.equal(error.rule, RULE)
             assert.equal(error.lineNumber, 1)
             assert.equal(error.level, 'warn')
             assert.equal(error.message,
@@ -51,10 +53,7 @@ vows.describe('no_nested_string_interpolation').addBatch({
             errors = coffeelint.lint(source)
             assert.isArray(errors)
             assert.lengthOf(errors, 4)
-            assert.equal(errors[0].rule, 'no_nested_string_interpolation')
-            assert.equal(errors[1].rule, 'no_nested_string_interpolation')
-            assert.equal(errors[2].rule, 'no_nested_string_interpolation')
-            assert.equal(errors[3].rule, 'no_nested_string_interpolation')
+            assert.equal(rule, RULE) for {rule} in errors
             assert.equal(errors[0].lineNumber, 1)
             assert.equal(errors[1].lineNumber, 2)
             assert.equal(errors[2].lineNumber, 3)

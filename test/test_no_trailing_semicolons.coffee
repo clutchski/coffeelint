@@ -6,10 +6,11 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 configError = {no_trailing_semicolons: {level: 'error'}}
 configIgnore = {no_trailing_semicolons: {level: 'ignore'}}
 
-vows.describe('semicolons').addBatch({
+RULE = 'no_trailing_semicolons'
+
+vows.describe(RULE).addBatch({
 
     'Semicolons at end of lines':
-
         topic:
             '''
             x = 1234;
@@ -22,7 +23,7 @@ vows.describe('semicolons').addBatch({
             error = errors[0]
             assert.equal(error.lineNumber, 1)
             assert.equal(error.message, 'Line contains a trailing semicolon')
-            assert.equal(error.rule, 'no_trailing_semicolons')
+            assert.equal(error.rule, RULE)
 
         'can be ignored': (source) ->
             errors = coffeelint.lint(source, configIgnore)
@@ -95,7 +96,7 @@ vows.describe('semicolons').addBatch({
             error = errors[0]
             assert.equal(error.lineNumber, 1)
             assert.equal(error.message, 'Line contains a trailing semicolon')
-            assert.equal(error.rule, 'no_trailing_semicolons')
+            assert.equal(error.rule, RULE)
 
     'Trailing semicolon in block comments':
         topic:
@@ -124,7 +125,7 @@ vows.describe('semicolons').addBatch({
             error = errors[0]
             assert.equal(error.lineNumber, 1)
             assert.equal(error.message, 'Line contains a trailing semicolon')
-            assert.equal(error.rule, 'no_trailing_semicolons')
+            assert.equal(error.rule, RULE)
 
     'Semicolons inside of blockquote string':
         topic:
@@ -152,6 +153,6 @@ vows.describe('semicolons').addBatch({
             error = errors[0]
             assert.equal(error.lineNumber, 1)
             assert.equal(error.message, 'Line contains a trailing semicolon')
-            assert.equal(error.rule, 'no_trailing_semicolons')
+            assert.equal(error.rule, RULE)
 
 }).export(module)

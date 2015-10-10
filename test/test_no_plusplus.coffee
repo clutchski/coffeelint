@@ -3,8 +3,9 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
+RULE = 'no_plusplus'
 
-vows.describe('plusplus').addBatch({
+vows.describe(RULE).addBatch({
 
     'The increment and decrement operators':
         topic:
@@ -26,6 +27,6 @@ vows.describe('plusplus').addBatch({
             assert.lengthOf(errors, 4)
             error = errors[0]
             assert.equal(error.lineNumber, 1)
-            assert.equal(error.rule, 'no_plusplus')
+            assert.equal(error.rule, RULE)
 
 }).export(module)

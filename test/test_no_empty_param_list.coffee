@@ -3,10 +3,11 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
-vows.describe('params').addBatch({
+RULE = 'no_empty_param_list'
+
+vows.describe(RULE).addBatch({
 
     'Empty param list':
-
         topic:
             '''
             blah = () ->
@@ -25,6 +26,6 @@ vows.describe('params').addBatch({
             error = errors[0]
             assert.equal(error.lineNumber, 1)
             assert.equal(error.message, 'Empty parameter list is forbidden')
-            assert.equal(error.rule, 'no_empty_param_list')
+            assert.equal(error.rule, RULE)
 
 }).export(module)

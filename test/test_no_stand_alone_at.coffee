@@ -3,7 +3,9 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
-vows.describe('stand alone @').addBatch({
+RULE = 'no_stand_alone_at'
+
+vows.describe(RULE).addBatch({
 
     'Stand alone @':
         topic:
@@ -31,15 +33,15 @@ vows.describe('stand alone @').addBatch({
             assert.lengthOf(errors, 4)
             error = errors[0]
             assert.equal(error.lineNumber, 2)
-            assert.equal(error.rule, 'no_stand_alone_at')
+            assert.equal(error.rule, RULE)
             error = errors[1]
             assert.equal(error.lineNumber, 4)
-            assert.equal(error.rule, 'no_stand_alone_at')
+            assert.equal(error.rule, RULE)
             error = errors[2]
             assert.equal(error.lineNumber, 7)
-            assert.equal(error.rule, 'no_stand_alone_at')
+            assert.equal(error.rule, RULE)
             error = errors[3]
             assert.equal(error.lineNumber, 9)
-            assert.equal(error.rule, 'no_stand_alone_at')
+            assert.equal(error.rule, RULE)
 
 }).export(module)

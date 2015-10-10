@@ -3,8 +3,9 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
+RULE = 'max_line_length'
+vows.describe(RULE).addBatch({
 
-vows.describe('linelength').addBatch({
     'Maximum line length':
         topic: () ->
             # Every line generated here is a comment.
@@ -19,7 +20,7 @@ vows.describe('linelength').addBatch({
             error = errors[0]
             assert.equal(error.lineNumber, 4)
             assert.equal(error.message, 'Line exceeds maximum allowed length')
-            assert.equal(error.rule, 'max_line_length')
+            assert.equal(error.rule, RULE)
 
         'is configurable': (source) ->
             config =

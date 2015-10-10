@@ -8,8 +8,9 @@ config = {
     no_private_function_fat_arrows: {level: 'error'}
 }
 
-vows.describe('no_private_function_fat_arrows').addBatch({
+RULE = 'no_private_function_fat_arrows'
 
+vows.describe(RULE).addBatch({
     'eol':
         'should warn with fat arrow': ->
             result = coffeelint.lint('''
@@ -17,7 +18,7 @@ vows.describe('no_private_function_fat_arrows').addBatch({
               foo = =>
             ''', config)
             assert.equal(result.length, 1)
-            assert.equal(result[0].rule,  'no_private_function_fat_arrows')
+            assert.equal(result[0].rule, RULE)
             assert.equal(result[0].level, 'error')
 
         'should work with nested classes': ->
@@ -28,7 +29,7 @@ vows.describe('no_private_function_fat_arrows').addBatch({
                   bar2 = =>
             ''', config)
             assert.equal(result.length, 1)
-            assert.equal(result[0].rule,  'no_private_function_fat_arrows')
+            assert.equal(result[0].rule, RULE)
             assert.equal(result[0].level, 'error')
 
             # Same method name as external function.
@@ -39,7 +40,7 @@ vows.describe('no_private_function_fat_arrows').addBatch({
                   foo = =>
             ''', config)
             assert.equal(result.length, 1)
-            assert.equal(result[0].rule,  'no_private_function_fat_arrows')
+            assert.equal(result[0].rule, RULE)
             assert.equal(result[0].level, 'error')
 
         'should not warn without fat arrow': ->

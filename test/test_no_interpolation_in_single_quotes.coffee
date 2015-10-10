@@ -3,10 +3,11 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
-vows.describe('no_interpolation_in_single_quotes').addBatch({
+RULE = 'no_interpolation_in_single_quotes'
+
+vows.describe(RULE).addBatch({
 
     'Interpolation in single quotes':
-
         topic:
             '''
             foo = '#{inter}foo#{polation}'
@@ -23,7 +24,7 @@ vows.describe('no_interpolation_in_single_quotes').addBatch({
             assert.lengthOf(errors, 1)
             error = errors[0]
             assert.equal(error.lineNumber, 1)
-            assert.equal(error.rule, 'no_interpolation_in_single_quotes')
+            assert.equal(error.rule, RULE)
 
     'Interpolation in double quotes':
         topic:

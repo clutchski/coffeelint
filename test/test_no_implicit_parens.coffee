@@ -3,8 +3,9 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
-vows.describe('parens').addBatch({
+RULE = 'no_implicit_parens'
 
+vows.describe(RULE).addBatch({
 
     'Implicit parens':
         topic:
@@ -38,7 +39,7 @@ vows.describe('parens').addBatch({
             error = errors[0]
             assert.equal(error.lineNumber, 1)
             assert.equal(error.message, 'Implicit parens are forbidden')
-            assert.equal(error.rule, 'no_implicit_parens')
+            assert.equal(error.rule, RULE)
 
     'No implicit parens strict':
         topic:
@@ -57,7 +58,7 @@ vows.describe('parens').addBatch({
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 2)
-            assert.equal(rule, 'no_implicit_parens') for {rule} in errors
+            assert.equal(rule, RULE) for {rule} in errors
 
         'allows parens at the end of lines when strict is false': (source) ->
             config =
@@ -90,7 +91,7 @@ vows.describe('parens').addBatch({
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 4)
-            assert.equal(rule, 'no_implicit_parens') for { rule } in errors
+            assert.equal(rule, RULE) for {rule} in errors
 
         'allows parens at the end of lines when strict is false': (source) ->
             config =
@@ -127,6 +128,9 @@ vows.describe('parens').addBatch({
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 3)
+            assert.equal(errors[0].rule, RULE)
+            assert.equal(errors[1].rule, RULE)
+            assert.equal(errors[2].rule, RULE)
 
         # When implicit parens are separated out on multiple lines
         # and strict is set to false, do not return an error.
@@ -139,5 +143,7 @@ vows.describe('parens').addBatch({
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 2)
+            assert.equal(errors[0].rule, RULE)
+            assert.equal(errors[1].rule, RULE)
 
 }).export(module)

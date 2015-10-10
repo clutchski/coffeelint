@@ -3,10 +3,11 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
-vows.describe('no_implicit_braces').addBatch({
+RULE = 'no_implicit_braces'
+
+vows.describe(RULE).addBatch({
 
     'Implicit braces':
-
         topic:
             '''
             a = 1: 2
@@ -28,7 +29,7 @@ vows.describe('no_implicit_braces').addBatch({
             error = errors[0]
             assert.equal(error.lineNumber, 1)
             assert.equal(error.message, 'Implicit braces are forbidden')
-            assert.equal(error.rule, 'no_implicit_braces')
+            assert.equal(error.rule, RULE)
 
     'Implicit braces strict':
         topic:
@@ -45,7 +46,7 @@ vows.describe('no_implicit_braces').addBatch({
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 2)
-            assert.equal(rule, 'no_implicit_braces') for {rule} in errors
+            assert.equal(rule, RULE) for {rule} in errors
 
         'allows braces at the end of lines when strict is false': (source) ->
             config =

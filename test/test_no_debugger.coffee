@@ -3,8 +3,9 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
+RULE = 'no_debugger'
 
-vows.describe('no_debugger').addBatch({
+vows.describe(RULE).addBatch({
 
     'console calls':
         topic:
@@ -34,7 +35,7 @@ vows.describe('no_debugger').addBatch({
             error = errors[0]
             assert.equal(error.level, 'warn')
             assert.equal(error.lineNumber, 1)
-            assert.equal(error.rule, 'no_debugger')
+            assert.equal(error.rule, RULE)
 
         'can be set to error': (source) ->
             errors = coffeelint.lint(source, {no_debugger: {'level': 'error'}})
@@ -43,6 +44,6 @@ vows.describe('no_debugger').addBatch({
             assert.lengthOf(errors, 1)
             error = errors[0]
             assert.equal(error.lineNumber, 1)
-            assert.equal(error.rule, 'no_debugger')
+            assert.equal(error.rule, RULE)
 
 }).export(module)

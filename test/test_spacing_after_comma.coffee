@@ -3,7 +3,9 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
-vows.describe('commas').addBatch({
+RULE = 'spacing_after_comma'
+
+vows.describe(RULE).addBatch({
 
     'regex':
         topic:
@@ -34,7 +36,7 @@ vows.describe('commas').addBatch({
             error = errors[0]
             assert.equal(error.lineNumber, 1)
             assert.equal(error.message, 'a space is required after commas')
-            assert.equal(error.rule, 'spacing_after_comma')
+            assert.equal(error.rule, RULE)
 
     'newline after commas':
         topic:

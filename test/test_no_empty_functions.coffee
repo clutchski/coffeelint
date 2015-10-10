@@ -3,6 +3,8 @@ vows        = require 'vows'
 assert      = require 'assert'
 coffeelint  = require path.join('..', 'lib', 'coffeelint')
 
+RULE = 'no_empty_functions'
+
 runLint = (source) ->
     config = no_empty_functions: level: 'error'
     coffeelint.lint source, config
@@ -23,7 +25,7 @@ shouldPass = (source) ->
         assert.isEmpty errors, "Expected no errors, got
             [#{errors.map( (error) -> error.name).join ', '}] instead"
 
-vows.describe('no empty functions').addBatch({
+vows.describe(RULE).addBatch({
     'empty fat-arrow function': shouldError(
         '=>', 2)
     'empty function': shouldError(

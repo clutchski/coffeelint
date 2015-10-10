@@ -5,7 +5,9 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 
 configError = {eol_last: {level: 'error'}}
 
-vows.describe('eol_last').addBatch({
+RULE = 'eol_last'
+
+vows.describe(RULE).addBatch({
 
     'eol':
         'should not warn by default': ->
@@ -15,13 +17,13 @@ vows.describe('eol_last').addBatch({
             result = coffeelint.lint('foobar', configError)
             assert.equal(result.length, 1)
             assert.equal(result[0].level, 'error')
-            assert.equal(result[0].rule,  'eol_last')
+            assert.equal(result[0].rule, RULE)
 
         'should warn when enabled with multiple newlines': ->
             result = coffeelint.lint('foobar\n\n', configError)
             assert.equal(result.length, 1)
             assert.equal(result[0].level, 'error')
-            assert.equal(result[0].rule,  'eol_last')
+            assert.equal(result[0].rule, RULE)
 
         'should not warn with newline': ->
             assert.isEmpty(coffeelint.lint('foobar\n', configError))

@@ -3,7 +3,9 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
-vows.describe('arrows').addBatch({
+RULE = 'arrow_spacing'
+
+vows.describe(RULE).addBatch({
 
     'No spacing around the arrow operator':
         topic:
@@ -39,6 +41,14 @@ vows.describe('arrows').addBatch({
             assert.equal(errors[5].lineNumber, 9)
             assert.equal(errors[6].lineNumber, 10)
             assert.equal(errors[7].lineNumber, 11)
+            assert.equal(errors[0].rule, RULE)
+            assert.equal(errors[1].rule, RULE)
+            assert.equal(errors[2].rule, RULE)
+            assert.equal(errors[3].rule, RULE)
+            assert.equal(errors[4].rule, RULE)
+            assert.equal(errors[5].rule, RULE)
+            assert.equal(errors[6].rule, RULE)
+            assert.equal(errors[7].rule, RULE)
 
         'will be ignored (no error)': (source) ->
             config = { 'arrow_spacing': { 'level': 'ignore' } }
@@ -114,7 +124,8 @@ vows.describe('arrows').addBatch({
             assert.equal(errors[4].lineNumber, 14)
             assert.equal(errors[5].lineNumber, 16)
             assert.equal(errors[6].lineNumber, 16)
-            assert.equal(errors.length, 7)
+            assert.equal(rule, RULE) for {rule} in errors
+            assert.lengthOf(errors, 7)
 
         'when spacing is not required around arrow operator': (source) ->
             config = { 'arrow_spacing': { 'level': 'ignore' } }

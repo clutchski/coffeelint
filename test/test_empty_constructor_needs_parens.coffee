@@ -3,8 +3,9 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
-vows.describe('empty_constructor_needs_parens').addBatch({
+RULE = 'empty_constructor_needs_parens'
 
+vows.describe(RULE).addBatch({
 
     'Make sure no errors if constructors are indexed (#421)':
         topic:
@@ -46,9 +47,8 @@ vows.describe('empty_constructor_needs_parens').addBatch({
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 2)
             assert.equal(errors[0].lineNumber, 4)
-            assert.equal(errors[0].rule, 'empty_constructor_needs_parens')
+            assert.equal(errors[0].rule, RULE)
             assert.equal(errors[1].lineNumber, 5)
-            assert.equal(errors[1].rule, 'empty_constructor_needs_parens')
-
+            assert.equal(errors[1].rule, RULE)
 
 }).export(module)
