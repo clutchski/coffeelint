@@ -300,8 +300,8 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
         s = LineLinter.configStatement.exec(l)
         if s?.length > 2 and 'enable' in s
             for r in s[1..]
-                unless r in ['enable','disable']
-                    unless r of config and config[r].level in ['warn','error']
+                unless r in ['enable', 'disable']
+                    unless r of config and config[r].level in ['warn', 'error']
                         disabled_initially.push r
                         config[r] = { level: 'error' }
 

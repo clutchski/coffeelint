@@ -25,7 +25,7 @@ module.exports = class SpacingAfterComma
 
         unless token.spaced or token.newLine or token.generated or
                 @isRegexFlag(token, tokenApi)
-            {context: token[1]}
+            return true
 
     # When generating a regex (///${whatever}///i) CoffeeScript generates tokens
     # for RegEx(whatever, "i") but doesn't bother to mark that comma as
