@@ -1,13 +1,13 @@
 
 regexes =
-    camelCase : /^[A-Z_][a-zA-Z\d]*$/
+    camelCase: /^[A-Z_][a-zA-Z\d]*$/
 
 module.exports = class CamelCaseClasses
 
     rule:
         name: 'camel_case_classes'
-        level : 'error'
-        message : 'Class name should be UpperCamelCased'
+        level: 'error'
+        message: 'Class name should be UpperCamelCased'
         description: """
             This rule mandates that all class names are UpperCamelCased.
             Camel casing class names is a generally accepted way of

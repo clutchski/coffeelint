@@ -36,32 +36,30 @@ process.env.NODE_PATH += ":" + path.resolve( __dirname,
 
 vows.describe('commandline').addBatch({
 
-    'with no args' :
-
-        topic : () ->
+    'with no args':
+        topic: () ->
             commandline [], this.callback
             return undefined
 
-        'shows usage' : (error, stdout, stderr) ->
+        'shows usage': (error, stdout, stderr) ->
             assert.isNotNull(error)
             assert.notEqual(error.code, 0)
             assert.include(stderr, "Usage")
             assert.isEmpty(stdout)
 
-    'version' :
-        topic : () ->
+    'version':
+        topic: () ->
             commandline ["--version"], this.callback
             return undefined
 
-        'exists' : (error, stdout, stderr) ->
+        'exists': (error, stdout, stderr) ->
             assert.isNull(error)
             assert.isEmpty(stderr)
             assert.isString(stdout)
             assert.include(stdout, coffeelint.VERSION)
 
-    'with clean source' :
-
-        topic : () ->
+    'with clean source':
+        topic: () ->
             args = [
                 '--noconfig'
                 'fixtures/clean.coffee'
@@ -69,14 +67,13 @@ vows.describe('commandline').addBatch({
             commandline args, this.callback
             return undefined
 
-        'passes' : (error, stdout, stderr) ->
+        'passes': (error, stdout, stderr) ->
             assert.isNull(error)
             assert.include(stdout, '0 errors and 0 warnings')
             assert.isEmpty(stderr)
 
-    'with failing source' :
-
-        topic : () ->
+    'with failing source':
+        topic: () ->
             args = [
                 '--noconfig'
                 'fixtures/fourspaces.coffee'
@@ -84,49 +81,45 @@ vows.describe('commandline').addBatch({
             commandline args, this.callback
             return undefined
 
-        'works' : (error, stdout, stderr) ->
+        'works': (error, stdout, stderr) ->
             assert.isNotNull(error)
             assert.include(stdout.toLowerCase(), 'line')
 
-    'with findconfig and local coffeelint.json' :
-
-        topic : () ->
+    'with findconfig and local coffeelint.json':
+        topic: () ->
             args = [
                 'fixtures/findconfigtest/sevenspaces.coffee'
             ]
             commandline args, this.callback
             return undefined
 
-        'works' : (error, stdout, stderr) ->
+        'works': (error, stdout, stderr) ->
             assert.isNull(error)
 
-    'with findconfig and  local package.json' :
-
-        topic : () ->
+    'with findconfig and local package.json':
+        topic: () ->
             args = [
                 'fixtures/findconfigtest/package/sixspaces.coffee'
             ]
             commandline args, this.callback
             return undefined
 
-        'works' : (error, stdout, stderr) ->
+        'works': (error, stdout, stderr) ->
             assert.isNull(error)
 
-    'with findconfig and local coffeelint.json and extended config' :
-
-        topic : () ->
+    'with findconfig and local coffeelint.json and extended config':
+        topic: () ->
             args = [
                 'fixtures/find_extended_test/invalid.coffee'
             ]
             commandline args, this.callback
             return undefined
 
-        'works' : (error, stdout, stderr) ->
+        'works': (error, stdout, stderr) ->
             assert.isNull(error)
 
-    'with custom configuration' :
-
-        topic : () ->
+    'with custom configuration':
+        topic: () ->
             args = [
                 '-f'
                 'fixtures/fourspaces.json'
@@ -136,11 +129,11 @@ vows.describe('commandline').addBatch({
             commandline args, this.callback
             return undefined
 
-        'works' : (error, stdout, stderr) ->
+        'works': (error, stdout, stderr) ->
             assert.isNull(error)
 
     'with --rule parameter for a custom plugin':
-        topic : () ->
+        topic: () ->
             args = [
                 '--rules'
                 # It's up to NodeJS to resolve the actual path. The top of the
@@ -153,12 +146,12 @@ vows.describe('commandline').addBatch({
             commandline args, this.callback
             return undefined
 
-        'works' : (error, stdout, stderr) ->
+        'works': (error, stdout, stderr) ->
             assert.isNotNull(error)
             assert.include(stdout.toLowerCase(), 'forbidden variable name')
 
     'with `module` specified for a specific rule':
-        topic : () ->
+        topic: () ->
             args = [
                 '-f'
                 'fixtures/custom_rules/rule_module.json'
@@ -168,13 +161,12 @@ vows.describe('commandline').addBatch({
             commandline args, this.callback
             return undefined
 
-        'works' : (error, stdout, stderr) ->
+        'works': (error, stdout, stderr) ->
             assert.isNotNull(error)
             assert.include(stdout.toLowerCase(), 'forbidden variable name')
 
-    'with multiple sources'  :
-
-        topic : () ->
+    'with multiple sources':
+        topic: () ->
             args = [
                 '--noconfig'
                 '-f'
@@ -186,12 +178,11 @@ vows.describe('commandline').addBatch({
             commandline args, this.callback
             return undefined
 
-        'works' : (error, stdout, stderr) ->
+        'works': (error, stdout, stderr) ->
             assert.isNotNull(error)
 
-    'with configuration file' :
-
-        topic : () ->
+    'with configuration file':
+        topic: () ->
             configPath = '../generated_coffeelint.json'
             configFile = fs.openSync configPath, 'w'
             commandline ['--makeconfig'], (error, stdout, stderr) =>
@@ -207,7 +198,7 @@ vows.describe('commandline').addBatch({
 
             return undefined
 
-        'works' : (config, error, stdout, stderr) ->
+        'works': (config, error, stdout, stderr) ->
             assert.isNotNull(config)
             # This will throw an exception if it doesn't parse.
             JSON.parse config
@@ -242,16 +233,14 @@ vows.describe('commandline').addBatch({
 
             return undefined
 
-        'is minimal' : (error, config) ->
+        'is minimal': (error, config) ->
             expected = fs.readFileSync(
                 path.join(__dirname, '..', 'coffeelint.json'), 'utf-8'
             )
-
             assert.deepEqual(JSON.parse(config), JSON.parse(expected))
 
-    'does not fail on warnings' :
-
-        topic : () ->
+    'does not fail on warnings':
+        topic: () ->
             args = [
                 '-f'
                 'fixtures/twospaces.warning.json'
@@ -261,12 +250,11 @@ vows.describe('commandline').addBatch({
             commandline args, this.callback
             return undefined
 
-        'works' : (error, stdout, stderr) ->
+        'works': (error, stdout, stderr) ->
             assert.isNull(error)
 
-    'with broken source' :
-
-        topic : () ->
+    'with broken source':
+        topic: () ->
             args = [
                 '--noconfig'
                 'fixtures/syntax_error.coffee'
@@ -274,12 +262,11 @@ vows.describe('commandline').addBatch({
             commandline args, this.callback
             return undefined
 
-        'fails' : (error, stdout, stderr) ->
+        'fails': (error, stdout, stderr) ->
             assert.isNotNull(error)
 
-    'recurses subdirectories' :
-
-        topic : () ->
+    'recurses subdirectories':
+        topic: () ->
             args = [
                 '--noconfig',
                 '-r',
@@ -289,14 +276,13 @@ vows.describe('commandline').addBatch({
             commandline args, this.callback
             return undefined
 
-        'and reports errors' : (error, stdout, stderr) ->
-            assert.isNotNull(error, "returned err")
+        'and reports errors': (error, stdout, stderr) ->
+            assert.isNotNull(error, 'returned err')
             assert.include(stdout.toLowerCase(), 'line')
 
-    'allows JSLint XML reporting' :
-
+    'allows JSLint XML reporting':
         # FIXME: Not sure how to unit test escaping w/o major refactoring
-        topic : () ->
+        topic: () ->
             args = [
                 '-f'
                 '../coffeelint.json'
@@ -306,7 +292,7 @@ vows.describe('commandline').addBatch({
             commandline args, this.callback
             return undefined
 
-        'Handles cyclomatic complexity check' : (error, stdout, stderr) ->
+        'Handles cyclomatic complexity check': (error, stdout, stderr) ->
             assert.include(stdout.toLowerCase(), 'cyclomatic complexity')
 
     'using stdin':

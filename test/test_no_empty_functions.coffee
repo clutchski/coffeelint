@@ -24,23 +24,23 @@ shouldPass = (source) ->
             [#{errors.map( (error) -> error.name).join ', '}] instead"
 
 vows.describe('no empty functions').addBatch({
-    'empty fat-arrow function'                          : shouldError(
+    'empty fat-arrow function': shouldError(
         '=>', 2)
-    'empty function'                                    : shouldError(
+    'empty function': shouldError(
         '->')
-    'function with undefined statement'                 : shouldPass(
+    'function with undefined statement': shouldPass(
         '-> undefined')
-    'function within function with undefined statement' : shouldPass(
+    'function within function with undefined statement': shouldPass(
         '-> -> undefined')
-    'empty fat arrow function within a function '       : shouldError(
+    'empty fat arrow function within a function ': shouldError(
         '-> =>', 2)
-    'empty function within a function '                 : shouldError(
+    'empty function within a function ': shouldError(
         '-> ->')
-    "empty function as param's default value"           : shouldError(
+    "empty function as param's default value": shouldError(
         'foo = (empty=(->)) -> undefined')
-    "non-empty function as param's default value"       : shouldPass(
+    "non-empty function as param's default value": shouldPass(
         'foo = (empty=(-> undefined)) -> undefined')
-    "empty function with implicit instance member
-    assignment as param"                                : shouldError(
-        'foo = (@_fooMember) ->')
+    'empty function with implicit instance member assignment as param':
+        shouldError('foo = (@_fooMember) ->')
+
 }).export(module)

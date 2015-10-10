@@ -5,9 +5,9 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 
 vows.describe('colon_assignment_spacing').addBatch({
 
-    'Equal spacing around assignment' :
 
-        topic : ->
+    'Equal spacing around assignment':
+        topic: ->
             '''
             object = {spacing : true}
             class Dog
@@ -16,19 +16,18 @@ vows.describe('colon_assignment_spacing').addBatch({
               'stringkey' : 'ok'
             '''
 
-        'will not return an error' : (source) ->
+        'will not return an error': (source) ->
             config =
-                'colon_assignment_spacing' :
-                    level : 'error'
-                    spacing :
-                        left : 1
-                        right : 1
+                colon_assignment_spacing:
+                    level: 'error'
+                    spacing:
+                        left: 1
+                        right: 1
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 
-    'No space before assignment' :
-
-        topic : ->
+    'No space before assignment':
+        topic: ->
             '''
             object = {spacing: true}
             object =
@@ -39,38 +38,36 @@ vows.describe('colon_assignment_spacing').addBatch({
               'stringkey': 'ok'
             '''
 
-        'will not return an error' : (source) ->
+        'will not return an error': (source) ->
             config =
-                'colon_assignment_spacing' :
-                    level : 'error'
-                    spacing :
-                        left : 0
-                        right : 1
+                colon_assignment_spacing:
+                    level: 'error'
+                    spacing:
+                        left: 0
+                        right: 1
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 
-    'Newline to the right of assignment' :
-
-        topic : ->
+    'Newline to the right of assignment':
+        topic: ->
             """
             query:
               method: 'GET'
               isArray: false
             """
 
-        'will not return an error' : (source) ->
+        'will not return an error': (source) ->
             config =
-                'colon_assignment_spacing' :
-                    level : 'error'
-                    spacing :
-                        left : 0
-                        right : 1
+                colon_assignment_spacing:
+                    level: 'error'
+                    spacing:
+                        left: 0
+                        right: 1
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 
-    'Improper spacing around assignment' :
-
-        topic : ->
+    'Improper spacing around assignment':
+        topic: ->
             '''
             object = {spacing: false}
             class Cat
@@ -79,42 +76,41 @@ vows.describe('colon_assignment_spacing').addBatch({
               'stringkey': 'notcool'
             '''
 
-        'will return an error' : (source) ->
+        'will return an error': (source) ->
             config =
-                'colon_assignment_spacing' :
-                    level : 'error'
-                    spacing :
-                        left : 1
-                        right : 1
+                colon_assignment_spacing:
+                    level: 'error'
+                    spacing:
+                        left: 1
+                        right: 1
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 3)
 
-        'will ignore an error' : (source) ->
+        'will ignore an error': (source) ->
             config =
-                'colon_assignment_spacing' :
-                    level : 'ignore'
-                    spacing :
-                        left : 1
-                        right : 1
+                colon_assignment_spacing:
+                    level: 'ignore'
+                    spacing:
+                        left: 1
+                        right: 1
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 
-    'Should not complain about strings' :
-
-        topic : ->
+    'Should not complain about strings':
+        topic: ->
             '''
             foo = (stuff) ->
               throw new Error("Error: stuff required") unless stuff?
               # do real work
             '''
 
-        'will return an error' : (source) ->
+        'will return an error': (source) ->
             config =
-                'colon_assignment_spacing' :
-                    level : 'error'
-                    spacing :
-                        left : 1
-                        right : 1
+                colon_assignment_spacing:
+                    level: 'error'
+                    spacing:
+                        left: 1
+                        right: 1
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 

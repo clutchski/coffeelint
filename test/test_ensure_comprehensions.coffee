@@ -22,7 +22,7 @@ vows.describe(ruleName).addBatch({
                 console.log x
             '''
 
-        'are ignored' : (source) ->
+        'are ignored': (source) ->
             config[ruleName] = { level: 'error' }
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)

@@ -11,22 +11,22 @@ vows.describe('commas').addBatch({
         '''
 
         'should not error': (source) ->
-            config = {spacing_after_comma : {level:'warn'}}
+            config = {spacing_after_comma: {level: 'warn'}}
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 0)
 
 
-    'Whitespace after commas' :
+    'Whitespace after commas':
 
-        topic : () ->
+        topic: () ->
             "doSomething(foo = ',',bar)\nfooBar()"
 
-        'permitted by default' : (source) ->
+        'permitted by default': (source) ->
             errors = coffeelint.lint(source)
             assert.equal(errors.length, 0)
 
-        'can be forbidden' : (source) ->
-            config = {spacing_after_comma : {level:'warn'}}
+        'can be forbidden': (source) ->
+            config = {spacing_after_comma: {level: 'warn'}}
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 1)
             error = errors[0]
@@ -35,7 +35,7 @@ vows.describe('commas').addBatch({
             assert.equal(error.message, "Spaces are required after commas")
             assert.equal(error.rule, 'spacing_after_comma')
 
-    'newline after commas' :
+    'newline after commas':
 
         topic: () ->
             '''
@@ -46,8 +46,8 @@ vows.describe('commas').addBatch({
             )
             '''
 
-        'should not issue warns' : (source) ->
-            config = {spacing_after_comma : {level:'warn'}}
+        'should not issue warns': (source) ->
+            config = {spacing_after_comma: {level: 'warn'}}
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 0)
 

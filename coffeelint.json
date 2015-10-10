@@ -8,6 +8,13 @@
     "indentation": {
         "value": 4
     },
+    "colon_assignment_spacing": {
+        "level": "error",
+        "spacing": {
+            "left": 0,
+            "right": 1
+        }
+    },
     "space_operators": {
         "level": "error"
     },

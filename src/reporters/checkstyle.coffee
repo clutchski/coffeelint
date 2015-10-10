@@ -3,16 +3,16 @@ JsLintReporter = require './jslint'
 
 module.exports = class CheckstyleReporter
 
-    constructor : (@errorReport, options = {}) ->
+    constructor: (@errorReport, options = {}) ->
 
-    print : (message) ->
+    print: (message) ->
         # coffeelint: disable=no_debugger
         console.log message
         # coffeelint: enable=no_debugger
 
-    escape : JsLintReporter::escape
+    escape: JsLintReporter::escape
 
-    publish : () ->
+    publish: () ->
         @print "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
         @print "<checkstyle version=\"4.3\">"
 

@@ -6,36 +6,33 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 
 vows.describe('coffeelint').addBatch({
 
-    "CoffeeLint's version number" :
+    "CoffeeLint's version number":
+        topic: coffeelint.VERSION
 
-        topic : coffeelint.VERSION
-
-        'exists' : (version) ->
+        'exists': (version) ->
             assert.isString(version)
 
-    "CoffeeLint's errors" :
-
-        topic : () -> coffeelint.lint """
+    "CoffeeLint's errors":
+        topic: () -> coffeelint.lint """
             a = () ->\t
                 1234
             """
 
-        'are sorted by line number' : (errors) ->
+        'are sorted by line number': (errors) ->
             assert.isArray(errors)
             assert.lengthOf(errors, 2)
             assert.equal(errors[1].lineNumber, 2)
             assert.equal(errors[0].lineNumber, 1)
 
-    "Errors in the source" :
-
-        topic : '''
+    'Errors in the source':
+        topic: '''
             fruits = [orange, apple, banana]
             switch 'a'
               when in fruits
                 something
         '''
 
-        'are reported' : (source) ->
+        'are reported': (source) ->
             errors = coffeelint.lint(source)
             assert.isArray(errors)
             assert.lengthOf(errors, 1)

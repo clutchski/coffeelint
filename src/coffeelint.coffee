@@ -327,8 +327,8 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
     else
         # default this so it knows what to do
         block_config =
-            enable : {}
-            disable : {}
+            enable: {}
+            disable: {}
 
     # Sort by line number and return.
     errors.sort((a, b) -> a.lineNumber - b.lineNumber)

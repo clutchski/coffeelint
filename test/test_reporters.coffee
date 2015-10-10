@@ -16,14 +16,14 @@ class PassThroughReporter extends RawReporter
 
 vows.describe('reporters').addBatch({
 
-    'Can be used by 3rd party projects' :
+    'Can be used by 3rd party projects':
 
-        topic : """
+        topic: """
             if true
                 undefined
             """
 
-        '(example)' : (code) ->
+        '(example)': (code) ->
 
             # Grab your own ErrorReport
             errorReport = coffeelint.getErrorReport()

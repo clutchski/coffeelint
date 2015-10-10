@@ -1,16 +1,16 @@
 
 regexes =
-    trailingWhitespace : /[^\s]+[\t ]+\r?$/
+    trailingWhitespace: /[^\s]+[\t ]+\r?$/
     onlySpaces: /^[\t ]+\r?$/
-    lineHasComment : /^\s*[^\#]*\#/
+    lineHasComment: /^\s*[^\#]*\#/
 
 module.exports = class NoTrailingWhitespace
 
     rule:
         name: 'no_trailing_whitespace'
-        level : 'error'
-        message : 'Line ends with trailing whitespace'
-        allowed_in_comments : false
+        level: 'error'
+        message: 'Line ends with trailing whitespace'
+        allowed_in_comments: false
         allowed_in_empty_lines: true
         description: """
             This rule forbids trailing whitespace in your code, since it is

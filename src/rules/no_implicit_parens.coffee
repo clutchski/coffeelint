@@ -2,9 +2,9 @@ module.exports = class NoImplicitParens
 
     rule:
         name: 'no_implicit_parens'
-        strict : true
-        level : 'ignore'
-        message : 'Implicit parens are forbidden'
+        level: 'ignore'
+        message: 'Implicit parens are forbidden'
+        strict: true
         description: """
             This rule prohibits implicit parens on function calls.
             <pre>
@@ -22,7 +22,7 @@ module.exports = class NoImplicitParens
 
     tokens: ['CALL_END']
 
-    lintToken : (token, tokenApi) ->
+    lintToken: (token, tokenApi) ->
         if token.generated
             unless tokenApi.config[@rule.name].strict is false
                 return true

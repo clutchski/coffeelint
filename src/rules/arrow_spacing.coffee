@@ -1,10 +1,9 @@
-
 module.exports = class ArrowSpacing
 
     rule:
         name: 'arrow_spacing'
-        level : 'ignore'
-        message : 'Function arrows (-> and =>) must be spaced properly'
+        level: 'ignore'
+        message: 'Function arrows (-> and =>) must be spaced properly'
         description: """
             <p>This rule checks to see that there is spacing before and after
             the arrow operator that declares a function. This rule is disabled
@@ -25,7 +24,7 @@ module.exports = class ArrowSpacing
 
     tokens: [ '->', '=>' ]
 
-    lintToken : (token, tokenApi) ->
+    lintToken: (token, tokenApi) ->
         # Throw error unless the following happens.
         #
         # We will take a look at the previous token to see

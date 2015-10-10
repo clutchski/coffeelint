@@ -6,9 +6,9 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 
 vows.describe('identifiers').addBatch({
 
-    'Camel cased class names' :
+    'Camel cased class names':
 
-        topic : """
+        topic: -> """
             class Animal
 
             class Wolf extends Animal
@@ -26,13 +26,12 @@ vows.describe('identifiers').addBatch({
             class deeply.nested.Name
             """
 
-        'are valid by default' : (source) ->
+        'are valid by default': (source) ->
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
 
-    'Non camel case class names' :
-
-        topic : """
+    'Non camel case class names':
+        topic: """
             class animal
 
             class wolf extends Animal
@@ -44,7 +43,7 @@ vows.describe('identifiers').addBatch({
             class _PrivatePrefix
             """
 
-        'are rejected by default' : (source) ->
+        'are rejected by default': (source) ->
             errors = coffeelint.lint(source)
             assert.lengthOf(errors, 4)
             error = errors[0]
@@ -53,15 +52,14 @@ vows.describe('identifiers').addBatch({
             assert.equal(error.context,  'class name: animal')
             assert.equal(error.rule,  'camel_case_classes')
 
-        'can be permitted' : (source) ->
+        'can be permitted': (source) ->
             config =
-                camel_case_classes : {level : 'ignore'}
+                camel_case_classes: {level: 'ignore'}
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 
-    'Anonymous class names' :
-
-        topic : """
+    'Anonymous class names':
+        topic: """
             x = class
               m : -> 123
 
@@ -73,13 +71,12 @@ vows.describe('identifiers').addBatch({
             r = class then 1:2
             """
 
-        'are permitted' : (source) ->
+        'are permitted': (source) ->
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
 
-    'Inner classes are permitted' :
-
-        topic : '''
+    'Inner classes are permitted':
+        topic: '''
             class X
               class @Y
                 f : 123
@@ -87,7 +84,7 @@ vows.describe('identifiers').addBatch({
                 f : 456
             '''
 
-        'are permitted' : (source) ->
+        'are permitted': (source) ->
             errors = coffeelint.lint(source)
             assert.lengthOf(errors, 0)
 

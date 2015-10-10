@@ -1,19 +1,18 @@
-
 # A summary of errors in a CoffeeLint run.
 module.exports = class ErrorReport
 
-    constructor : (@coffeelint) ->
+    constructor: (@coffeelint) ->
         @paths = {}
 
     lint: (filename, source, config = {}, literate = false) ->
         @paths[filename] = @coffeelint.lint(source, config, literate)
 
-    getExitCode : () ->
+    getExitCode: () ->
         for path of @paths
             return 1 if @pathHasError(path)
         return 0
 
-    getSummary : () ->
+    getSummary: () ->
         pathCount = errorCount = warningCount = 0
         for path, errors of @paths
             pathCount++
@@ -22,21 +21,21 @@ module.exports = class ErrorReport
                 warningCount++ if error.level is 'warn'
         return {errorCount, warningCount, pathCount}
 
-    getErrors : (path) ->
+    getErrors: (path) ->
         return @paths[path]
 
-    pathHasWarning : (path) ->
+    pathHasWarning: (path) ->
         return @_hasLevel(path, 'warn')
 
-    pathHasError : (path) ->
+    pathHasError: (path) ->
         return @_hasLevel(path, 'error')
 
-    hasError : () ->
+    hasError: () ->
         for path of @paths
             return true if @pathHasError(path)
         return false
 
-    _hasLevel : (path, level) ->
+    _hasLevel: (path, level) ->
         for error in @paths[path]
             return true if error.level is level
         return false

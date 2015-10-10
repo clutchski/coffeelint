@@ -2,13 +2,13 @@ module.exports = class CyclomaticComplexity
 
     rule:
         name: 'cyclomatic_complexity'
-        value : 10
-        level : 'ignore'
-        message : 'The cyclomatic complexity is too damn high'
-        description : 'Examine the complexity of your application.'
+        level: 'ignore'
+        message: 'The cyclomatic complexity is too damn high'
+        value: 10
+        description: 'Examine the complexity of your application.'
 
     # returns the "complexity" value of the current node.
-    getComplexity : (node) ->
+    getComplexity: (node) ->
         name = @astApi.getNodeName node
         complexity = if name in ['If', 'While', 'For', 'Try']
             1
@@ -20,12 +20,12 @@ module.exports = class CyclomaticComplexity
             0
         return complexity
 
-    lintAST : (node, @astApi) ->
+    lintAST: (node, @astApi) ->
         @lintNode node
         undefined
 
     # Lint the AST node and return its cyclomatic complexity.
-    lintNode : (node, line) ->
+    lintNode: (node, line) ->
 
         # Get the complexity of the current node.
         name = @astApi?.getNodeName node

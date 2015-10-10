@@ -1,13 +1,13 @@
 module.exports = class CSVReporter
 
-    constructor : (@errorReport, options = {}) ->
+    constructor: (@errorReport, options = {}) ->
 
-    print : (message) ->
+    print: (message) ->
         # coffeelint: disable=no_debugger
         console.log message
         # coffeelint: enable=no_debugger
 
-    publish : () ->
+    publish: () ->
         header = ["path","lineNumber", "lineNumberEnd", "level", "message"]
         @print header.join(",")
         for path, errors of @errorReport.paths

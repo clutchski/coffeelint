@@ -5,16 +5,16 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 
 vows.describe('line endings').addBatch({
 
-    'Unix line endings' :
+    'Unix line endings':
 
-        topic : 'x = 1\ny=2'
+        topic: 'x = 1\ny=2'
 
-        'are allowed by default' : (source) ->
+        'are allowed by default': (source) ->
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
 
-        'can be forbidden' : (source) ->
-            config = {line_endings : {level:'error', value:'windows'}}
+        'can be forbidden': (source) ->
+            config = {line_endings: {level: 'error', value: 'windows'}}
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 1)
@@ -24,16 +24,15 @@ vows.describe('line endings').addBatch({
             assert.equal(error.context, 'Expected windows')
             assert.equal(error.rule, 'line_endings')
 
-    'Windows line endings' :
+    'Windows line endings':
 
-        topic : 'x = 1\r\ny=2'
-
-        'are allowed by default' : (source) ->
+        topic: 'x = 1\r\ny=2'
+        'are allowed by default': (source) ->
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
 
-        'can be forbidden' : (source) ->
-            config = {line_endings : {level:'error', value:'unix'}}
+        'can be forbidden': (source) ->
+            config = {line_endings: {level: 'error', value: 'unix'}}
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 1)
@@ -43,13 +42,13 @@ vows.describe('line endings').addBatch({
             assert.equal(error.context, 'Expected unix')
             assert.equal(error.rule, 'line_endings')
 
-    'Unknown line endings' :
+    'Unknown line endings':
 
-        topic : 'x = 1\ny=2'
+        topic: 'x = 1\ny=2'
 
-        'throw errors' : (source) ->
+        'throw errors': (source) ->
             config =
-                line_endings : {level: 'error', value: 'osx'}
+                line_endings: {level: 'error', value: 'osx'}
             assert.throws () ->
                 coffeelint.lint(source, config)
 

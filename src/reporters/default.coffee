@@ -1,8 +1,7 @@
-
 # Reports errors to the command line.
 module.exports = class Reporter
 
-    constructor : (@errorReport, options = {}) ->
+    constructor: (@errorReport, options = {}) ->
         {
             @colorize
             @quiet
@@ -11,10 +10,10 @@ module.exports = class Reporter
         @warn = '⚡'
         @err = '✗'
 
-    stylize : (message, styles...) ->
+    stylize: (message, styles...) ->
         return message if not @colorize
         map = {
-            bold  : [1,  22],
+            bold: [1,  22],
             yellow: [33, 39],
             green: [32, 39],
             red: [31, 39]
@@ -23,7 +22,7 @@ module.exports = class Reporter
             return "\u001b[" + map[s][0] + "m" + m + "\u001b[" + map[s][1] + "m"
         , message
 
-    publish : () ->
+    publish: () ->
         paths = @errorReport.paths
 
         report  = ""
@@ -34,7 +33,7 @@ module.exports = class Reporter
         @print report if not @quiet or @errorReport.hasError()
         return this
 
-    reportSummary : (s) ->
+    reportSummary: (s) ->
         start = if s.errorCount > 0
             "#{@err} #{@stylize("Lint!", 'red', 'bold')}"
         else if s.warningCount > 0
@@ -50,7 +49,7 @@ module.exports = class Reporter
         msg = "#{start} » #{e} #{err} and #{w} #{warn} in #{p} #{file}"
         return "\n" + @stylize(msg) + "\n"
 
-    reportPath : (path, errors) ->
+    reportPath: (path, errors) ->
         [overall, color] = if hasError = @errorReport.pathHasError(path)
             [@err, 'red']
         else if hasWarning = @errorReport.pathHasWarning(path)
@@ -76,10 +75,10 @@ module.exports = class Reporter
 
         pathReport
 
-    print : (message) ->
+    print: (message) ->
         # coffeelint: disable=no_debugger
         console.log message
         # coffeelint: enable=no_debugger
 
-    plural : (str, count) ->
+    plural: (str, count) ->
         if count is 1 then str else "#{str}s"

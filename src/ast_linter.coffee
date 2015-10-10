@@ -1,16 +1,16 @@
 BaseLinter = require './base_linter.coffee'
 
 node_children =
-  Class:    ['variable', 'parent', 'body']
-  Code:     ['params', 'body']
-  For:      ['body', 'source', 'guard', 'step']
-  If:       ['condition', 'body', 'elseBody']
-  Obj:      ['properties']
-  Op:       ['first', 'second']
-  Switch:   ['subject', 'cases', 'otherwise']
-  Try:      ['attempt', 'recovery', 'ensure']
-  Value:    ['base', 'properties']
-  While:    ['condition', 'guard', 'body']
+    Class: ['variable', 'parent', 'body']
+    Code: ['params', 'body']
+    For: ['body', 'source', 'guard', 'step']
+    If: ['condition', 'body', 'elseBody']
+    Obj: ['properties']
+    Op: ['first', 'second']
+    Switch: ['subject', 'cases', 'otherwise']
+    Try: ['attempt', 'recovery', 'ensure']
+    Value: ['base', 'properties']
+    While: ['condition', 'guard', 'body']
 
 hasChildren = (node, children) ->
     node?.children?.length is children.length and
@@ -32,7 +32,7 @@ class ASTApi
 # syntax tree.
 module.exports = class ASTLinter extends BaseLinter
 
-    constructor : (source, config, rules, @CoffeeScript) ->
+    constructor: (source, config, rules, @CoffeeScript) ->
         super source, config, rules
         @astApi = new ASTApi @config
 
@@ -41,7 +41,7 @@ module.exports = class ASTLinter extends BaseLinter
     acceptRule: (rule) ->
         return typeof rule.lintAST is 'function'
 
-    lint : () ->
+    lint: () ->
         errors = []
         try
             @node = @CoffeeScript.nodes(@source)
@@ -65,7 +65,7 @@ module.exports = class ASTLinter extends BaseLinter
             return v if v?
         errors
 
-    _parseCoffeeScriptError : (coffeeError) ->
+    _parseCoffeeScriptError: (coffeeError) ->
         rule = @config['coffeescript_error']
 
         message = coffeeError.toString()

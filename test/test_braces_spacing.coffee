@@ -73,12 +73,12 @@ shouldFail = (source, config, errorMessages = []) ->
 
 vows.describe('braces_spacing').addBatch({
 
-    'disabled by default' :
+    'disabled by default':
         'with no spaces': shouldPass(sources.sameLine.noSpaces)
         'with one space': shouldPass(sources.sameLine.oneSpace)
 
 
-    'enabled with spaces set to 0' :
+    'enabled with spaces set to 0':
         'implicit braces':
             shouldPass(sources.implicit, configs.zeroSpaces)
 
@@ -126,8 +126,7 @@ vows.describe('braces_spacing').addBatch({
                 shouldPass(sources.stringInterpolation.oneSpace,
                            configs.zeroSpaces)
 
-
-    'enabled with spaces set to 1' :
+    'enabled with spaces set to 1':
         'implicit braces':
             shouldPass(sources.implicit, configs.oneSpace)
 

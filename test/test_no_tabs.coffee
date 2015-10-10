@@ -11,16 +11,15 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 
 vows.describe('tabs').addBatch({
 
-    'Tabs' :
-
-        topic : () ->
+    'Tabs':
+        topic: () ->
             """
             x = () ->
             \ty = () ->
             \t\treturn 1234
             """
 
-        'can be forbidden' : (source) ->
+        'can be forbidden': (source) ->
             config = {}
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 4)
@@ -29,59 +28,56 @@ vows.describe('tabs').addBatch({
             assert.equal("Line contains tab indentation", error.message)
             assert.equal(error.rule, 'no_tabs')
 
-        'can be permitted' : (source) ->
+        'can be permitted': (source) ->
             config =
-                no_tabs : {level: 'ignore'}
-                indentation : {level: 'error', value: 1}
+                no_tabs: {level: 'ignore'}
+                indentation: {level: 'error', value: 1}
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 0)
 
-        'are forbidden by default' : (source) ->
+        'are forbidden by default': (source) ->
             config =
-                indentation : {level: 'error', value: 1}
+                indentation: {level: 'error', value: 1}
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.equal(errors.length, 2)
 
-        'are allowed in strings' : () ->
+        'are allowed in strings': () ->
             source = "x = () -> '\t'"
             errors = coffeelint.lint(source)
             assert.equal(errors.length, 0)
 
-    'Tabs in multi-line strings' :
-
-        topic : '''
+    'Tabs in multi-line strings':
+        topic: '''
             x = 1234
             y = """
             \t\tasdf
             """
             '''
 
-        'are ignored' : (errors) ->
+        'are ignored': (errors) ->
             errors = coffeelint.lint(errors)
             assert.isEmpty(errors)
 
-    'Tabs in Heredocs' :
-
-        topic : '''
+    'Tabs in Heredocs':
+        topic: '''
             ###
             \t\tMy Heredoc
             ###
             '''
 
-        'are ignored' : (errors) ->
+        'are ignored': (errors) ->
             errors = coffeelint.lint(errors)
             assert.isEmpty(errors)
 
-    'Tabs in multi line regular expressions' :
-
-        topic : '''
+    'Tabs in multi line regular expressions':
+        topic: '''
             ///
             \t\tMy Heredoc
             ///
             '''
 
-        'are ignored' : (errors) ->
+        'are ignored': (errors) ->
             errors = coffeelint.lint(errors)
             assert.isEmpty(errors)
 

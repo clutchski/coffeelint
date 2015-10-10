@@ -19,8 +19,7 @@ vows.describe('empty_constructor_needs_parens').addBatch({
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 0)
 
-    'Missing Parentheses on "new Foo"' :
-
+    'Missing Parentheses on "new Foo"':
         topic: () ->
             """
             class Foo

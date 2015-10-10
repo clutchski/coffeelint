@@ -1,13 +1,13 @@
 module.exports = class JSLintReporter
 
-    constructor : (@errorReport, options = {}) ->
+    constructor: (@errorReport, options = {}) ->
 
-    print : (message) ->
+    print: (message) ->
         # coffeelint: disable=no_debugger
         console.log message
         # coffeelint: enable=no_debugger
 
-    publish : () ->
+    publish: () ->
         @print "<?xml version=\"1.0\" encoding=\"utf-8\"?><jslint>"
 
         for path, errors of @errorReport.paths
@@ -25,7 +25,7 @@ module.exports = class JSLintReporter
 
         @print "</jslint>"
 
-    escape : (msg) ->
+    escape: (msg) ->
         # Force msg to be a String
         msg = "" + msg
         unless msg

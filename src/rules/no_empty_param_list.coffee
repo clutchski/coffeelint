@@ -4,8 +4,8 @@ module.exports = class NoEmptyParamList
 
     rule:
         name: 'no_empty_param_list'
-        level : 'ignore'
-        message : 'Empty parameter list is forbidden'
+        level: 'ignore'
+        message: 'Empty parameter list is forbidden'
         description: """
             This rule prohibits empty parameter lists in function definitions.
             <pre>
@@ -21,7 +21,7 @@ module.exports = class NoEmptyParamList
 
     tokens: [ "PARAM_START" ]
 
-    lintToken : (token, tokenApi) ->
+    lintToken: (token, tokenApi) ->
         nextType = tokenApi.peek()[0]
         return nextType is 'PARAM_END'
 

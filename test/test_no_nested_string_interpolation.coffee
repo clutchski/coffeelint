@@ -5,24 +5,23 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 
 vows.describe('no_nested_string_interpolation').addBatch({
 
-    'Non-nested string interpolation' :
+    'Non-nested string interpolation':
 
-        topic : '''
+        topic: '''
         "Book by #{firstName.toUpperCase()} #{lastName.toUpperCase()}"
         '''
 
-        'is allowed' : (source) ->
+        'is allowed': (source) ->
             errors = coffeelint.lint(source)
             assert.isArray(errors)
             assert.isEmpty(errors)
 
-    'Nested string interpolation' :
+    'Nested string interpolation':
 
-        topic : '''
+        topic: '''
         str = "Book by #{"#{firstName} #{lastName}".toUpperCase()}"
         '''
-
-        'should generate a warning' : (source) ->
+        'should generate a warning': (source) ->
             errors = coffeelint.lint(source)
             assert.isArray(errors)
             assert.lengthOf(errors, 1)
@@ -33,21 +32,20 @@ vows.describe('no_nested_string_interpolation').addBatch({
             assert.equal(error.message,
                 'Nested string interpolation is forbidden')
 
-        'can be permitted' : (source) ->
-            config = {no_nested_string_interpolation : {level:'ignore'}}
+        'can be permitted': (source) ->
+            config = {no_nested_string_interpolation: {level: 'ignore'}}
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.isEmpty(errors)
 
-    'Deeply nested string interpolation' :
-
-        topic : '''
+    'Deeply nested string interpolation':
+        topic: '''
         str1 = "string #{"interpolation #{"inception"}"}"
         str2 = "going #{"in #{"even #{"deeper"}"}"}"
         str3 = "#{"multiple #{"warnings"}"} for #{"different #{"nestings"}"}"
         '''
 
-        'generates only one warning per string' : (source) ->
+        'generates only one warning per string': (source) ->
             errors = coffeelint.lint(source)
             assert.isArray(errors)
             assert.lengthOf(errors, 4)

@@ -8,7 +8,7 @@ class TokenApi
     i: 0              # The index of the current token we're linting.
 
     # Return the token n places away from the current token.
-    peek : (n = 1) ->
+    peek: (n = 1) ->
         @tokens[@i + n] || null
 
 

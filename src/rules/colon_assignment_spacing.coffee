@@ -1,13 +1,12 @@
 module.exports = class ColonAssignmentSpacing
-
-    rule :
-        name : 'colon_assignment_spacing'
-        level : 'ignore'
-        message :'Colon assignment without proper spacing'
-        spacing :
-            left : 0
-            right : 0
-        description : """
+    rule:
+        name: 'colon_assignment_spacing'
+        level: 'ignore'
+        message: 'Colon assignment without proper spacing'
+        spacing:
+            left: 0
+            right: 0
+        description: """
             <p>This rule checks to see that there is spacing before and
             after the colon in a colon assignment (i.e., classes, objects).
             The spacing amount is specified by
@@ -19,21 +18,21 @@ module.exports = class ColonAssignmentSpacing
             # If spacing.left and spacing.right is 1
             #
 
-            # Good
+            # Doesn't throw an error
             object = {spacing : true}
             class Dog
               canBark : true
 
-            # Bad
+            # Throws an error
             object = {spacing: true}
             class Cat
               canBark: false
             </code></pre>
             """
 
-    tokens : [':']
+    tokens: [':']
 
-    lintToken : (token, tokenApi) ->
+    lintToken: (token, tokenApi) ->
         spaceRules = tokenApi.config[@rule.name].spacing
         previousToken = tokenApi.peek -1
         nextToken = tokenApi.peek 1
@@ -61,9 +60,4 @@ module.exports = class ColonAssignmentSpacing
         if isLeftSpaced and isRightSpaced
             null
         else
-            context :
-                """
-                Incorrect spacing around column #{token[2].first_column}.
-                Expected left: #{spaceRules.left}, right: #{spaceRules.right}.
-                Got left: #{leftSpacing}, right: #{rightSpacing}.
-                """
+            context: "Incorrect spacing around column #{token[2].first_column}"

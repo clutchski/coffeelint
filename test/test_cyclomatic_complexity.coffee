@@ -6,7 +6,7 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 
 # Return the cyclomatic complexity of a code snippet with one function.
 getComplexity = (source) ->
-    config = {cyclomatic_complexity : {level: 'error', value: 0}}
+    config = {cyclomatic_complexity: {level: 'error', value: 0}}
     errors = coffeelint.lint(source, config)
     assert.isNotEmpty(errors)
     assert.lengthOf(errors, 1)
@@ -14,12 +14,10 @@ getComplexity = (source) ->
     assert.equal(error.rule, 'cyclomatic_complexity')
     return error.context
 
-
 vows.describe('cyclomatic complexity').addBatch({
 
-    'Cyclomatic complexity' :
-
-        topic : """
+    'Cyclomatic complexity':
+        topic: """
             x = ->
               1 and 2 and 3 and
               4 and 5 and 6 and
@@ -27,13 +25,13 @@ vows.describe('cyclomatic complexity').addBatch({
               10 and 11
             """
 
-        'defaults to ignore' : (source) ->
+        'defaults to ignore': (source) ->
             errors = coffeelint.lint(source)
             assert.isArray(errors)
             assert.isEmpty(errors)
 
-        'can be enabled' : (source) ->
-            config = {cyclomatic_complexity : {level: 'error'}}
+        'can be enabled': (source) ->
+            config = {cyclomatic_complexity: {level: 'error'}}
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 1)
@@ -43,40 +41,37 @@ vows.describe('cyclomatic complexity').addBatch({
             assert.equal(error.lineNumber, 1)
             assert.equal(error.lineNumberEnd, 5)
 
-        'can be enabled with configurable complexity' : (source) ->
-            config = {cyclomatic_complexity : {level: 'error', value: 12}}
+        'can be enabled with configurable complexity': (source) ->
+            config = { cyclomatic_complexity: { level: 'error', value: 12 } }
             errors = coffeelint.lint(source)
             assert.isArray(errors)
             assert.isEmpty(errors)
 
-    'An empty function' :
+    'An empty function':
+        topic: "x = () -> 1234"
 
-        topic : "x = () -> 1234"
-
-        'has a complexity of one' : (source) ->
+        'has a complexity of one': (source) ->
             complexity = getComplexity(source)
             assert.equal(complexity, 1)
 
-    'If statement' :
+    'If statement':
+        topic: "x = () -> 2 if $ == true"
 
-        topic : "x = () -> 2 if $ == true"
-
-        'increments the complexity' : (source) ->
+        'increments the complexity': (source) ->
             complexity = getComplexity(source)
             assert.equal(complexity, 2)
 
 
-    'If Else statement' :
 
-        topic : 'y = -> if $ then 1 else 3'
+    'If Else statement':
+        topic: 'y = -> if $ then 1 else 3'
 
-        'increments the complexity' : (source) ->
+        'increments the complexity': (source) ->
             complexity = getComplexity(source)
             assert.equal(complexity, 2)
 
-    'If ElseIf statement' :
-
-        topic : """
+    'If ElseIf statement':
+        topic: """
             x = ->
               if 1233
                 'abc'
@@ -84,13 +79,12 @@ vows.describe('cyclomatic complexity').addBatch({
                 'xyz'
             """
 
-        'has a complexity of three' : (source) ->
+        'has a complexity of three': (source) ->
             complexity = getComplexity(source)
             assert.equal(complexity, 3)
 
-    'If If-Else Else statement' :
-
-        topic : """
+    'If If-Else Else statement':
+        topic: """
             z = () ->
               if x
                 1
@@ -100,67 +94,65 @@ vows.describe('cyclomatic complexity').addBatch({
                 3
             """
 
-        'has a complexity of three' : (source) ->
+        'has a complexity of three': (source) ->
             complexity = getComplexity(source)
             assert.equal(complexity, 3)
 
-    'Nested if statements' :
 
-        topic : """
+    'Nested if statements':
+        topic: """
             z = () ->
               if abc?
                 if other?
                   123
             """
 
-        'has a complexity of three' : (source) ->
+        'has a complexity of three': (source) ->
             complexity = getComplexity(source)
             assert.equal(complexity, 3)
 
 
-    'A while loop' :
 
-        topic : """
+    'A while loop':
+        topic: """
             x = () ->
               while 1
                 'asdf'
             """
-
-        'increments complexity' : (source) ->
+        'increments complexity': (source) ->
             complexity = getComplexity(source)
             assert.equal(complexity, 2)
 
-    'An until loop' :
 
-        topic : "x = () -> log 'a' until $?"
+    'An until loop':
+        topic: "x = () -> log 'a' until $?"
 
-        'increments complexity' : (source) ->
+        'increments complexity': (source) ->
             complexity = getComplexity(source)
             assert.equal(complexity, 2)
 
-    'A for loop' :
 
-        topic : """
+    'A for loop':
+        topic: """
             x = () ->
               for i in window
                 log i
             """
 
-        'increments complexity' : (source) ->
+        'increments complexity': (source) ->
             complexity = getComplexity(source)
             assert.equal(complexity, 2)
 
-    'A list comprehension' :
+    'A list comprehension':
+        topic: "x = -> [a for a in window]"
 
-        topic : "x = -> [a for a in window]"
-
-        'increments complexity' : (source) ->
+        'increments complexity': (source) ->
             complexity = getComplexity(source)
             assert.equal(complexity, 2)
 
-    'Try / Catch blocks' :
 
-        topic : """
+    'Try / Catch blocks':
+        topic: """
             x = () ->
               try
                 divide("byZero")
@@ -168,12 +160,12 @@ vows.describe('cyclomatic complexity').addBatch({
                 log("uh oh")
             """
 
-        'increments complexity' : (source) ->
+        'increments complexity': (source) ->
             assert.equal(getComplexity(source), 2)
 
-    'Try / Catch / Finally blocks' :
 
-        topic : """
+    'Try / Catch / Finally blocks':
+        topic: """
             x = () ->
               try
                 divide("byZero")
@@ -183,12 +175,12 @@ vows.describe('cyclomatic complexity').addBatch({
                 clean()
             """
 
-        'increments complexity' : (source) ->
+        'increments complexity': (source) ->
             assert.equal(getComplexity(source), 2)
 
-    'Switch statements without an else' :
 
-        topic : '''
+    'Switch statements without an else':
+        topic: '''
             x = () ->
               switch a
                 when "b" then "b"
@@ -196,13 +188,13 @@ vows.describe('cyclomatic complexity').addBatch({
                 when "d" then "d"
             '''
 
-        'increase complexity by the number of cases' : (source) ->
+        'increase complexity by the number of cases': (source) ->
             complexity = getComplexity(source)
             assert.equal(complexity, 4)
 
-    'Switch statements with an else' :
 
-        topic : '''
+    'Switch statements with an else':
+        topic: '''
             x = () ->
               switch a
                 when "b" then "b"
@@ -211,29 +203,29 @@ vows.describe('cyclomatic complexity').addBatch({
                 else "e"
             '''
 
-        'increase complexity by the number of cases' : (source) ->
+        'increase complexity by the number of cases': (source) ->
             complexity = getComplexity(source)
             assert.equal(complexity, 4)
 
-    'And operators' :
 
-        topic : 'x = () -> $ and window'
+    'And operators':
+        topic: 'x = () -> $ and window'
 
-        'increments the complexity' : (source) ->
+        'increments the complexity': (source) ->
             complexity = getComplexity(source)
             assert.equal(complexity, 2)
 
-    'Or operators' :
+    'Or operators':
 
-        topic : 'x = () -> $ or window'
+        topic: 'x = () -> $ or window'
 
-        'increments the complexity' : (source) ->
+        'increments the complexity': (source) ->
             complexity = getComplexity(source)
             assert.equal(complexity, 2)
 
-    'A complicated example' :
 
-        topic : """
+    'A complicated example':
+        topic: """
             x = () ->
               if a and b and c or d and c or e
                 if x or d or e of f
@@ -246,8 +238,8 @@ vows.describe('cyclomatic complexity').addBatch({
               return false
             """
 
-        'works' : (source) ->
-            config = {cyclomatic_complexity : {level: 'error'}}
+        'works': (source) ->
+            config = {cyclomatic_complexity: {level: 'error'}}
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 1)

@@ -6,22 +6,21 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 
 vows.describe('plusplus').addBatch({
 
-    'The increment and decrement operators' :
-
-        topic : '''
+    'The increment and decrement operators':
+        topic: '''
             y++
             ++y
             x--
             --x
             '''
 
-        'are permitted by default' : (source) ->
+        'are permitted by default': (source) ->
             errors = coffeelint.lint(source)
             assert.isArray(errors)
             assert.isEmpty(errors)
 
-        'can be forbidden' : (source) ->
-            errors = coffeelint.lint(source, {no_plusplus: {'level':'error'}})
+        'can be forbidden': (source) ->
+            errors = coffeelint.lint(source, {no_plusplus: {'level': 'error'}})
             assert.isArray(errors)
             assert.lengthOf(errors, 4)
             error = errors[0]

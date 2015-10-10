@@ -5,9 +5,9 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 
 vows.describe('stand alone @').addBatch({
 
-    'Stand alone @' :
+    'Stand alone @':
 
-        topic : () ->
+        topic: () ->
             """
             @alright
             @   .error
@@ -20,13 +20,13 @@ vows.describe('stand alone @').addBatch({
             @:: #notok
             """
 
-        'are allowed by default' : (source) ->
+        'are allowed by default': (source) ->
             errors = coffeelint.lint(source)
             assert.isArray(errors)
             assert.isEmpty(errors)
 
-        'can be forbidden' : (source) ->
-            config = {no_stand_alone_at : {level:'error'}}
+        'can be forbidden': (source) ->
+            config = {no_stand_alone_at: {level: 'error'}}
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 4)
