@@ -244,10 +244,10 @@ vows.describe('commandline').addBatch({
 
         'is minimal' : (error, config) ->
             expected = fs.readFileSync(
-                path.join(__dirname, '..', 'coffeelint.json')
-            ).toString()
+                path.join(__dirname, '..', 'coffeelint.json'), 'utf-8'
+            )
 
-            assert.equal(config, expected)
+            assert.deepEqual(JSON.parse(config), JSON.parse(expected))
 
     'does not fail on warnings' :
 
