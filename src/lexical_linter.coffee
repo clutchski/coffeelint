@@ -42,13 +42,8 @@ module.exports = class LexicalLinter extends BaseLinter
 
     # Return an error if the given token fails a lint check, false otherwise.
     lintToken: (token) ->
-        [type, value, lineNumber] = token
+        [type, value, { first_line: lineNumber }] = token
 
-        if typeof lineNumber is "object"
-            if type is 'OUTDENT' or type is 'INDENT'
-                lineNumber = lineNumber.last_line
-            else
-                lineNumber = lineNumber.first_line
         @tokensByLine[lineNumber] ?= []
         @tokensByLine[lineNumber].push(token)
         # CoffeeScript loses line numbers of interpolations and multi-line
