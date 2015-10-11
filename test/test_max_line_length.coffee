@@ -62,7 +62,7 @@ vows.describe(RULE).addBatch({
             source += 'http://testing.example.com/really-really-long-url-' +
                 'that-shouldnt-have-to-be-split-to-avoid-the-lint-error'
 
-        '': (source) ->
+        'long urls are ignored': (source) ->
             errors = coffeelint.lint(source, {}, true)
             assert.isEmpty(errors)
 
