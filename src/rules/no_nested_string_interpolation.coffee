@@ -17,7 +17,7 @@ module.exports = class NoNestedStringInterpolation
             </pre>
             '''
 
-    tokens: [ 'STRING_START', 'STRING_END' ]
+    tokens: ['STRING_START', 'STRING_END']
 
     constructor: ->
         @startedStrings = 0

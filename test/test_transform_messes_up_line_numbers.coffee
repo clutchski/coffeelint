@@ -20,7 +20,7 @@ vows.describe('transform_messes_up_line_numbers').addBatch({
         'will warn if the number of lines changes': (source) ->
             config =
                 coffeelint:
-                    transforms: [ prefix, cloud ]
+                    transforms: [prefix, cloud]
 
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 1)
@@ -29,7 +29,7 @@ vows.describe('transform_messes_up_line_numbers').addBatch({
         "will not warn if the number of lines doesn't change": (source) ->
             config =
                 coffeelint:
-                    transforms: [ cloud ]
+                    transforms: [cloud]
 
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 0)

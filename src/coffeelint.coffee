@@ -153,7 +153,7 @@ coffeelint.registerRule = (RuleConstructor, ruleName = undefined) ->
 
     e 'Rule defaults require a message' unless p.rule.message?
     e 'Rule defaults require a description' unless p.rule.description?
-    unless p.rule.level in [ 'ignore', 'warn', 'error' ]
+    unless p.rule.level in ['ignore', 'warn', 'error']
         e "Default level must be 'ignore', 'warn', or 'error'"
 
     if typeof p.lintToken is 'function'
@@ -281,7 +281,7 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
     # indicates a syntax error and would not work well as a stand alone rule.
     #
     # Why can't JSON just support comments?
-    for name of userConfig when name not in [ 'coffeescript_error', '_comment' ]
+    for name of userConfig when name not in ['coffeescript_error', '_comment']
         unless _rules[name]?
             # TODO: Figure out a good way to notify the user that they have
             # configured a rule that doesn't exist. throwing an Error was

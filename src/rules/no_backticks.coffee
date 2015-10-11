@@ -13,7 +13,7 @@ module.exports = class NoBackticks
             This rule is enabled by default.
             '''
 
-    tokens: [ 'JS' ]
+    tokens: ['JS']
 
     lintToken: (token, tokenApi) ->
         true

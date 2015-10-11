@@ -22,7 +22,7 @@ module.exports = class ArrowSpacing
             </pre>
              '''
 
-    tokens: [ '->', '=>' ]
+    tokens: ['->', '=>']
 
     lintToken: (token, tokenApi) ->
         # Throw error unless the following happens.

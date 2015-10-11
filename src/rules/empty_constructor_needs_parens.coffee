@@ -8,7 +8,7 @@ module.exports = class EmptyConstructorNeedsParens
             Requires constructors with no parameters to include the parens
             '''
 
-    tokens: [ 'UNARY' ]
+    tokens: ['UNARY']
 
     # Return an error if the given indentation token is not correct.
     lintToken: (token, tokenApi) ->

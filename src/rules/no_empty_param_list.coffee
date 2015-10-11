@@ -17,9 +17,8 @@ module.exports = class NoEmptyParamList
             Empty parameter lists are permitted by default.
             '''
 
-    tokens: [ 'PARAM_START' ]
+    tokens: ['PARAM_START']
 
     lintToken: (token, tokenApi) ->
         nextType = tokenApi.peek()[0]
         return nextType is 'PARAM_END'
-

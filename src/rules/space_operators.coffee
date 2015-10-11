@@ -19,15 +19,15 @@ module.exports = class SpaceOperators
     lintToken: ([type], tokenApi) ->
 
         # These just keep track of state
-        if type in [ 'CALL_START', 'CALL_END' ]
+        if type in ['CALL_START', 'CALL_END']
             @trackCall arguments...
             return
 
-        if type in [ 'STRING_START', 'STRING_END' ]
+        if type in ['STRING_START', 'STRING_END']
             return @trackParens arguments...
 
         # These may return errors
-        if type in [ '+', '-' ]
+        if type in ['+', '-']
             @lintPlus arguments...
         else
             @lintMath arguments...
