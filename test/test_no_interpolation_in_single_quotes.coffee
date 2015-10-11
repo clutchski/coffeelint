@@ -19,7 +19,7 @@ vows.describe(RULE).addBatch({
             assert.isEmpty(errors)
 
         'interpolation in single quotes can be forbidden': (source) ->
-            config = {no_interpolation_in_single_quotes: {level: 'error'}}
+            config = no_interpolation_in_single_quotes: { level: 'error' }
             errors = coffeelint.lint(source, config)
             assert.lengthOf(errors, 1)
             error = errors[0]
@@ -34,7 +34,7 @@ vows.describe(RULE).addBatch({
             '''
 
         'interpolation in double quotes is always allowed': (source) ->
-            config = {no_interpolation_in_single_quotes: {level: 'error'}}
+            config = no_interpolation_in_single_quotes: { level: 'error' }
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.isEmpty(errors)

@@ -7,7 +7,7 @@ RULE = 'cyclomatic_complexity'
 
 # Return the cyclomatic complexity of a code snippet with one function.
 getComplexity = (source) ->
-    config = {cyclomatic_complexity: {level: 'error', value: 0}}
+    config = cyclomatic_complexity: { level: 'error', value: 0 }
     errors = coffeelint.lint(source, config)
     assert.isNotEmpty(errors)
     assert.lengthOf(errors, 1)
@@ -33,7 +33,7 @@ vows.describe(RULE).addBatch({
             assert.isEmpty(errors)
 
         'can be enabled': (source) ->
-            config = {cyclomatic_complexity: {level: 'error'}}
+            config = cyclomatic_complexity: { level: 'error' }
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 1)
@@ -271,7 +271,7 @@ vows.describe(RULE).addBatch({
             '''
 
         'works': (source) ->
-            config = {cyclomatic_complexity: {level: 'error'}}
+            config = cyclomatic_complexity: { level: 'error' }
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 1)

@@ -36,7 +36,7 @@ vows.describe(RULE).addBatch({
                 'Nested string interpolation is forbidden')
 
         'can be permitted': (source) ->
-            config = {no_nested_string_interpolation: {level: 'ignore'}}
+            config = no_nested_string_interpolation: { level: 'ignore' }
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.isEmpty(errors)
@@ -53,7 +53,7 @@ vows.describe(RULE).addBatch({
             errors = coffeelint.lint(source)
             assert.isArray(errors)
             assert.lengthOf(errors, 4)
-            assert.equal(rule, RULE) for {rule} in errors
+            assert.equal(rule, RULE) for { rule } in errors
             assert.equal(errors[0].lineNumber, 1)
             assert.equal(errors[1].lineNumber, 2)
             assert.equal(errors[2].lineNumber, 3)

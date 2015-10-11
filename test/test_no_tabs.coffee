@@ -21,8 +21,7 @@ vows.describe(RULE).addBatch({
             '''
 
         'can be forbidden': (source) ->
-            config = {}
-            errors = coffeelint.lint(source, config)
+            errors = coffeelint.lint(source)
             assert.equal(errors.length, 4)
             error = errors[1]
             assert.equal(error.lineNumber, 2)
@@ -31,18 +30,18 @@ vows.describe(RULE).addBatch({
 
         'can be permitted': (source) ->
             config =
-                no_tabs: {level: 'ignore'}
-                indentation: {level: 'error', value: 1}
+                no_tabs: { level: 'ignore' }
+                indentation: { level: 'error', value: 1 }
+
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 0)
 
         'are forbidden by default': (source) ->
-            config =
-                indentation: {level: 'error', value: 1}
+            config = indentation: { level: 'error', value: 1 }
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.equal(errors.length, 2)
-            assert.equal(rule, RULE) for {rule} in errors
+            assert.equal(rule, RULE) for { rule } in errors
 
         'are allowed in strings': () ->
             source = "x = () -> '\t'"

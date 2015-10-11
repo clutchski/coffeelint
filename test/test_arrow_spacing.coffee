@@ -124,7 +124,7 @@ vows.describe(RULE).addBatch({
             assert.equal(errors[4].lineNumber, 14)
             assert.equal(errors[5].lineNumber, 16)
             assert.equal(errors[6].lineNumber, 16)
-            assert.equal(rule, RULE) for {rule} in errors
+            assert.equal(rule, RULE) for { rule } in errors
             assert.lengthOf(errors, 7)
 
         'when spacing is not required around arrow operator': (source) ->

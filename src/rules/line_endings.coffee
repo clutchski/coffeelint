@@ -23,6 +23,6 @@ module.exports = class LineEndings
         else
             throw new Error("unknown line ending type: #{ending}")
         if not valid
-            return {context: "Expected #{ending}"}
+            return { context: "Expected #{ending}" }
         else
             return null

@@ -19,7 +19,7 @@ module.exports = class ErrorReport
             for error in errors
                 errorCount++ if error.level is 'error'
                 warningCount++ if error.level is 'warn'
-        return {errorCount, warningCount, pathCount}
+        return { errorCount, warningCount, pathCount }
 
     getErrors: (path) ->
         return @paths[path]

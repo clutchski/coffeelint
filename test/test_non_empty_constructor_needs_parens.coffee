@@ -36,12 +36,13 @@ vows.describe(RULE).addBatch({
             config =
                 non_empty_constructor_needs_parens:
                     level: 'error'
+
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 4)
             assert.equal(errors[0].lineNumber, 6)
             assert.equal(errors[1].lineNumber, 7)
             assert.equal(errors[2].lineNumber, 9)
             assert.equal(errors[3].lineNumber, 10)
-            assert.equal(rule, RULE) for {rule} in errors
+            assert.equal(rule, RULE) for { rule } in errors
 
 }).export(module)

@@ -15,9 +15,9 @@ module.exports = class NoDebugger
 
     lintToken: (token, tokenApi) ->
         if token[0] is 'DEBUGGER'
-            return {context: "found '#{token[0]}'"}
+            return { context: "found '#{token[0]}'" }
 
         if tokenApi.config[@rule.name]?.console
             if token[1] is 'console' and tokenApi.peek(1)?[0] is '.'
                 method = tokenApi.peek(2)
-                return {context: "found 'console.#{method[1]}'"}
+                return { context: "found 'console.#{method[1]}'" }

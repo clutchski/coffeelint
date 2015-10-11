@@ -14,7 +14,7 @@ vows.describe(RULE).addBatch({
             '''
 
         'single quotes should always be allowed': (source) ->
-            config = {no_unnecessary_double_quotes: {level: 'error'}}
+            config = { no_unnecessary_double_quotes: { level: 'error' } }
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.isEmpty(errors)
@@ -32,7 +32,7 @@ vows.describe(RULE).addBatch({
             assert.isEmpty(errors)
 
         'double quotes can be forbidden': (source) ->
-            config = {no_unnecessary_double_quotes: {level: 'error'}}
+            config = { no_unnecessary_double_quotes: { level: 'error' } }
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 1)
@@ -53,7 +53,7 @@ vows.describe(RULE).addBatch({
             '''
 
         'string interpolation should always be allowed': (source) ->
-            config = {no_unnecessary_double_quotes: {level: 'error'}}
+            config = { no_unnecessary_double_quotes: { level: 'error' } }
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.isEmpty(errors)
@@ -68,7 +68,7 @@ vows.describe(RULE).addBatch({
             '''
 
         'block strings with double quotes are not allowed': (source) ->
-            config = {no_unnecessary_double_quotes: {level: 'error'}}
+            config = { no_unnecessary_double_quotes: { level: 'error' } }
             errors = coffeelint.lint(source, config)
             assert.lengthOf(errors, 1)
             error = errors[0]
@@ -88,7 +88,7 @@ vows.describe(RULE).addBatch({
             '''
 
         'block strings with useful content should be allowed': (source) ->
-            config = {no_unnecessary_double_quotes: {level: 'error'}}
+            config = { no_unnecessary_double_quotes: { level: 'error' } }
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.isEmpty(errors)
@@ -103,7 +103,7 @@ vows.describe(RULE).addBatch({
             """
 
         'block strings with single quotes should be allowed': (source) ->
-            config = {no_unnecessary_double_quotes: {level: 'error'}}
+            config = { no_unnecessary_double_quotes: { level: 'error' } }
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.isEmpty(errors)
@@ -116,7 +116,7 @@ vows.describe(RULE).addBatch({
             '''
 
         'double quotes should not be allowed': (source) ->
-            config = {no_unnecessary_double_quotes: {level: 'error'}}
+            config = { no_unnecessary_double_quotes: { level: 'error' } }
             errors = coffeelint.lint(source, config)
             assert.lengthOf(errors, 2)
             error = errors[0]
@@ -134,7 +134,7 @@ vows.describe(RULE).addBatch({
             '''
 
         'should not error at the start of the file #306': (source) ->
-            config = {no_unnecessary_double_quotes: {level: 'error'}}
+            config = { no_unnecessary_double_quotes: { level: 'error' } }
             # Without the fix for 306 this throws an Error.
             errors = coffeelint.lint(source, config)
             assert.lengthOf(errors, 1)
@@ -149,7 +149,7 @@ vows.describe(RULE).addBatch({
             '''
 
         'should not generate an error': (source) ->
-            config = {no_unnecessary_double_quotes: {level: 'error'}}
+            config = { no_unnecessary_double_quotes: { level: 'error' } }
             errors = coffeelint.lint(source, config)
             assert.lengthOf(errors, 0)
 
@@ -166,7 +166,7 @@ vows.describe(RULE).addBatch({
             '''
 
         'should not generate an error': (source) ->
-            config = {no_unnecessary_double_quotes: {level: 'error'}}
+            config = { no_unnecessary_double_quotes: { level: 'error' } }
             errors = coffeelint.lint(source, config)
             assert.lengthOf(errors, 0)
 

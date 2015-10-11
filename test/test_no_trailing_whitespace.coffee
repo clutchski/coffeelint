@@ -23,7 +23,7 @@ vows.describe(RULE).addBatch({
             assert.equal(error.rule, RULE)
 
         'can be permitted': (source) ->
-            config = {no_trailing_whitespace: {level: 'ignore'}}
+            config = no_trailing_whitespace: { level: 'ignore' }
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 0)
 
@@ -43,14 +43,14 @@ vows.describe(RULE).addBatch({
             assert.equal(error.rule, RULE)
 
         'can be permitted': (source) ->
-            config = {no_trailing_whitespace: {allowed_in_comments: true}}
+            config = no_trailing_whitespace: { allowed_in_comments: true }
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 0)
 
     'a # in a string':
         topic: "x = 'some # string'   "
         'does not confuse trailing_whitespace': (source) ->
-            config = {no_trailing_whitespace: {allowed_in_comments: true}}
+            config = no_trailing_whitespace: { allowed_in_comments: true }
             errors = coffeelint.lint(source, config)
             assert.isNotEmpty(errors)
 
@@ -70,7 +70,7 @@ vows.describe(RULE).addBatch({
             assert.equal(error.rule, RULE)
 
         'can be permitted': (source) ->
-            config = {no_trailing_whitespace: {allowed_in_comments: true}}
+            config = no_trailing_whitespace: { allowed_in_comments: true }
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 0)
 
@@ -85,7 +85,9 @@ vows.describe(RULE).addBatch({
             assert.equal(errors.length, 0)
 
         'can be forbidden': (source) ->
-            config = {no_trailing_whitespace: {allowed_in_empty_lines: false}}
+            config =
+                no_trailing_whitespace:
+                    allowed_in_empty_lines: false
 
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 1)
@@ -102,7 +104,7 @@ vows.describe(RULE).addBatch({
             '''
 
         'are forbidden as well': (source) ->
-            errors = coffeelint.lint(source, {})
+            errors = coffeelint.lint(source)
             assert.equal(errors.length, 1)
 
     'Windows line endings':

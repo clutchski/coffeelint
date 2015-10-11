@@ -3,7 +3,7 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
-configError = {prefer_english_operator: {level: 'error'}}
+configError = { prefer_english_operator: { level: 'error' } }
 
 RULE = 'prefer_english_operator'
 
@@ -36,11 +36,10 @@ vows.describe(RULE).addBatch({
             assert.equal(result.length, 0)
 
         'can be configred at an independent level': ->
-
-            configError = {prefer_english_operator: {
-                level: 'error'
-                doubleNotLevel: 'warn'
-            }}
+            configError =
+                prefer_english_operator:
+                    level: 'error'
+                    doubleNotLevel: 'warn'
 
             result = coffeelint.lint('x = !!y', configError)
             assert.equal(result.length, 1)

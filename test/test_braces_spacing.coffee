@@ -53,9 +53,9 @@ configs =
     oneSpace:
         braces_spacing: { level: 'error', spaces: 1 }
     zeroEmptyObjectSpaces:
-        braces_spacing: {level: 'error', empty_object_spaces: 0}
+        braces_spacing: { level: 'error', empty_object_spaces: 0 }
     zeroSpaces:
-        braces_spacing: {level: 'error', spaces: 0}
+        braces_spacing: { level: 'error', spaces: 0 }
 
 shouldPass = (source, config = {}) ->
     topic: coffeelint.lint(source, config)

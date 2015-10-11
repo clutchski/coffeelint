@@ -16,4 +16,4 @@ module.exports = class NoPlusPlus
     tokens: [ '++', '--' ]
 
     lintToken: (token, tokenApi) ->
-        return {context: "found '#{token[0]}'"}
+        return { context: "found '#{token[0]}'" }

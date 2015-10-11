@@ -14,7 +14,7 @@ vows.describe(RULE).addBatch({
             '''
 
         'should not error': (source) ->
-            config = {spacing_after_comma: {level: 'warn'}}
+            config = { spacing_after_comma: { level: 'warn' } }
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 0)
 
@@ -30,7 +30,7 @@ vows.describe(RULE).addBatch({
             assert.equal(errors.length, 0)
 
         'can be forbidden': (source) ->
-            config = {spacing_after_comma: {level: 'warn'}}
+            config = { spacing_after_comma: { level: 'warn' } }
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 1)
             error = errors[0]
@@ -49,7 +49,7 @@ vows.describe(RULE).addBatch({
             '''
 
         'should not issue warns': (source) ->
-            config = {spacing_after_comma: {level: 'warn'}}
+            config = { spacing_after_comma: { level: 'warn' } }
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 0)
 

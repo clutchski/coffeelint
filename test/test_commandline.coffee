@@ -6,15 +6,14 @@ path = require 'path'
 fs = require 'fs'
 vows = require 'vows'
 assert = require 'assert'
-{spawn, exec} = require 'child_process'
+{ spawn, exec } = require 'child_process'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
 
 # The path to the command line tool.
 coffeelintPath = path.join('..', 'bin', 'coffeelint')
 
-execOptions =
-    cwd: __dirname
+execOptions = cwd: __dirname
 # Run the coffeelint command line with the given
 # args. Callback will be called with (error, stdout,
 # stderr)

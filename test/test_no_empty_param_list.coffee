@@ -19,7 +19,7 @@ vows.describe(RULE).addBatch({
             assert.isEmpty(errors)
 
         'can be forbidden': (source) ->
-            config = {no_empty_param_list: {level: 'error'}}
+            config = no_empty_param_list: { level: 'error' }
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 1)

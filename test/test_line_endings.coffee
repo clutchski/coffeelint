@@ -19,7 +19,7 @@ vows.describe(RULE).addBatch({
             assert.isEmpty(errors)
 
         'can be forbidden': (source) ->
-            config = {line_endings: {level: 'error', value: 'windows'}}
+            config = line_endings: { level: 'error', value: 'windows' }
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 1)
@@ -40,7 +40,7 @@ vows.describe(RULE).addBatch({
             assert.isEmpty(errors)
 
         'can be forbidden': (source) ->
-            config = {line_endings: {level: 'error', value: 'unix'}}
+            config = line_endings: { level: 'error', value: 'unix' }
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 1)
@@ -57,8 +57,7 @@ vows.describe(RULE).addBatch({
             '''
 
         'throw errors': (source) ->
-            config =
-                line_endings: {level: 'error', value: 'osx'}
+            config = line_endings: { level: 'error', value: 'osx' }
             assert.throws () ->
                 coffeelint.lint(source, config)
 

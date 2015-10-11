@@ -91,15 +91,15 @@ vows.describe(RULE).addBatch({
             '''
 
         'are permitted by default': (source) ->
-            config = {no_nested_string_interpolation: {level: 'ignore'}}
+            config = { no_nested_string_interpolation: { level: 'ignore' } }
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 
         'can be forbidden': (source) ->
-            config = {
-                space_operators: {level: 'error'},
-                no_nested_string_interpolation: {level: 'ignore'}
-            }
+            config =
+                space_operators: { level: 'error' },
+                no_nested_string_interpolation: { level: 'ignore' }
+
             errors = coffeelint.lint(source, config)
             assert.lengthOf(errors, source.split('\n').length)
             error = errors[0]
@@ -170,10 +170,10 @@ vows.describe(RULE).addBatch({
             '''
 
         'are permitted': (source) ->
-            config = {
-                space_operators: {level: 'error'},
-                no_nested_string_interpolation: {level: 'ignore'}
-            }
+            config =
+                space_operators: { level: 'error' },
+                no_nested_string_interpolation: { level: 'ignore' }
+
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 
@@ -189,12 +189,12 @@ vows.describe(RULE).addBatch({
             assert.isEmpty(errors)
 
         'can be forbidden': (source) ->
-            config = {
-                space_operators: {level: 'error'},
-                no_nested_string_interpolation: {level: 'ignore'}
-            }
+            config =
+                space_operators: { level: 'error' },
+                no_nested_string_interpolation: { level: 'ignore' }
+
             errors = coffeelint.lint(source, config)
             assert.lengthOf(errors, 2)
-            assert.equal(rule, RULE) for {rule} in errors
+            assert.equal(rule, RULE) for { rule } in errors
 
 }).export(module)

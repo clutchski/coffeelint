@@ -25,7 +25,7 @@ vows.describe(RULE).addBatch({
             assert.equal(error.rule, RULE)
 
         'can be permitted': (source) ->
-            config = {no_throwing_strings: {level: 'ignore'}}
+            config = no_throwing_strings: { level: 'ignore' }
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 

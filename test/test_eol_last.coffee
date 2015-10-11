@@ -3,7 +3,7 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
-configError = {eol_last: {level: 'error'}}
+configError = eol_last: { level: 'error' }
 
 RULE = 'eol_last'
 

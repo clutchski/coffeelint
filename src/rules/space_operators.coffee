@@ -48,14 +48,14 @@ module.exports = class SpaceOperators
         if (isUnary and token.spaced?) or
                 (not isUnary and not token.newLine and
                 (not token.spaced or (p and not p.spaced)))
-            return {context: token[1]}
+            return { context: token[1] }
         else
             null
 
     lintMath: (token, tokenApi) ->
         p = tokenApi.peek(-1)
         if not token.newLine and (not token.spaced or (p and not p.spaced))
-            return {context: token[1]}
+            return { context: token[1] }
         else
             null
 
