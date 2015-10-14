@@ -17,7 +17,7 @@ module.exports = class DuplicateKey
     constructor: ->
         @braceScopes = []   # A stack tracking keys defined in nexted scopes.
 
-    lintToken : ([type], tokenApi) ->
+    lintToken: ([type], tokenApi) ->
 
         if type in [ '{', '}' ]
             @lintBrace arguments...
@@ -26,7 +26,7 @@ module.exports = class DuplicateKey
         if type is 'IDENTIFIER'
             @lintIdentifier arguments...
 
-    lintIdentifier : (token, tokenApi) ->
+    lintIdentifier: (token, tokenApi) ->
         key = token[1]
 
         # Class names might not be in a scope
@@ -50,7 +50,7 @@ module.exports = class DuplicateKey
             @currentScope[key] = token
             null
 
-    lintBrace : (token) ->
+    lintBrace: (token) ->
         if token[0] is '{'
             @braceScopes.push @currentScope if @currentScope?
             @currentScope = {}

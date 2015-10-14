@@ -1,11 +1,11 @@
 module.exports = class RawReporter
 
-    constructor : (@errorReport, options = {}) ->
+    constructor: (@errorReport, options = {}) ->
 
-    print : (message) ->
+    print: (message) ->
         # coffeelint: disable=no_debugger
         console.log message
         # coffeelint: enable=no_debugger
 
-    publish : () ->
+    publish: () ->
         @print JSON.stringify(@errorReport.paths, undefined, 2)

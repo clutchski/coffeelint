@@ -12,9 +12,9 @@ class LineApi
         #   classIndents: the number of indents within a class
         @context = {
             class: {
-                inClass : false
-                lastUnemptyLineInClass : null
-                classIndents : null
+                inClass: false
+                lastUnemptyLineInClass: null
+                classIndents: null
             }
         }
 
@@ -23,7 +23,7 @@ class LineApi
     isLiterate: -> @literate
 
     # maintain the contextual information for class-related stuff
-    maintainClassContext : (line) ->
+    maintainClassContext: (line) ->
         if @context.class.inClass
             if @lineHasToken 'INDENT'
                 @context.class.classIndents++
@@ -45,12 +45,12 @@ class LineApi
 
         null
 
-    isLastLine : () ->
+    isLastLine: () ->
         return @lineNumber is @lineCount - 1
 
     # Return true if the given line actually has tokens.
     # Optional parameter to check for a specific token type and line number.
-    lineHasToken : (tokenType = null, lineNumber = null) ->
+    lineHasToken: (tokenType = null, lineNumber = null) ->
         lineNumber = lineNumber ? @lineNumber
         unless tokenType?
             return @tokensByLine[lineNumber]?
@@ -62,7 +62,7 @@ class LineApi
             return false
 
     # Return tokens for the given line number.
-    getLineTokens : () ->
+    getLineTokens: () ->
         @tokensByLine[@lineNumber] || []
 
 
@@ -79,20 +79,20 @@ module.exports = class LineLinter extends BaseLinter
     # This is exposed here so coffeelint.coffee can reuse it
     @configStatement: configStatement
 
-    constructor : (source, config, rules, tokensByLine, literate = false) ->
+    constructor: (source, config, rules, tokensByLine, literate = false) ->
         super source, config, rules
 
         @lineApi = new LineApi source, config, tokensByLine, literate
 
         # Store suppressions in the form of { line #: type }
         @block_config =
-            enable : {}
-            disable : {}
+            enable: {}
+            disable: {}
 
     acceptRule: (rule) ->
         return typeof rule.lintLine is 'function'
 
-    lint : () ->
+    lint: () ->
         errors = []
         for line, lineNumber in @lineApi.lines
             @lineApi.lineNumber = @lineNumber = lineNumber
@@ -104,7 +104,7 @@ module.exports = class LineLinter extends BaseLinter
         errors
 
     # Return an error if the line contained failed a rule, null otherwise.
-    lintLine : (line) ->
+    lintLine: (line) ->
 
         # Multiple rules might run against the same line to build context.
         # Every every rule should run even if something has already produced an
@@ -115,7 +115,7 @@ module.exports = class LineLinter extends BaseLinter
             errors.push v if v?
         errors
 
-    collectInlineConfig : (line) ->
+    collectInlineConfig: (line) ->
         # Check for block config statements enable and disable
         result = configStatement.exec(line)
         if result?

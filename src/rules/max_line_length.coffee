@@ -1,10 +1,9 @@
-
 regexes =
     literateComment: ///
         ^
         \#\s # This is prefixed on MarkDown lines.
     ///
-    longUrlComment : ///
+    longUrlComment: ///
       ^\s*\# # indentation, up to comment
       \s*
       http[^\s]+$ # Link that takes up the rest of the line without spaces.
@@ -15,9 +14,9 @@ module.exports = class MaxLineLength
     rule:
         name: 'max_line_length'
         value: 80
-        level : 'error'
+        level: 'error'
         limitComments: true
-        message : 'Line exceeds maximum allowed length'
+        message: 'Line exceeds maximum allowed length'
         description: """
             This rule imposes a maximum line length on your code. <a
             href="http://www.python.org/dev/peps/pep-0008/">Python's style

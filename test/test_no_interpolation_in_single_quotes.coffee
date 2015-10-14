@@ -12,13 +12,13 @@ vows.describe('no_interpolation_in_single_quotes').addBatch({
             foo = '#{inter}foo#{polation}'
             '''
 
-        'interpolation in single quotes is allowed by default' : (source) ->
+        'interpolation in single quotes is allowed by default': (source) ->
             errors = coffeelint.lint(source)
             assert.isArray(errors)
             assert.isEmpty(errors)
 
-        'interpolation in single quotes can be forbidden' : (source) ->
-            config = {no_interpolation_in_single_quotes : {level:'error'}}
+        'interpolation in single quotes can be forbidden': (source) ->
+            config = {no_interpolation_in_single_quotes: {level: 'error'}}
             errors = coffeelint.lint(source, config)
             assert.lengthOf(errors, 1)
             error = errors[0]
@@ -33,8 +33,8 @@ vows.describe('no_interpolation_in_single_quotes').addBatch({
             bar = "ive\#{escaped}"
             '''
 
-        'interpolation in double quotes is always allowed' : (source) ->
-            config = {no_interpolation_in_single_quotes : {level:'error'}}
+        'interpolation in double quotes is always allowed': (source) ->
+            config = {no_interpolation_in_single_quotes: {level: 'error'}}
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.isEmpty(errors)

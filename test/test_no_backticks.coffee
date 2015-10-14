@@ -5,11 +5,11 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 
 vows.describe('backticks').addBatch({
 
-    'Backticks' :
+    'Backticks':
 
-        topic : "`with(document) alert(height);`"
+        topic: "`with(document) alert(height);`"
 
-        'are forbidden by default' : (source) ->
+        'are forbidden by default': (source) ->
             errors = coffeelint.lint(source)
             assert.isArray(errors)
             assert.lengthOf(errors, 1)
@@ -18,8 +18,8 @@ vows.describe('backticks').addBatch({
             assert.equal(error.lineNumber, 1)
             assert.equal(error.message, "Backticks are forbidden")
 
-        'can be permitted' : (source) ->
-            config = {no_backticks : {level:'ignore'}}
+        'can be permitted': (source) ->
+            config = {no_backticks: {level: 'ignore'}}
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.isEmpty(errors)

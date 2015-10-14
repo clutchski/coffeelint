@@ -5,20 +5,20 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 
 vows.describe('params').addBatch({
 
-    'Empty param list' :
+    'Empty param list':
 
-        topic : () ->
+        topic: () ->
             '''
             blah = () ->
             '''
 
-        'are allowed by default' : (source) ->
+        'are allowed by default': (source) ->
             errors = coffeelint.lint(source)
             assert.isArray(errors)
             assert.isEmpty(errors)
 
-        'can be forbidden' : (source) ->
-            config = {no_empty_param_list : {level:'error'}}
+        'can be forbidden': (source) ->
+            config = {no_empty_param_list: {level: 'error'}}
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 1)

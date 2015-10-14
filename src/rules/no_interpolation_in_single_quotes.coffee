@@ -22,7 +22,7 @@ module.exports = class NoInterpolationInSingleQuotes
 
     tokens: [ 'STRING' ]
 
-    lintToken : (token, tokenApi) ->
+    lintToken: (token, tokenApi) ->
         tokenValue = token[1]
         hasInterpolation = tokenValue.match(/^\'.*#\{[^}]+\}.*\'$/)
         return hasInterpolation

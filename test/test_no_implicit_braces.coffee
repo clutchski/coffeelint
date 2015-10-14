@@ -5,23 +5,23 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 
 vows.describe('no_implicit_braces').addBatch({
 
-    'Implicit braces' :
+    'Implicit braces':
 
-        topic : () ->
+        topic: () ->
             '''
-            a = 1:2
+            a = 1: 2
             y =
-              'a':'b'
+              'a': 'b'
               3:4
             '''
 
-        'are allowed by default' : (source) ->
+        'are allowed by default': (source) ->
             errors = coffeelint.lint(source)
             assert.isArray(errors)
             assert.isEmpty(errors)
 
-        'can be forbidden' : (source) ->
-            config = {no_implicit_braces : {level:'error'}}
+        'can be forbidden': (source) ->
+            config = {no_implicit_braces: {level: 'error'}}
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 2)
@@ -30,7 +30,7 @@ vows.describe('no_implicit_braces').addBatch({
             assert.equal(error.message, 'Implicit braces are forbidden')
             assert.equal(error.rule, 'no_implicit_braces')
 
-    'Implicit braces strict' :
+    'Implicit braces strict':
         topic: """
             foo =
               bar:
@@ -40,7 +40,7 @@ vows.describe('no_implicit_braces').addBatch({
         """
 
         "blocks all implicit braces by default": (source) ->
-            config = {no_implicit_braces : {level:'error'}}
+            config = {no_implicit_braces: {level: 'error'}}
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 2)
@@ -48,16 +48,15 @@ vows.describe('no_implicit_braces').addBatch({
 
         "allows braces at the end of lines when strict is false": (source) ->
             config =
-                no_implicit_braces :
+                no_implicit_braces:
                     level: 'error'
                     strict: false
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.isEmpty(errors)
 
-    'Implicit braces in class definitions' :
-
-        topic : () ->
+    'Implicit braces in class definitions':
+        topic: () ->
             '''
             class Animal
               walk: ->
@@ -72,18 +71,18 @@ vows.describe('no_implicit_braces').addBatch({
               constructor: (@options) ->
 
             x = class
-              m : -> 123
+              m: -> 123
 
             y = class extends x
-              m : -> 456
+              m: -> 456
 
             z = class
 
             r = class then 1:2
             '''
 
-        'are always ignored' : (source) ->
-            config = {no_implicit_braces : {level:'error'}}
+        'are always ignored': (source) ->
+            config = {no_implicit_braces: {level: 'error'}}
             errors = coffeelint.lint(source)
             assert.isArray(errors)
             assert.isEmpty(errors)

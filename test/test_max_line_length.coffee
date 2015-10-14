@@ -5,17 +5,15 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 
 
 vows.describe('linelength').addBatch({
-
-    'Maximum line length' :
-
-        topic : () ->
+    'Maximum line length':
+        topic: () ->
             # Every line generated here is a comment.
             line = (length) ->
                 return '# ' + new Array(length - 1).join('-')
             lengths = [50, 79, 80, 81, 100, 200]
             (line(l) for l in lengths).join("\n")
 
-        'defaults to 80' : (source) ->
+        'defaults to 80': (source) ->
             errors = coffeelint.lint(source)
             assert.equal(errors.length, 3)
             error = errors[0]
@@ -23,18 +21,18 @@ vows.describe('linelength').addBatch({
             assert.equal(error.message, "Line exceeds maximum allowed length")
             assert.equal(error.rule, 'max_line_length')
 
-        'is configurable' : (source) ->
+        'is configurable': (source) ->
             config =
-                max_line_length :
+                max_line_length:
                     value: 99
                     level: 'error'
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 2)
 
-        'is optional' : (source) ->
+        'is optional': (source) ->
             for length in [null, 0, false]
                 config =
-                    max_line_length :
+                    max_line_length:
                         value: length
                         level: 'ignore'
                 errors = coffeelint.lint(source, config)
@@ -54,7 +52,7 @@ vows.describe('linelength').addBatch({
             errors = coffeelint.lint(source, {})
             assert.isEmpty(errors)
 
-    'Literate Line Length' :
+    'Literate Line Length':
         topic: ->
             # This creates a line with 80 Xs.
             source = new Array(81).join('X') + "\n"

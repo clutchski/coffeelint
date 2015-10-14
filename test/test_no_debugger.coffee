@@ -11,23 +11,22 @@ vows.describe('no_debugger').addBatch({
         console.log("hello world")
         '''
 
-        'causes a warning when present' : (source) ->
+        'causes a warning when present': (source) ->
             errors = coffeelint.lint(source, {
                 no_debugger:
-                    'level':'error'
+                    'level': 'error'
                     "console": true
             })
             assert.isArray(errors)
             assert.lengthOf(errors, 1)
 
-    'The debugger statement' :
-
-        topic : ->
+    'The debugger statement':
+        topic: ->
             '''
             debugger
             '''
 
-        'causes a warning when present' : (source) ->
+        'causes a warning when present': (source) ->
             errors = coffeelint.lint(source)
             assert.isArray(errors)
             assert.lengthOf(errors, 1)
@@ -36,8 +35,8 @@ vows.describe('no_debugger').addBatch({
             assert.equal(error.lineNumber, 1)
             assert.equal(error.rule, 'no_debugger')
 
-        'can be set to error' : (source) ->
-            errors = coffeelint.lint(source, {no_debugger: {'level':'error'}})
+        'can be set to error': (source) ->
+            errors = coffeelint.lint(source, {no_debugger: {'level': 'error'}})
             assert.isArray(errors)
             assert.isArray(errors)
             assert.lengthOf(errors, 1)

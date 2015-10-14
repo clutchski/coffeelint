@@ -5,9 +5,9 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 
 vows.describe('parens').addBatch({
 
-    'Implicit parens' :
 
-        topic : () ->
+    'Implicit parens':
+        topic: () ->
             '''
             console.log 'implict parens'
             blah = (a, b) ->
@@ -25,13 +25,13 @@ vows.describe('parens').addBatch({
                 @c = a ? _defaultC
             '''
 
-        'are allowed by default' : (source) ->
+        'are allowed by default': (source) ->
             errors = coffeelint.lint(source)
             assert.isArray(errors)
             assert.isEmpty(errors)
 
-        'can be forbidden' : (source) ->
-            config = {no_implicit_parens : {level:'error'}}
+        'can be forbidden': (source) ->
+            config = {no_implicit_parens: {level: 'error'}}
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 2)
@@ -40,7 +40,7 @@ vows.describe('parens').addBatch({
             assert.equal(error.message, 'Implicit parens are forbidden')
             assert.equal(error.rule, 'no_implicit_parens')
 
-    'No implicit parens strict' :
+    'No implicit parens strict':
         topic: """
             blah = (a) ->
             blah
@@ -51,14 +51,14 @@ vows.describe('parens').addBatch({
             , 'b'
         """
 
-        'blocks all implicit parens by default' : (source) ->
-            config = {no_implicit_parens : {level:'error'}}
+        'blocks all implicit parens by default': (source) ->
+            config = {no_implicit_parens: {level: 'error'}}
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 2)
             assert.equal(rule, 'no_implicit_parens') for {rule} in errors
 
-        'allows parens at the end of lines when strict is false' : (source) ->
+        'allows parens at the end of lines when strict is false': (source) ->
             config =
                 no_implicit_parens:
                     level: 'error'
@@ -67,7 +67,7 @@ vows.describe('parens').addBatch({
             assert.isArray(errors)
             assert.isEmpty(errors)
 
-    'Nested no implicit parens strict' :
+    'Nested no implicit parens strict':
         topic: """
             blah = (a) ->
             blah
@@ -83,14 +83,14 @@ vows.describe('parens').addBatch({
             , 'd')
         """
 
-        'blocks all implicit parens by default' : (source) ->
-            config = {no_implicit_parens : {level:'error'}}
+        'blocks all implicit parens by default': (source) ->
+            config = {no_implicit_parens: {level: 'error'}}
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 4)
             assert.equal(rule, 'no_implicit_parens') for { rule } in errors
 
-        'allows parens at the end of lines when strict is false' : (source) ->
+        'allows parens at the end of lines when strict is false': (source) ->
             config =
                 no_implicit_parens:
                     level: 'error'
@@ -99,7 +99,7 @@ vows.describe('parens').addBatch({
             assert.isArray(errors)
             assert.isEmpty(errors)
 
-    'Test for when implicit parens are on the last line' :
+    'Test for when implicit parens are on the last line':
         topic: """
             class Something
               constructor: ->
@@ -115,8 +115,7 @@ vows.describe('parens').addBatch({
             , blah('c', 'd')
 
         """
-
-        'throws three errors when strict is true' : (source) ->
+        'throws three errors when strict is true': (source) ->
             config =
                 no_implicit_parens:
                     level: 'error'
@@ -128,7 +127,7 @@ vows.describe('parens').addBatch({
 
         # When implicit parens are separated out on multiple lines
         # and strict is set to false, do not return an error.
-        'throws two errors when strict is false' : (source) ->
+        'throws two errors when strict is false': (source) ->
             config =
                 no_implicit_parens:
                     level: 'error'

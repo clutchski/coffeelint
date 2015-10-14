@@ -5,9 +5,9 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 
 vows.describe('spacing').addBatch({
 
-    'No spaces around binary operators' :
+    'No spaces around binary operators':
 
-        topic : ->
+        topic: ->
             '''
             x= 1
             1+ 1
@@ -89,15 +89,15 @@ vows.describe('spacing').addBatch({
             a%%b
             '''
 
-        'are permitted by default' : (source) ->
-            config = {no_nested_string_interpolation : {level:'ignore'}}
+        'are permitted by default': (source) ->
+            config = {no_nested_string_interpolation: {level: 'ignore'}}
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 
-        'can be forbidden' : (source) ->
+        'can be forbidden': (source) ->
             config = {
-                space_operators                : {level:'error'},
-                no_nested_string_interpolation : {level:'ignore'}
+                space_operators: {level: 'error'},
+                no_nested_string_interpolation: {level: 'ignore'}
             }
             errors = coffeelint.lint(source, config)
             assert.lengthOf(errors, source.split("\n").length)
@@ -106,9 +106,9 @@ vows.describe('spacing').addBatch({
             assert.equal(error.lineNumber, 1)
             assert.equal(error.message, "Operators must be spaced properly")
 
-    'Correctly spaced operators' :
+    'Correctly spaced operators':
 
-        topic : ->
+        topic: ->
             '''
             x = 1
             1 + 1
@@ -169,30 +169,30 @@ vows.describe('spacing').addBatch({
               when -1 then 42
             '''
 
-        'are permitted' : (source) ->
+        'are permitted': (source) ->
             config = {
-                space_operators                : {level:'error'},
-                no_nested_string_interpolation : {level:'ignore'}
+                space_operators: {level: 'error'},
+                no_nested_string_interpolation: {level: 'ignore'}
             }
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 
-    'Spaces around unary operators' :
+    'Spaces around unary operators':
 
-        topic : ->
+        topic: ->
             '''
             + 1
             - - 1
             '''
 
-        'are permitted by default' : (source) ->
+        'are permitted by default': (source) ->
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
 
-        'can be forbidden' : (source) ->
+        'can be forbidden': (source) ->
             config = {
-                space_operators                : {level:'error'},
-                no_nested_string_interpolation : {level:'ignore'}
+                space_operators: {level: 'error'},
+                no_nested_string_interpolation: {level: 'ignore'}
             }
             errors = coffeelint.lint(source, config)
             assert.lengthOf(errors, 2)

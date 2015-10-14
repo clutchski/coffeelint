@@ -3,8 +3,8 @@ module.exports = class SpaceOperators
 
     rule:
         name: 'space_operators'
-        level : 'ignore'
-        message : 'Operators must be spaced properly'
+        level: 'ignore'
+        message: 'Operators must be spaced properly'
         description: "This rule enforces that operators have space around them."
 
     tokens: ['+', '-', '=', '**', 'MATH', 'COMPARE', 'LOGIC', 'COMPOUND_ASSIGN',

@@ -5,8 +5,8 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 
 vows.describe('non_empty_constructor_needs_parens').addBatch({
 
-    'Missing Parentheses on "new Foo 1, 2"' :
 
+    'Missing Parentheses on "new Foo 1, 2"':
         topic: () ->
             """
             class Foo

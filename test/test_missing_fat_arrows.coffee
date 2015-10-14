@@ -30,12 +30,12 @@ shouldPass = (source, is_strict = false) ->
 
 vows.describe(RULE).addBatch({
 
-    'empty function'        : shouldPass '->'
-    'function without this' : shouldPass '-> 1'
-    'function with this'    : shouldError '-> this'
-    'function with this.a'  : shouldError '-> this.a'
-    'function with @'       : shouldError '-> @'
-    'function with @a'      : shouldError '-> @a'
+    'empty function': shouldPass '->'
+    'function without this': shouldPass '-> 1'
+    'function with this': shouldError '-> this'
+    'function with this.a': shouldError '-> this.a'
+    'function with @': shouldError '-> @'
+    'function with @a': shouldError '-> @a'
 
     'nested functions with this inside':
         'with inner fat arrow': shouldPass '-> => this'
@@ -48,8 +48,8 @@ vows.describe(RULE).addBatch({
         'with both fat arrows': shouldPass '=> (this; =>)'
 
     'deeply nested functions':
-        'with thin arrow'     : shouldError '-> -> -> -> -> this'
-        'with fat arrow'      : shouldPass '-> -> -> -> => this'
+        'with thin arrow': shouldError '-> -> -> -> -> this'
+        'with fat arrow': shouldPass '-> -> -> -> => this'
         'with wrong fat arrow': shouldError '-> -> => -> -> this'
 
     'functions with multiple statements': shouldError '''
@@ -58,8 +58,8 @@ vows.describe(RULE).addBatch({
             z ((a) -> a; this.x)
         ''', 2
 
-    'functions with parameters'                        : shouldPass '(a) ->'
-    'functions with parameter assignment'              : shouldError '(@a) ->'
+    'functions with parameters': shouldPass '(a) ->'
+    'functions with parameter assignment': shouldError '(@a) ->'
     'functions with destructuring parameter assignment': shouldError '({@a}) ->'
 
     'class instance method':

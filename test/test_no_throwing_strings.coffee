@@ -5,9 +5,9 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 
 vows.describe('throw').addBatch({
 
-    'Throwing strings' :
+    'Throwing strings':
 
-        topic : '''
+        topic: '''
             throw 'my error'
             throw "#{1234}"
             throw """
@@ -15,15 +15,15 @@ vows.describe('throw').addBatch({
             """
         '''
 
-        'is forbidden by default' : (source) ->
+        'is forbidden by default': (source) ->
             errors = coffeelint.lint(source)
             assert.lengthOf(errors, 3)
             error = errors[0]
             assert.equal(error.message, 'Throwing strings is forbidden')
             assert.equal(error.rule, 'no_throwing_strings')
 
-        'can be permitted' : (source) ->
-            config = {no_throwing_strings : {level : 'ignore'}}
+        'can be permitted': (source) ->
+            config = {no_throwing_strings: {level: 'ignore'}}
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 
