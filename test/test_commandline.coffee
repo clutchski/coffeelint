@@ -19,20 +19,20 @@ execOptions =
 # args. Callback will be called with (error, stdout,
 # stderr)
 commandline = (args, callback) ->
-    exec("#{coffeelintPath} #{args.join(" ")}", execOptions, callback)
+    exec("#{coffeelintPath} #{args.join(' ')}", execOptions, callback)
 
 
-process.env.HOME = ""
-process.env.HOMEPATH = ""
-process.env.USERPROFILE = ""
-process.env.COFFEELINT_CONFIG = ""
+process.env.HOME = ''
+process.env.HOMEPATH = ''
+process.env.USERPROFILE = ''
+process.env.COFFEELINT_CONFIG = ''
 
 # Custom rules are loaded by module name. Using a relative path in the test is
 # an unrealistic example when rules can be installed with `npm install -g
 # some-custom-rule`. This will setup a fake version of node_modules to a
 # relative path doesn't have to be used.
-process.env.NODE_PATH += ":" + path.resolve( __dirname,
-    "fixtures/mock_node_modules/")
+process.env.NODE_PATH += ':' + path.resolve( __dirname,
+    'fixtures/mock_node_modules/')
 
 vows.describe('commandline').addBatch({
 
@@ -44,12 +44,12 @@ vows.describe('commandline').addBatch({
         'shows usage': (error, stdout, stderr) ->
             assert.isNotNull(error)
             assert.notEqual(error.code, 0)
-            assert.include(stderr, "Usage")
+            assert.include(stderr, 'Usage')
             assert.isEmpty(stdout)
 
     'version':
         topic: () ->
-            commandline ["--version"], this.callback
+            commandline ['--version'], this.callback
             return undefined
 
         'exists': (error, stdout, stderr) ->
@@ -139,7 +139,7 @@ vows.describe('commandline').addBatch({
                 # It's up to NodeJS to resolve the actual path. The top of the
                 # file modifies NODE_PATH so this can look like a 3rd party
                 # module.
-                "he_who_must_not_be_named"
+                'he_who_must_not_be_named'
                 'fixtures/custom_rules/voldemort.coffee'
             ]
 
@@ -321,9 +321,8 @@ vows.describe('commandline').addBatch({
 
         'Autoloads config based on cwd':
             topic: () ->
-                exec("cat fixtures/cyclo_fail.coffee |" +
-                    " #{coffeelintPath} --stdin",
-                    execOptions, this.callback)
+                exec('cat fixtures/cyclo_fail.coffee | ' +
+                    coffeelintPath + ' --stdin', execOptions, this.callback)
                 return undefined
 
             'fails': (error, stdout, stderr) ->
@@ -395,7 +394,7 @@ vows.describe('commandline').addBatch({
                 args = [
                     'fixtures/clean.coffee'
                 ]
-                process.env.COFFEELINT_CONFIG = "not_existing_293ujff"
+                process.env.COFFEELINT_CONFIG = 'not_existing_293ujff'
                 commandline args, this.callback
                 return undefined
 
@@ -407,7 +406,7 @@ vows.describe('commandline').addBatch({
                 args = [
                     'fixtures/fourspaces.coffee'
                 ]
-                conf = "fixtures/fourspaces.json"
+                conf = 'fixtures/fourspaces.json'
                 process.env.COFFEELINT_CONFIG = conf
                 commandline args, this.callback
                 return undefined
@@ -421,7 +420,7 @@ vows.describe('commandline').addBatch({
                     '--noconfig'
                     'fixtures/fourspaces.coffee'
                 ]
-                conf = "fixtures/fourspaces.json"
+                conf = 'fixtures/fourspaces.json'
                 process.env.COFFEELINT_CONFIG = conf
                 commandline args, this.callback
                 return undefined

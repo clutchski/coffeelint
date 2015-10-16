@@ -7,7 +7,7 @@ vows.describe('no_interpolation_in_single_quotes').addBatch({
 
     'Interpolation in single quotes':
 
-        topic: () ->
+        topic:
             '''
             foo = '#{inter}foo#{polation}'
             '''
@@ -26,8 +26,7 @@ vows.describe('no_interpolation_in_single_quotes').addBatch({
             assert.equal(error.rule, 'no_interpolation_in_single_quotes')
 
     'Interpolation in double quotes':
-
-        topic: () ->
+        topic:
             '''
             foo = "#{inter}foo#{polation}"
             bar = "ive\#{escaped}"

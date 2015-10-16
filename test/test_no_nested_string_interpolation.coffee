@@ -6,10 +6,10 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 vows.describe('no_nested_string_interpolation').addBatch({
 
     'Non-nested string interpolation':
-
-        topic: '''
-        "Book by #{firstName.toUpperCase()} #{lastName.toUpperCase()}"
-        '''
+        topic:
+            '''
+            "Book by #{firstName.toUpperCase()} #{lastName.toUpperCase()}"
+            '''
 
         'is allowed': (source) ->
             errors = coffeelint.lint(source)
@@ -17,10 +17,11 @@ vows.describe('no_nested_string_interpolation').addBatch({
             assert.isEmpty(errors)
 
     'Nested string interpolation':
+        topic:
+            '''
+            str = "Book by #{"#{firstName} #{lastName}".toUpperCase()}"
+            '''
 
-        topic: '''
-        str = "Book by #{"#{firstName} #{lastName}".toUpperCase()}"
-        '''
         'should generate a warning': (source) ->
             errors = coffeelint.lint(source)
             assert.isArray(errors)
@@ -39,11 +40,12 @@ vows.describe('no_nested_string_interpolation').addBatch({
             assert.isEmpty(errors)
 
     'Deeply nested string interpolation':
-        topic: '''
-        str1 = "string #{"interpolation #{"inception"}"}"
-        str2 = "going #{"in #{"even #{"deeper"}"}"}"
-        str3 = "#{"multiple #{"warnings"}"} for #{"different #{"nestings"}"}"
-        '''
+        topic:
+            '''
+            str1 = "string #{"interpolation #{"inception"}"}"
+            str2 = "going #{"in #{"even #{"deeper"}"}"}"
+            str3 = "#{"multiple #{"warnings"}"} for #{"diff #{"nestings"}"}"
+            '''
 
         'generates only one warning per string': (source) ->
             errors = coffeelint.lint(source)

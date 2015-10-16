@@ -5,7 +5,9 @@ module.exports = class CyclomaticComplexity
         level: 'ignore'
         message: 'The cyclomatic complexity is too damn high'
         value: 10
-        description: 'Examine the complexity of your application.'
+        description: '''
+            Examine the complexity of your application.
+            '''
 
     # returns the "complexity" value of the current node.
     getComplexity: (node) ->

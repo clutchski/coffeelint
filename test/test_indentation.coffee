@@ -7,14 +7,14 @@ vows.describe('indent').addBatch({
 
     'Indentation':
 
-        topic: () ->
-            """
+        topic:
+            '''
             x = () ->
               'two spaces'
 
             a = () ->
                 'four spaces'
-            """
+            '''
 
         'defaults to two spaces': (source) ->
             errors = coffeelint.lint(source)
@@ -45,12 +45,12 @@ vows.describe('indent').addBatch({
             assert.equal(errors.length, 0)
 
     'Nested indentation errors':
-        topic: () ->
-            """
+        topic:
+            '''
             x = () ->
               y = () ->
                   1234
-            """
+            '''
 
         'are caught': (source) ->
             errors = coffeelint.lint(source)
@@ -59,11 +59,11 @@ vows.describe('indent').addBatch({
             assert.equal(error.lineNumber, 3)
 
     'Compiler generated indentation':
-        topic: () ->
-            """
+        topic:
+            '''
             () ->
                 if 1 then 2 else 3
-            """
+            '''
 
         'is ignored when not using two spaces': (source) ->
             config =
@@ -73,25 +73,29 @@ vows.describe('indent').addBatch({
             assert.isEmpty(errors)
 
     'Indentation inside interpolation':
-        topic: 'a = "#{ 1234 }"'
+        topic:
+            '''
+            a = "#{ 1234 }"
+            '''
 
         'is ignored': (source) ->
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
 
     'Indentation in multi-line expressions':
-        topic: """
-        x = '1234' + '1234' + '1234' +
-                '1234' + '1234'
-        """
+        topic:
+            '''
+            x = '1234' + '1234' + '1234' +
+                    '1234' + '1234'
+            '''
 
         'is ignored': (source) ->
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
 
     'Indentation across line breaks':
-        topic: () ->
-            """
+        topic:
+            '''
             days = ["mon", "tues", "wed",
                        "thurs", "fri"
                                 "sat", "sun"]
@@ -102,14 +106,15 @@ vows.describe('indent').addBatch({
             arr = [() ->
                     1234
             ]
-            """
+            '''
 
         'is ignored': (source) ->
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
 
     'Indentation on seperate line invocation':
-        topic: """
+        topic:
+            '''
             rockinRockin
                     .around ->
                       3
@@ -117,48 +122,52 @@ vows.describe('indent').addBatch({
             rockrockrock.
                     around ->
                       1234
-            """
+            '''
 
         'is ignored. Issue #4': (source) ->
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
 
     'Consecutive indented chained invocations':
-        topic: """
+        topic:
+            '''
             $('body')
                 .addClass('k')
                 .removeClass 'k'
                 .animate()
                 .hide()
-            """
+            '''
 
         'is permitted': (source) ->
             assert.isEmpty(coffeelint.lint(source))
 
     'Consecutive chained invocations and blank line':
-        topic: """
+        topic:
+            '''
             $('body')
 
                 .addClass('k').hide()
-            """
+            '''
 
         'is permitted': (source) ->
             assert.isEmpty(coffeelint.lint(source))
 
     'Consecutive indented chained invocations and multi-line expression':
-        topic: """
+        topic:
+            '''
             $('body')
               .addClass ->
                 return $(this).name + $(this).that +
                   $(this).this
               .removeClass 'k'
-            """
+            '''
 
         'is permitted': (source) ->
             assert.isEmpty(coffeelint.lint(source))
 
     'Consecutive indented chained invocations with bad indents':
-        topic: """
+        topic:
+            '''
             $('body')
               .addClass('k')
                  # bad indented comments are ignored
@@ -169,7 +178,7 @@ vows.describe('indent').addBatch({
                 # comments are ignored
                  .hide() # this will check with '.animated()' and complain
 
-            """
+            '''
         'fails with indent error': (source) ->
             errors = coffeelint.lint(source)
             assert.equal(errors.length, 1)
@@ -180,10 +189,11 @@ vows.describe('indent').addBatch({
             assert.equal(error.context, 'Expected 2 got 3')
 
     'One chain invocations with bad indents':
-        topic: """
+        topic:
+            '''
             $('body')
                .addClass('k')
-            """
+            '''
         'fails with indent error': (source) ->
             errors = coffeelint.lint(source)
             assert.equal(errors.length, 1)
@@ -194,7 +204,8 @@ vows.describe('indent').addBatch({
             assert.equal(error.context, 'Expected 2 got 3')
 
     'Separate chained invocations with bad indents':
-        topic: """
+        topic:
+            '''
             $('body')
               .addClass ->
                 return name + that +
@@ -203,7 +214,7 @@ vows.describe('indent').addBatch({
 
             $('html')
                .hello()
-            """
+            '''
 
         'correctly identifies two errors': (source) ->
             errors = coffeelint.lint(source)
@@ -222,8 +233,8 @@ vows.describe('indent').addBatch({
 
 
     'Ignore comment in indented chained invocations':
-        topic: () ->
-            """
+        topic:
+            '''
             test()
                 .r((s) ->
                     # Ignore this comment
@@ -234,7 +245,7 @@ vows.describe('indent').addBatch({
                     y()
                 )
                 .s()
-            """
+            '''
         'no error when comment is in first line of a chain': (source) ->
             config =
                 indentation:
@@ -244,7 +255,7 @@ vows.describe('indent').addBatch({
 
     'Ignore blank line in indented chained invocations':
         topic:
-            """
+            '''
             test()
                 .r((s) ->
 
@@ -254,7 +265,7 @@ vows.describe('indent').addBatch({
                     y()
                 )
                 .s()
-            """
+            '''
         'no error when blank line is in first line of a chain': (source) ->
             config =
                 indentation:
@@ -263,29 +274,32 @@ vows.describe('indent').addBatch({
             assert.isEmpty(errors)
 
     'Arbitrarily indented arguments':
-        topic: """
+        topic:
+            '''
             myReallyLongFunction withLots,
                                  ofArguments,
                                  everywhere
-            """
+            '''
 
         'are permitted': (source) ->
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
 
     'Indenting a callback in a chained call inside a function':
-        topic: """
+        topic:
+            '''
             someFunction = ->
               $.when(somePromise)
                 .done (result) ->
                   foo = result.bar
-            """
+            '''
         'is permitted. See issue #88': (source) ->
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
 
     'Handle multiple chained calls':
-        topic: """
+        topic:
+            '''
             anObject
               .firstChain (f) ->
                 doStepOne()
@@ -294,13 +308,14 @@ vows.describe('indent').addBatch({
               .secondChain (s) ->
                 moreStuff()
                 return s
-            """
+            '''
         'is permitted': (source) ->
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
 
     'Handle multiple chained calls (4 spaces)':
-        topic: """
+        topic:
+            '''
             anObject
                 .firstChain (f) ->
                     doStepOne()
@@ -309,7 +324,7 @@ vows.describe('indent').addBatch({
                 .secondChain (s) ->
                     moreStuff()
                     return s
-            """
+            '''
         'fails when using 2 space indentation default': (source) ->
             msg = 'Line contains inconsistent indentation'
 
@@ -337,7 +352,8 @@ vows.describe('indent').addBatch({
             assert.isEmpty(errors)
 
     'Handle multiple chained calls inside more indentation':
-        topic: """
+        topic:
+            '''
             someLongFunction = (a, b, c, d) ->
               retValue = anObject
                 .firstChain (f) ->
@@ -350,13 +366,14 @@ vows.describe('indent').addBatch({
 
               retValue + [1]
 
-            """
+            '''
         'is permitted': (source) ->
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
 
     'Handle chains where there are tokens with generated property':
-        topic: """
+        topic:
+            '''
             anObject 'bar'
               .firstChain ->
                 doStepOne()
@@ -367,13 +384,14 @@ vows.describe('indent').addBatch({
                   .then ->
                     e ->
                   .finally x
-            """
+            '''
         'is permitted': (source) ->
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
 
     'Handle nested chain calls':
-        topic: """
+        topic:
+            '''
             anObject
               .firstChain (f) ->
                 doStepOne()
@@ -382,13 +400,14 @@ vows.describe('indent').addBatch({
               .secondChain (s) ->
                 moreStuff()
                 return s
-            """
+            '''
         'is permitted': (source) ->
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
 
     'Make sure indentation check is not affected outside proper scope':
-        topic: """
+        topic:
+            '''
             a
               .b
 
@@ -400,7 +419,7 @@ vows.describe('indent').addBatch({
                 (false or
                   long.expression.that.necessitates(linebreak))
                 @foo()
-            """
+            '''
         'returns no errors outside scope': (source) ->
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
@@ -424,7 +443,8 @@ vows.describe('indent').addBatch({
     # Fixes people wanted to heavily indent if statements attached to assignment
     # See: #468, #345
     'Handle different if statements indentations':
-        topic: '''
+        topic:
+            '''
             r = unless p1
               if p2
                 1

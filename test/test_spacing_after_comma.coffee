@@ -6,9 +6,10 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 vows.describe('commas').addBatch({
 
     'regex':
-        topic: '''
-        ///^#{ inputValue }///i.test field.name
-        '''
+        topic:
+            '''
+            ///^#{ inputValue }///i.test field.name
+            '''
 
         'should not error': (source) ->
             config = {spacing_after_comma: {level: 'warn'}}
@@ -17,9 +18,10 @@ vows.describe('commas').addBatch({
 
 
     'Whitespace after commas':
-
-        topic: () ->
-            "doSomething(foo = ',',bar)\nfooBar()"
+        topic:
+            '''
+            doSomething(foo = ',',bar)\nfooBar()
+            '''
 
         'permitted by default': (source) ->
             errors = coffeelint.lint(source)
@@ -32,12 +34,11 @@ vows.describe('commas').addBatch({
             error = errors[0]
             assert.isObject(error)
             assert.equal(error.lineNumber, 1)
-            assert.equal(error.message, "Spaces are required after commas")
+            assert.equal(error.message, 'a space is required after commas')
             assert.equal(error.rule, 'spacing_after_comma')
 
     'newline after commas':
-
-        topic: () ->
+        topic:
             '''
             multiLineFuncCall(
               arg1,

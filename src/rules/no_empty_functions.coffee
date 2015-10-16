@@ -8,7 +8,7 @@ module.exports = class NoEmptyFunctions
         name: 'no_empty_functions'
         level: 'ignore'
         message: 'Empty function'
-        description: """
+        description: '''
             Disallows declaring empty functions. The goal of this rule is that
             unintentional empty callbacks can be detected:
             <pre>
@@ -31,7 +31,7 @@ module.exports = class NoEmptyFunctions
             doSomethingSignificant()
             </code>
             </pre>
-            """
+            '''
 
     lintAST: (node, astApi) ->
         @lintNode node, astApi

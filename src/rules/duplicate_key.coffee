@@ -9,8 +9,9 @@ module.exports = class DuplicateKey
         name: 'duplicate_key'
         level: 'error'
         message: 'Duplicate key defined in object or class'
-        description:
-            "Prevents defining duplicate keys in object literals and classes"
+        description: '''
+            Prevents defining duplicate keys in object literals and classes
+            '''
 
     tokens: [ 'IDENTIFIER', '{', '}' ]
 

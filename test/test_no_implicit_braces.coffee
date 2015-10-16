@@ -7,7 +7,7 @@ vows.describe('no_implicit_braces').addBatch({
 
     'Implicit braces':
 
-        topic: () ->
+        topic:
             '''
             a = 1: 2
             y =
@@ -31,22 +31,23 @@ vows.describe('no_implicit_braces').addBatch({
             assert.equal(error.rule, 'no_implicit_braces')
 
     'Implicit braces strict':
-        topic: """
+        topic:
+            '''
             foo =
               bar:
                 baz: 1
                 thing: 'a'
               baz: ['a', 'b', 'c']
-        """
+            '''
 
-        "blocks all implicit braces by default": (source) ->
+        'blocks all implicit braces by default': (source) ->
             config = {no_implicit_braces: {level: 'error'}}
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 2)
             assert.equal(rule, 'no_implicit_braces') for {rule} in errors
 
-        "allows braces at the end of lines when strict is false": (source) ->
+        'allows braces at the end of lines when strict is false': (source) ->
             config =
                 no_implicit_braces:
                     level: 'error'
@@ -56,7 +57,7 @@ vows.describe('no_implicit_braces').addBatch({
             assert.isEmpty(errors)
 
     'Implicit braces in class definitions':
-        topic: () ->
+        topic:
             '''
             class Animal
               walk: ->
@@ -88,7 +89,7 @@ vows.describe('no_implicit_braces').addBatch({
             assert.isEmpty(errors)
 
     'Test against use of implicit braces in loop with conditional (#459)':
-        topic: () ->
+        topic:
             '''
 
             list =

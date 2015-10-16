@@ -4,8 +4,9 @@ module.exports = class EnsureComprehensions
         name: 'ensure_comprehensions'
         level: 'warn'
         message: 'Comprehensions must have parentheses around them'
-        description:
-            'This rule makes sure that parentheses are around comprehensions.'
+        description: '''
+            This rule makes sure that parentheses are around comprehensions.
+            '''
 
     tokens: ['FOR']
 

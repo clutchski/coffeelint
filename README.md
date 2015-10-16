@@ -57,9 +57,9 @@ module.exports = class NoComment
         name: 'no_comment'
         level: 'ignore'
         message: 'No comment'
-        description: """
+        description: '''
             Disallows any comment in the code
-            """
+            '''
 
     tokens: ['#', '###']
 
@@ -69,7 +69,7 @@ module.exports = class NoComment
 
 The description property is a string that can embed HTML code:
 ```html
-description: """
+description: '''
 	Disallows any comment in the code. This code would not pass:
 	<pre>
 	<code>### Some code with comments
@@ -78,7 +78,7 @@ description: """
 		bar()
 	</code>
 	</pre>
-	"""
+	'''
 ```
 [Coffeelint's website](http://www.coffeelint.org/) generates each
 rule's documentation based on this `description` property.

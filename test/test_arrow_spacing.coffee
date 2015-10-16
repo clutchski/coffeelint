@@ -6,8 +6,7 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 vows.describe('arrows').addBatch({
 
     'No spacing around the arrow operator':
-
-        topic: ->
+        topic:
             '''
             test1 = (foo, bar)->console.log("foobar")
             test2 = (foo, bar) ->console.log("foo->bar")
@@ -27,8 +26,8 @@ vows.describe('arrows').addBatch({
 
         'will return an error': (source) ->
             config = {
-                "indentation": { "value": 2, "level": "error" }
-                "arrow_spacing": { "level": "error" }
+                'indentation': { 'value': 2, 'level': 'error' }
+                'arrow_spacing': { 'level': 'error' }
             }
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 8)
@@ -42,13 +41,12 @@ vows.describe('arrows').addBatch({
             assert.equal(errors[7].lineNumber, 11)
 
         'will be ignored (no error)': (source) ->
-            config = { "arrow_spacing": { "level": "ignore" } }
+            config = { 'arrow_spacing': { 'level': 'ignore' } }
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 
     'Handles good spacing when parentheses are generated':
-
-        topic: ->
+        topic:
             '''
             testingThis
               .around ->
@@ -71,23 +69,22 @@ vows.describe('arrows').addBatch({
 
         'when spacing is not required around arrow operator': (source) ->
             config = {
-                "indentation": { "value": 2, "level": "error" },
-                "arrow_spacing": { "level": "ignore" }
+                'indentation': { 'value': 2, 'level': 'error' },
+                'arrow_spacing': { 'level': 'ignore' }
             }
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 
         'when spacing is required around arrow operator': (source) ->
             config = {
-                "indentation": { "value": 2, "level": "error" },
-                "arrow_spacing": { "level": "error" }
+                'indentation': { 'value': 2, 'level': 'error' },
+                'arrow_spacing': { 'level': 'error' }
             }
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 
     'Handles bad spacing when parentheses are generated':
-
-        topic: ->
+        topic:
             '''
             testingThis
               .around ->
@@ -108,7 +105,7 @@ vows.describe('arrows').addBatch({
             '''
 
         'when spacing is required around arrow operator': (source) ->
-            config = { "arrow_spacing": { "level": "error" } }
+            config = { 'arrow_spacing': { 'level': 'error' } }
             errors = coffeelint.lint(source, config)
             assert.equal(errors[0].lineNumber, 3)
             assert.equal(errors[1].lineNumber, 6)
@@ -120,14 +117,14 @@ vows.describe('arrows').addBatch({
             assert.equal(errors.length, 7)
 
         'when spacing is not required around arrow operator': (source) ->
-            config = { "arrow_spacing": { "level": "ignore" } }
+            config = { 'arrow_spacing': { 'level': 'ignore' } }
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 
     'Ignore spacing for non-generated parentheses':
         # if the function has no parameters (and thus no parentheses),
         # it will accept a lack of spacing preceding the arrow (first example)
-        topic: ->
+        topic:
             '''
             x(-> 3)
             x( -> 3)
@@ -135,17 +132,17 @@ vows.describe('arrows').addBatch({
             (-> true)()
             '''
         'when spacing is required around arrow operator': (source) ->
-            config = { "arrow_spacing": { "level": "error" } }
+            config = { 'arrow_spacing': { 'level': 'error' } }
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 0)
 
         'when spacing is not required around arrow operator': (source) ->
-            config = { "arrow_spacing": { "level": "ignore" } }
+            config = { 'arrow_spacing': { 'level': 'ignore' } }
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors, 0)
 
     'Handle an arrow at beginning of statement':
-        topic: ->
+        topic:
             '''
             @waitForSelector ".application",
               -> @test.pass "homepage loaded ok"
@@ -154,17 +151,17 @@ vows.describe('arrows').addBatch({
             '''
 
         'when spacing is required around arrow operator': (source) ->
-            config = { "arrow_spacing": { "level": "error" } }
+            config = { 'arrow_spacing': { 'level': 'error' } }
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 0)
 
         'when spacing is not required around arrow operator': (source) ->
-            config = { "arrow_spacing": { "level": "ignore" } }
+            config = { 'arrow_spacing': { 'level': 'ignore' } }
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors, 0)
 
     'Handle an empty arrow at end of expression':
-        topic: ->
+        topic:
             '''
             (x = ->)
             {x: ->}
@@ -172,76 +169,87 @@ vows.describe('arrows').addBatch({
             '''
 
         'when spacing is required around arrow operator': (source) ->
-            config = { "arrow_spacing": { "level": "error" } }
+            config = { 'arrow_spacing': { 'level': 'error' } }
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 0)
 
         'when spacing is not required around arrow operator': (source) ->
-            config = { "arrow_spacing": { "level": "ignore" } }
+            config = { 'arrow_spacing': { 'level': 'ignore' } }
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors, 0)
 
     'Handle a nested arrow at end of file':
-        topic: ->
-            'class A\n  f: ->'
+        topic:
+            '''
+            class A\n  f: ->
+            '''
 
         'when spacing is required around arrow operator': (source) ->
-            config = { "arrow_spacing": { "level": "error" } }
+            config = { 'arrow_spacing': { 'level': 'error' } }
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 0)
 
         'when spacing is not required around arrow operator': (source) ->
-            config = { "arrow_spacing": { "level": "ignore" } }
+            config = { 'arrow_spacing': { 'level': 'ignore' } }
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors, 0)
 
     'Handle a nested arrow at end of file':
-        topic: ->
-            'define ->\n  class A\n    f: ->'
+        topic:
+            '''
+            define ->\n  class A\n    f: ->
+            '''
 
         'when spacing is required around arrow operator': (source) ->
-            config = { "arrow_spacing": { "level": "error" } }
+            config = { 'arrow_spacing': { 'level': 'error' } }
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 0)
 
         'when spacing is not required around arrow operator': (source) ->
-            config = { "arrow_spacing": { "level": "ignore" } }
+            config = { 'arrow_spacing': { 'level': 'ignore' } }
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors, 0)
 
     'Handle an arrow at end of file':
-        topic: ->
-            'f: ->'
+        topic:
+            '''
+            f: ->
+            '''
 
         'when spacing is required around arrow operator': (source) ->
-            config = { "arrow_spacing": { "level": "error" } }
+            config = { 'arrow_spacing': { 'level': 'error' } }
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 0)
 
         'when spacing is not required around arrow operator': (source) ->
-            config = { "arrow_spacing": { "level": "ignore" } }
+            config = { 'arrow_spacing': { 'level': 'ignore' } }
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors, 0)
 
     'Handles empty functions':
-        topic: "console ?= log: (->), error: (->)"
+        topic:
+            '''
+            console ?= log: (->), error: (->)
+            '''
 
         'when spacing is required around arrow operator': (source) ->
-            config = { "arrow_spacing": { "level": "error" } }
+            config = { 'arrow_spacing': { 'level': 'error' } }
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 0)
 
     'Handle an arrow at beginning of file':
-        topic: ->
-            '-> foo()'
+        topic:
+            '''
+            -> foo()
+            '''
 
         'when spacing is required around arrow operator': (source) ->
-            config = { "arrow_spacing": { "level": "error" } }
+            config = { 'arrow_spacing': { 'level': 'error' } }
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 0)
 
         'when spacing is not required around arrow operator': (source) ->
-            config = { "arrow_spacing": { "level": "ignore" } }
+            config = { 'arrow_spacing': { 'level': 'ignore' } }
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors, 0)
 

@@ -12,40 +12,40 @@ vows.describe('no_private_function_fat_arrows').addBatch({
 
     'eol':
         'should warn with fat arrow': ->
-            result = coffeelint.lint("""
+            result = coffeelint.lint('''
             class Foo
               foo = =>
-            """, config)
+            ''', config)
             assert.equal(result.length, 1)
             assert.equal(result[0].rule,  'no_private_function_fat_arrows')
             assert.equal(result[0].level, 'error')
 
         'should work with nested classes': ->
-            result = coffeelint.lint("""
+            result = coffeelint.lint('''
             class Bar
               foo = ->
                 class
                   bar2 = =>
-            """, config)
+            ''', config)
             assert.equal(result.length, 1)
             assert.equal(result[0].rule,  'no_private_function_fat_arrows')
             assert.equal(result[0].level, 'error')
 
             # Same method name as external function.
-            result = coffeelint.lint("""
+            result = coffeelint.lint('''
             class Bar
               foo = ->
                 class
                   foo = =>
-            """, config)
+            ''', config)
             assert.equal(result.length, 1)
             assert.equal(result[0].rule,  'no_private_function_fat_arrows')
             assert.equal(result[0].level, 'error')
 
         'should not warn without fat arrow': ->
-            assert.isEmpty(coffeelint.lint("""
+            assert.isEmpty(coffeelint.lint('''
             class Foo
               foo = ->
-            """, config))
+            ''', config))
 
 }).export(module)

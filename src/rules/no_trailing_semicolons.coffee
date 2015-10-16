@@ -7,7 +7,7 @@ module.exports = class NoTrailingSemicolons
         name: 'no_trailing_semicolons'
         level: 'error'
         message: 'Line contains a trailing semicolon'
-        description: """
+        description: '''
             This rule prohibits trailing semicolons, since they are needless
             cruft in CoffeeScript.
             <pre>
@@ -19,8 +19,7 @@ module.exports = class NoTrailingSemicolons
             </code>
             </pre>
             Trailing semicolons are forbidden by default.
-            """
-
+            '''
 
     lintLine: (line, lineApi) ->
 

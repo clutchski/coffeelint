@@ -58,18 +58,20 @@ vows.describe('PreferEnglishOperatorssemicolons').addBatch({
             assert.isEmpty(coffeelint.lint('1 or 1', configError))
 
     'Comments': ->
-        topic: """
-        # 1 == 1
-        # 1 != 1
-        # 1 && 1
-        # 1 || 1
-        ###
-        1 == 1
-        1 != 1
-        1 && 1
-        1 || 1
-        ###
-        """
+        topic:
+            '''
+            # 1 == 1
+            # 1 != 1
+            # 1 && 1
+            # 1 || 1
+            ###
+            1 == 1
+            1 != 1
+            1 && 1
+            1 || 1
+            ###
+            '''
+
         'should not warn when == is used in a comment': (source) ->
             assert.isEmpty(coffeelint.lint(source, configError))
 
@@ -85,7 +87,7 @@ vows.describe('PreferEnglishOperatorssemicolons').addBatch({
                 """
                 1 == 1
                 """
-            '''
+                '''
             assert.isEmpty(coffeelint.lint(source, configError))
 
 }).export(module)

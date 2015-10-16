@@ -7,7 +7,10 @@ vows.describe('backticks').addBatch({
 
     'Backticks':
 
-        topic: "`with(document) alert(height);`"
+        topic:
+            '''
+            `with(document) alert(height);`
+            '''
 
         'are forbidden by default': (source) ->
             errors = coffeelint.lint(source)
@@ -16,7 +19,7 @@ vows.describe('backticks').addBatch({
             error = errors[0]
             assert.equal(error.rule, 'no_backticks')
             assert.equal(error.lineNumber, 1)
-            assert.equal(error.message, "Backticks are forbidden")
+            assert.equal(error.message, 'Backticks are forbidden')
 
         'can be permitted': (source) ->
             config = {no_backticks: {level: 'ignore'}}

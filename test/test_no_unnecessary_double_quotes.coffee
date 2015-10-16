@@ -6,7 +6,7 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 vows.describe('no_unnecessary_double_quotes').addBatch({
 
     'Single quotes':
-        topic: () ->
+        topic:
             '''
             foo = 'single'
             '''
@@ -19,7 +19,7 @@ vows.describe('no_unnecessary_double_quotes').addBatch({
 
 
     'Unnecessary double quotes':
-        topic: () ->
+        topic:
             '''
             foo = "double"
             '''
@@ -43,8 +43,7 @@ vows.describe('no_unnecessary_double_quotes').addBatch({
 
 
     'Useful double quotes':
-
-        topic: () ->
+        topic:
             '''
             interpolation = "inter#{polation}"
             multipleInterpolation = "#{foo}bar#{baz}"
@@ -59,8 +58,7 @@ vows.describe('no_unnecessary_double_quotes').addBatch({
 
 
     'Block strings with double quotes':
-
-        topic: () ->
+        topic:
             '''
             foo = """
               doubleblock
@@ -80,8 +78,7 @@ vows.describe('no_unnecessary_double_quotes').addBatch({
 
 
     'Block strings with useful double quotes':
-
-        topic: () ->
+        topic:
             '''
             foo = """
               #{interpolation}foo 'some single quotes for good measure'
@@ -96,8 +93,7 @@ vows.describe('no_unnecessary_double_quotes').addBatch({
 
 
     'Block strings with single quotes':
-
-        topic: () ->
+        topic:
             """
             foo = '''
               singleblock
@@ -112,7 +108,7 @@ vows.describe('no_unnecessary_double_quotes').addBatch({
 
 
     'Hand concatenated string with parenthesis':
-        topic: () ->
+        topic:
             '''
             foo = (("inter") + "polation")
             '''
@@ -130,10 +126,10 @@ vows.describe('no_unnecessary_double_quotes').addBatch({
 
     'use strict':
         topic:
-            """
+            '''
             "use strict"
             foo = 'foo'
-            """
+            '''
 
         'should not error at the start of the file #306': (source) ->
             config = {no_unnecessary_double_quotes: {level: 'error'}}
@@ -145,7 +141,10 @@ vows.describe('no_unnecessary_double_quotes').addBatch({
             assert.equal(error.rule, 'no_unnecessary_double_quotes')
 
     'Test RegExp flags #405':
-        topic: 'd = ///#{foo}///i'
+        topic:
+            '''
+            d = ///#{foo}///i
+            '''
 
         'should not generate an error': (source) ->
             config = {no_unnecessary_double_quotes: {level: 'error'}}

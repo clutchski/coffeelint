@@ -10,18 +10,18 @@ vows.describe('semicolons').addBatch({
 
     'Semicolons at end of lines':
 
-        topic: () ->
-            """
+        topic:
+            '''
             x = 1234;
             y = 1234; z = 1234
-            """
+            '''
 
         'are forbidden': (source) ->
             errors = coffeelint.lint(source)
             assert.lengthOf(errors, 1)
             error = errors[0]
             assert.equal(error.lineNumber, 1)
-            assert.equal(error.message, "Line contains a trailing semicolon")
+            assert.equal(error.message, 'Line contains a trailing semicolon')
             assert.equal(error.rule, 'no_trailing_semicolons')
 
         'can be ignored': (source) ->
@@ -29,7 +29,8 @@ vows.describe('semicolons').addBatch({
             assert.isEmpty(errors)
 
     'Semicolons in multiline expressions':
-        topic: '''
+        topic:
+            '''
             x = "asdf;
             asdf"
 
@@ -55,15 +56,20 @@ vows.describe('semicolons').addBatch({
             assert.isEmpty(errors)
 
     'Trailing semicolon in comments':
-        topic: "undefined\n# comment;\nundefined"
+        topic:
+            '''
+            undefined\n# comment;\nundefined
+            '''
 
         'are ignored': (source) ->
             errors = coffeelint.lint(source, {})
             assert.isEmpty(errors)
 
     'Trailing semicolon in comments with no semicolon in statement':
-
-        topic: "x = 3 #set x to 3;"
+        topic:
+            '''
+            x = 3 #set x to 3;
+            '''
 
         'are ignored': (source) ->
             errors = coffeelint.lint(source, configIgnore)
@@ -74,8 +80,10 @@ vows.describe('semicolons').addBatch({
             assert.isEmpty(errors)
 
     'Trailing semicolon in comments with semicolon in statement':
-
-        topic: "x = 3; #set x to 3;"
+        topic:
+            '''
+            x = 3; #set x to 3;
+            '''
 
         'are ignored': (source) ->
             errors = coffeelint.lint(source, configIgnore)
@@ -86,12 +94,14 @@ vows.describe('semicolons').addBatch({
             assert.lengthOf(errors, 1)
             error = errors[0]
             assert.equal(error.lineNumber, 1)
-            assert.equal(error.message, "Line contains a trailing semicolon")
+            assert.equal(error.message, 'Line contains a trailing semicolon')
             assert.equal(error.rule, 'no_trailing_semicolons')
 
     'Trailing semicolon in block comments':
-
-        topic: "###\nThis is a block comment;\n###"
+        topic:
+            '''
+            ###\nThis is a block comment;\n###
+            '''
 
         'are ignored': (source) ->
             errors = coffeelint.lint(source, configIgnore)
@@ -102,9 +112,10 @@ vows.describe('semicolons').addBatch({
             assert.isEmpty(errors)
 
     'Semicolons with windows line endings':
-
-        topic: () ->
-            "x = 1234;\r\n"
+        topic:
+            '''
+            x = 1234;\r\n
+            '''
 
         'works as expected': (source) ->
             config = { line_endings: { value: 'windows' } }
@@ -112,11 +123,11 @@ vows.describe('semicolons').addBatch({
             assert.lengthOf(errors, 1)
             error = errors[0]
             assert.equal(error.lineNumber, 1)
-            assert.equal(error.message, "Line contains a trailing semicolon")
+            assert.equal(error.message, 'Line contains a trailing semicolon')
             assert.equal(error.rule, 'no_trailing_semicolons')
 
     'Semicolons inside of blockquote string':
-        topic: () ->
+        topic:
             '''
             foo = bar();
 
@@ -140,7 +151,7 @@ vows.describe('semicolons').addBatch({
             assert.lengthOf(errors, 1)
             error = errors[0]
             assert.equal(error.lineNumber, 1)
-            assert.equal(error.message, "Line contains a trailing semicolon")
+            assert.equal(error.message, 'Line contains a trailing semicolon')
             assert.equal(error.rule, 'no_trailing_semicolons')
 
 }).export(module)

@@ -7,8 +7,8 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 vows.describe('identifiers').addBatch({
 
     'Camel cased class names':
-
-        topic: -> """
+        topic:
+            '''
             class Animal
 
             class Wolf extends Animal
@@ -24,14 +24,15 @@ vows.describe('identifiers').addBatch({
             class nested.Name
 
             class deeply.nested.Name
-            """
+            '''
 
         'are valid by default': (source) ->
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
 
     'Non camel case class names':
-        topic: """
+        topic:
+            '''
             class animal
 
             class wolf extends Animal
@@ -41,7 +42,7 @@ vows.describe('identifiers').addBatch({
             class canadaGoose extends Animal
 
             class _PrivatePrefix
-            """
+            '''
 
         'are rejected by default': (source) ->
             errors = coffeelint.lint(source)
@@ -59,7 +60,8 @@ vows.describe('identifiers').addBatch({
             assert.isEmpty(errors)
 
     'Anonymous class names':
-        topic: """
+        topic:
+            '''
             x = class
               m : -> 123
 
@@ -69,14 +71,15 @@ vows.describe('identifiers').addBatch({
             z = class
 
             r = class then 1:2
-            """
+            '''
 
         'are permitted': (source) ->
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
 
     'Inner classes are permitted':
-        topic: '''
+        topic:
+            '''
             class X
               class @Y
                 f : 123

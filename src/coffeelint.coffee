@@ -128,8 +128,8 @@ coffeelint.invertLiterate = (source) ->
     source = CoffeeScript.helpers.invertLiterate source
     # Strip the first 4 spaces from every line. After this the markdown is
     # commented and all of the other code should be at their natural location.
-    newSource = ""
-    for line in source.split "\n"
+    newSource = ''
+    for line in source.split '\n'
         if line.match(/^#/)
             # strip trailing space
             line = line.replace /\s*$/, ''
@@ -145,18 +145,18 @@ _rules = {}
 coffeelint.registerRule = (RuleConstructor, ruleName = undefined) ->
     p = new RuleConstructor
 
-    name = p?.rule?.name or "(unknown)"
+    name = p?.rule?.name or '(unknown)'
     e = (msg) -> throw new Error "Invalid rule: #{name} #{msg}"
     unless p.rule?
-        e "Rules must provide rule attribute with a default configuration."
+        e 'Rules must provide rule attribute with a default configuration.'
 
-    e "Rule defaults require a name" unless p.rule.name?
+    e 'Rule defaults require a name' unless p.rule.name?
 
     if ruleName? and ruleName isnt p.rule.name
         e "Mismatched rule name: #{ruleName}"
 
-    e "Rule defaults require a message" unless p.rule.message?
-    e "Rule defaults require a description" unless p.rule.description?
+    e 'Rule defaults require a message' unless p.rule.message?
+    e 'Rule defaults require a description' unless p.rule.description?
     unless p.rule.level in [ 'ignore', 'warn', 'error' ]
         e "Default level must be 'ignore', 'warn', or 'error'"
 
@@ -164,7 +164,7 @@ coffeelint.registerRule = (RuleConstructor, ruleName = undefined) ->
         e "'tokens' is required for 'lintToken'" unless p.tokens
     else if typeof p.lintLine isnt 'function' and
             typeof p.lintAST isnt 'function'
-        e "Rules must implement lintToken, lintLine, or lintAST"
+        e 'Rules must implement lintToken, lintLine, or lintAST'
 
     # Capture the default options for the new rule.
     RULES[p.rule.name] = p.rule
@@ -254,7 +254,7 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
 
     source = @invertLiterate source if literate
     if userConfig?.coffeelint?.transforms?
-        sourceLength = source.split("\n").length
+        sourceLength = source.split('\n').length
         for m in userConfig?.coffeelint?.transforms
             try
                 ruleLoader = nodeRequire './ruleLoader'
@@ -265,7 +265,7 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
         # changes one line into two early in the file and later condenses two
         # into one you'll end up with the same length and not get the warning
         # even though everything in between will be off by one.
-        if sourceLength isnt source.split("\n").length and
+        if sourceLength isnt source.split('\n').length and
                 config.transform_messes_up_line_numbers.level isnt 'ignore'
 
             errors.push(extend(

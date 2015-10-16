@@ -7,13 +7,14 @@ vows.describe('throw').addBatch({
 
     'Throwing strings':
 
-        topic: '''
+        topic:
+            '''
             throw 'my error'
             throw "#{1234}"
             throw """
                 long string
             """
-        '''
+            '''
 
         'is forbidden by default': (source) ->
             errors = coffeelint.lint(source)

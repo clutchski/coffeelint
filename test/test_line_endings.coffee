@@ -7,7 +7,10 @@ vows.describe('line endings').addBatch({
 
     'Unix line endings':
 
-        topic: 'x = 1\ny=2'
+        topic:
+            '''
+            x = 1\ny=2
+            '''
 
         'are allowed by default': (source) ->
             errors = coffeelint.lint(source)
@@ -25,8 +28,11 @@ vows.describe('line endings').addBatch({
             assert.equal(error.rule, 'line_endings')
 
     'Windows line endings':
+        topic:
+            '''
+            x = 1\r\ny=2
+            '''
 
-        topic: 'x = 1\r\ny=2'
         'are allowed by default': (source) ->
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
@@ -43,8 +49,10 @@ vows.describe('line endings').addBatch({
             assert.equal(error.rule, 'line_endings')
 
     'Unknown line endings':
-
-        topic: 'x = 1\ny=2'
+        topic:
+            '''
+            x = 1\ny=2
+            '''
 
         'throw errors': (source) ->
             config =

@@ -17,7 +17,7 @@ findFile = (name, dir) ->
     dir = dir or process.cwd()
     filename = path.normalize(path.join(dir, name))
     return findFileResults[filename]  if findFileResults[filename]
-    parent = path.resolve(dir, "../")
+    parent = path.resolve(dir, '../')
     if fs.existsSync(filename)
         findFileResults[filename] = filename
     else if dir is parent
@@ -27,7 +27,7 @@ findFile = (name, dir) ->
 
 # Possibly find CoffeeLint configuration within a package.json file.
 loadNpmConfig = (dir) ->
-    fp = findFile("package.json", dir)
+    fp = findFile('package.json', dir)
     loadJSON(fp)?.coffeelintConfig  if fp
 
 # Parse a JSON file gracefully.
@@ -46,11 +46,11 @@ getConfig = (dir) ->
 
     npmConfig = loadNpmConfig(dir)
     return npmConfig  if npmConfig
-    projConfig = findFile("coffeelint.json", dir)
+    projConfig = findFile('coffeelint.json', dir)
     return loadJSON(projConfig)  if projConfig
 
     envs = process.env.USERPROFILE or process.env.HOME or process.env.HOMEPATH
-    home = path.normalize(path.join(envs, "coffeelint.json"))
+    home = path.normalize(path.join(envs, 'coffeelint.json'))
     if fs.existsSync(home)
         return loadJSON(home)
 

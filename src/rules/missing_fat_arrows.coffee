@@ -17,8 +17,7 @@ module.exports = class MissingFatArrows
         level: 'ignore'
         is_strict: false
         message: 'Used `this` in a function without a fat arrow'
-        description:
-            '''
+        description: '''
             Warns when you use `this` inside a function that wasn't defined
             with a fat arrow. This rule does not apply to methods defined in a
             class, since they have `this` bound to the class instance (or the
