@@ -32,7 +32,6 @@ vows.describe('commas').addBatch({
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 1)
             error = errors[0]
-            assert.isObject(error)
             assert.equal(error.lineNumber, 1)
             assert.equal(error.message, 'a space is required after commas')
             assert.equal(error.rule, 'spacing_after_comma')

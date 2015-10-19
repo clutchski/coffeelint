@@ -26,6 +26,9 @@
         "level": "error",
         "console": true
     },
+    "spacing_after_comma": {
+        "level": "error"
+    },
     "no_unnecessary_double_quotes": {
         "level": "error"
     }
