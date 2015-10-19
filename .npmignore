@@ -1,3 +1,4 @@
 test/
 .git*
 utils/
+coffeelint.json
