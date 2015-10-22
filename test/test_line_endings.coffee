@@ -3,7 +3,9 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
-vows.describe('line endings').addBatch({
+RULE = 'line_endings'
+
+vows.describe(RULE).addBatch({
 
     'Unix line endings':
 
@@ -25,7 +27,7 @@ vows.describe('line endings').addBatch({
             assert.equal(error.lineNumber, 1)
             assert.equal(error.message, 'Line contains incorrect line endings')
             assert.equal(error.context, 'Expected windows')
-            assert.equal(error.rule, 'line_endings')
+            assert.equal(error.rule, RULE)
 
     'Windows line endings':
         topic:
@@ -46,7 +48,7 @@ vows.describe('line endings').addBatch({
             assert.equal(error.lineNumber, 1)
             assert.equal(error.message, 'Line contains incorrect line endings')
             assert.equal(error.context, 'Expected unix')
-            assert.equal(error.rule, 'line_endings')
+            assert.equal(error.rule, RULE)
 
     'Unknown line endings':
         topic:

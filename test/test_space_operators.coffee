@@ -3,10 +3,11 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
-vows.describe('spacing').addBatch({
+RULE = 'space_operators'
+
+vows.describe(RULE).addBatch({
 
     'No spaces around binary operators':
-
         topic:
             '''
             x= 1
@@ -102,7 +103,7 @@ vows.describe('spacing').addBatch({
             errors = coffeelint.lint(source, config)
             assert.lengthOf(errors, source.split('\n').length)
             error = errors[0]
-            assert.equal(error.rule, 'space_operators')
+            assert.equal(error.rule, RULE)
             assert.equal(error.lineNumber, 1)
             assert.equal(error.message, 'Operators must be spaced properly')
 
@@ -194,6 +195,6 @@ vows.describe('spacing').addBatch({
             }
             errors = coffeelint.lint(source, config)
             assert.lengthOf(errors, 2)
-            error = errors[0]
+            assert.equal(rule, RULE) for {rule} in errors
 
 }).export(module)

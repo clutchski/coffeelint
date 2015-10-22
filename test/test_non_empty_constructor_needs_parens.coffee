@@ -3,8 +3,9 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
-vows.describe('non_empty_constructor_needs_parens').addBatch({
+RULE = 'non_empty_constructor_needs_parens'
 
+vows.describe(RULE).addBatch({
 
     'Missing Parentheses on "new Foo 1, 2"':
         topic:
@@ -38,12 +39,9 @@ vows.describe('non_empty_constructor_needs_parens').addBatch({
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 4)
             assert.equal(errors[0].lineNumber, 6)
-            assert.equal(errors[0].rule, 'non_empty_constructor_needs_parens')
             assert.equal(errors[1].lineNumber, 7)
-            assert.equal(errors[1].rule, 'non_empty_constructor_needs_parens')
             assert.equal(errors[2].lineNumber, 9)
-            assert.equal(errors[2].rule, 'non_empty_constructor_needs_parens')
             assert.equal(errors[3].lineNumber, 10)
-            assert.equal(errors[3].rule, 'non_empty_constructor_needs_parens')
+            assert.equal(rule, RULE) for {rule} in errors
 
 }).export(module)

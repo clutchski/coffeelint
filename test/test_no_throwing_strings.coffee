@@ -3,10 +3,11 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
-vows.describe('throw').addBatch({
+RULE = 'no_throwing_strings'
+
+vows.describe(RULE).addBatch({
 
     'Throwing strings':
-
         topic:
             '''
             throw 'my error'
@@ -21,7 +22,7 @@ vows.describe('throw').addBatch({
             assert.lengthOf(errors, 3)
             error = errors[0]
             assert.equal(error.message, 'Throwing strings is forbidden')
-            assert.equal(error.rule, 'no_throwing_strings')
+            assert.equal(error.rule, RULE)
 
         'can be permitted': (source) ->
             config = {no_throwing_strings: {level: 'ignore'}}

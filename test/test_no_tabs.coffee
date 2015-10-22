@@ -8,8 +8,9 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
+RULE = 'no_tabs'
 
-vows.describe('tabs').addBatch({
+vows.describe(RULE).addBatch({
 
     'Tabs':
         topic:
@@ -26,7 +27,7 @@ vows.describe('tabs').addBatch({
             error = errors[1]
             assert.equal(error.lineNumber, 2)
             assert.equal(error.message, 'Line contains tab indentation')
-            assert.equal(error.rule, 'no_tabs')
+            assert.equal(error.rule, RULE)
 
         'can be permitted': (source) ->
             config =
@@ -41,6 +42,7 @@ vows.describe('tabs').addBatch({
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.equal(errors.length, 2)
+            assert.equal(rule, RULE) for {rule} in errors
 
         'are allowed in strings': () ->
             source = "x = () -> '\t'"

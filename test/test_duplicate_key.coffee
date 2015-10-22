@@ -37,11 +37,11 @@ vows.describe(RULE).addBatch({
             error = errors[0]
             assert.equal(error.lineNumber, 8) # 2nd getA
             assert.equal(error.message, message)
-            assert.equal(error.rule, 'duplicate_key')
+            assert.equal(error.rule, RULE)
             error = errors[1]
             assert.equal(error.lineNumber, 9) # 2nd getConfig
             assert.equal(error.message, message)
-            assert.equal(error.rule, 'duplicate_key')
+            assert.equal(error.rule, RULE)
 
         'is optional': (source) ->
             for length in [null, 0, false]

@@ -3,11 +3,11 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
-ruleName = 'ensure_comprehensions'
+RULE = 'ensure_comprehensions'
 errorMessage = 'Comprehensions must have parentheses around them'
 config = {}
 
-vows.describe(ruleName).addBatch({
+vows.describe(RULE).addBatch({
 
     'Ignore for-loops':
         topic:
@@ -23,7 +23,7 @@ vows.describe(ruleName).addBatch({
             '''
 
         'are ignored': (source) ->
-            config[ruleName] = { level: 'error' }
+            config[RULE] = { level: 'error' }
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.isEmpty(errors)
@@ -42,7 +42,7 @@ vows.describe(ruleName).addBatch({
             '''
 
         'throws an error': (source) ->
-            config[ruleName] = { level: 'error' }
+            config[RULE] = { level: 'error' }
 
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
@@ -51,10 +51,10 @@ vows.describe(ruleName).addBatch({
             error = errors[0]
             assert.equal(error.lineNumber, 4)
             assert.equal(error.message, errorMessage)
-            assert.equal(error.rule, ruleName)
+            assert.equal(error.rule, RULE)
 
         'doesn\'t throw an error when rule is ignore': (source) ->
-            config[ruleName] = { level: 'ignore' }
+            config[RULE] = { level: 'ignore' }
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.isEmpty(errors)
@@ -79,7 +79,7 @@ vows.describe(ruleName).addBatch({
             '''
 
         'doesn\'t throw an error': (source) ->
-            config[ruleName] = { level: 'error' }
+            config[RULE] = { level: 'error' }
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 2)
@@ -87,12 +87,12 @@ vows.describe(ruleName).addBatch({
             error = errors[0]
             assert.equal(error.lineNumber, 6)
             assert.equal(error.message, errorMessage)
-            assert.equal(error.rule, ruleName)
+            assert.equal(error.rule, RULE)
 
             error = errors[1]
             assert.equal(error.lineNumber, 9)
             assert.equal(error.message, errorMessage)
-            assert.equal(error.rule, ruleName)
+            assert.equal(error.rule, RULE)
 
     'Doesn\'t trigger if we encounter key/value and there is no equal sign':
         topic:
@@ -108,7 +108,7 @@ vows.describe(ruleName).addBatch({
             '''
 
         'doesn\'t throw an error': (source) ->
-            config[ruleName] = { level: 'error' }
+            config[RULE] = { level: 'error' }
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.isEmpty(errors)
@@ -125,7 +125,7 @@ vows.describe(ruleName).addBatch({
             '''
 
         'doesn\'t throw an error': (source) ->
-            config[ruleName] = { level: 'error' }
+            config[RULE] = { level: 'error' }
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.isEmpty(errors)
@@ -146,7 +146,7 @@ vows.describe(ruleName).addBatch({
             '''
 
         'doesn\'t throw an error': (source) ->
-            config[ruleName] = { level: 'error' }
+            config[RULE] = { level: 'error' }
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.isEmpty(errors)
@@ -158,7 +158,7 @@ vows.describe(ruleName).addBatch({
             '''
 
         'doesn\'t throw an error': (source) ->
-            config[ruleName] = { level: 'error' }
+            config[RULE] = { level: 'error' }
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.isEmpty(errors)
@@ -177,7 +177,7 @@ vows.describe(ruleName).addBatch({
             '''
 
         'doesn\'t throw an error': (source) ->
-            config[ruleName] = { level: 'error' }
+            config[RULE] = { level: 'error' }
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 1)
@@ -185,6 +185,6 @@ vows.describe(ruleName).addBatch({
             error = errors[0]
             assert.equal(error.lineNumber, 8)
             assert.equal(error.message, errorMessage)
-            assert.equal(error.rule, ruleName)
+            assert.equal(error.rule, RULE)
 
 }).export(module)

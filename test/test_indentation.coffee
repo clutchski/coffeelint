@@ -3,10 +3,11 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
-vows.describe('indent').addBatch({
+RULE = 'indentation'
+
+vows.describe(RULE).addBatch({
 
     'Indentation':
-
         topic:
             '''
             x = () ->
@@ -22,7 +23,7 @@ vows.describe('indent').addBatch({
             error = errors[0]
             msg = 'Line contains inconsistent indentation'
             assert.equal(error.message, msg)
-            assert.equal(error.rule, 'indentation')
+            assert.equal(error.rule, RULE)
             assert.equal(error.lineNumber, 5)
             assert.equal(error.context, 'Expected 2 got 4')
 
@@ -184,7 +185,7 @@ vows.describe('indent').addBatch({
             assert.equal(errors.length, 1)
             error = errors[0]
 
-            assert.equal(error.rule, 'indentation')
+            assert.equal(error.rule, RULE)
             assert.equal(error.lineNumber, 9)
             assert.equal(error.context, 'Expected 2 got 3')
 
@@ -199,7 +200,7 @@ vows.describe('indent').addBatch({
             assert.equal(errors.length, 1)
             error = errors[0]
 
-            assert.equal(error.rule, 'indentation')
+            assert.equal(error.rule, RULE)
             assert.equal(error.lineNumber, 2)
             assert.equal(error.context, 'Expected 2 got 3')
 
@@ -221,13 +222,13 @@ vows.describe('indent').addBatch({
             assert.equal(errors.length, 2)
             error = errors[0]
 
-            assert.equal(error.rule, 'indentation')
+            assert.equal(error.rule, RULE)
             assert.equal(error.lineNumber, 5)
             assert.equal(error.context, 'Expected 2 got 1')
 
             error = errors[1]
 
-            assert.equal(error.rule, 'indentation')
+            assert.equal(error.rule, RULE)
             assert.equal(error.lineNumber, 8)
             assert.equal(error.context, 'Expected 2 got 3')
 
@@ -333,14 +334,14 @@ vows.describe('indent').addBatch({
             error = errors[0]
 
             assert.equal(error.message, msg)
-            assert.equal(error.rule, 'indentation')
+            assert.equal(error.rule, RULE)
             assert.equal(error.lineNumber, 3)
             assert.equal(error.context, 'Expected 2 got 4')
 
             error = errors[1]
 
             assert.equal(error.message, msg)
-            assert.equal(error.rule, 'indentation')
+            assert.equal(error.rule, RULE)
             assert.equal(error.lineNumber, 7)
             assert.equal(error.context, 'Expected 2 got 4')
 

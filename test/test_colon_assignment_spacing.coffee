@@ -3,8 +3,9 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
-vows.describe('colon_assignment_spacing').addBatch({
+RULE = 'colon_assignment_spacing'
 
+vows.describe(RULE).addBatch({
 
     'Equal spacing around assignment':
         topic:
@@ -84,7 +85,8 @@ vows.describe('colon_assignment_spacing').addBatch({
                         left: 1
                         right: 1
             errors = coffeelint.lint(source, config)
-            assert.equal(errors.length, 3)
+            assert.equal(rule, RULE) for {rule} in errors
+            assert.lengthOf(errors, 3)
 
         'will ignore an error': (source) ->
             config =

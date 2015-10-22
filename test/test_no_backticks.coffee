@@ -3,10 +3,11 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
-vows.describe('backticks').addBatch({
+RULE = 'no_backticks'
+
+vows.describe(RULE).addBatch({
 
     'Backticks':
-
         topic:
             '''
             `with(document) alert(height);`
@@ -17,7 +18,7 @@ vows.describe('backticks').addBatch({
             assert.isArray(errors)
             assert.lengthOf(errors, 1)
             error = errors[0]
-            assert.equal(error.rule, 'no_backticks')
+            assert.equal(error.rule, RULE)
             assert.equal(error.lineNumber, 1)
             assert.equal(error.message, 'Backticks are forbidden')
 

@@ -5,15 +5,15 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 
 configError = {no_this: {level: 'error'}}
 
-rule = 'no_this'
+RULE = 'no_this'
 
-vows.describe(rule).addBatch({
+vows.describe(RULE).addBatch({
 
     'this':
         'should warn when \'this\' is used': ->
             result = coffeelint.lint('this.foo()', configError)[0]
             assert.equal(result.lineNumber, 1)
-            assert.equal(result.rule, rule)
+            assert.equal(result.rule, RULE)
 
     '@':
         'should not warn when \'@\' is used': ->
@@ -70,11 +70,11 @@ vows.describe(rule).addBatch({
             assert.equal(errors.length, 2)
             error = errors[0]
             assert.equal(error.lineNumber, 3)
-            assert.equal(error.rule, rule)
+            assert.equal(error.rule, RULE)
 
             error = errors[1]
             assert.equal(error.lineNumber, 7)
-            assert.equal(error.rule, rule)
+            assert.equal(error.rule, RULE)
 
         'returns no errors if no_stand_alone_at is on warn/error': (source) ->
             config =
@@ -88,7 +88,7 @@ vows.describe(rule).addBatch({
 
             error = errors[0]
             assert.equal(error.lineNumber, 7)
-            assert.equal(error.rule, rule)
+            assert.equal(error.rule, RULE)
 
             config =
                 no_stand_alone_at:
@@ -101,6 +101,6 @@ vows.describe(rule).addBatch({
 
             error = errors[0]
             assert.equal(error.lineNumber, 7)
-            assert.equal(error.rule, rule)
+            assert.equal(error.rule, RULE)
 
 }).export(module)

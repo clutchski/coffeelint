@@ -13,7 +13,7 @@ shouldError = (source, numErrors = 1) ->
         errors = runLint source
         assert.lengthOf errors, numErrors, "Expected #{numErrors} errors"
         error = errors[0]
-        assert.equal error.rule, 'no_unnecessary_fat_arrows'
+        assert.equal error.rule, RULE
 
 shouldPass = (source) ->
     topic: source
@@ -21,7 +21,9 @@ shouldPass = (source) ->
         errors = runLint source
         assert.isEmpty errors, "Expected no errors, got #{errors}"
 
-vows.describe('no unnecessary fat arrows').addBatch({
+RULE = 'no_unnecessary_fat_arrows'
+
+vows.describe(RULE).addBatch({
 
     'empty function': shouldError '=>'
     'simple function': shouldError '=> 1'

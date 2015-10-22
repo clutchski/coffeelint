@@ -3,10 +3,11 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
-vows.describe('trailing').addBatch({
+RULE = 'no_trailing_whitespace'
+
+vows.describe(RULE).addBatch({
 
     'Trailing whitespace':
-
         topic:
             '''
             x = 1234      \ny = 1
@@ -19,7 +20,7 @@ vows.describe('trailing').addBatch({
             assert.isObject(error)
             assert.equal(error.lineNumber, 1)
             assert.equal(error.message, 'Line ends with trailing whitespace')
-            assert.equal(error.rule, 'no_trailing_whitespace')
+            assert.equal(error.rule, RULE)
 
         'can be permitted': (source) ->
             config = {no_trailing_whitespace: {level: 'ignore'}}
@@ -39,7 +40,7 @@ vows.describe('trailing').addBatch({
             assert.isObject(error)
             assert.equal(error.lineNumber, 1)
             assert.equal(error.message, 'Line ends with trailing whitespace')
-            assert.equal(error.rule, 'no_trailing_whitespace')
+            assert.equal(error.rule, RULE)
 
         'can be permitted': (source) ->
             config = {no_trailing_whitespace: {allowed_in_comments: true}}
@@ -66,7 +67,7 @@ vows.describe('trailing').addBatch({
             assert.isObject(error)
             assert.equal(error.lineNumber, 2)
             assert.equal(error.message, 'Line ends with trailing whitespace')
-            assert.equal(error.rule, 'no_trailing_whitespace')
+            assert.equal(error.rule, RULE)
 
         'can be permitted': (source) ->
             config = {no_trailing_whitespace: {allowed_in_comments: true}}
@@ -92,7 +93,7 @@ vows.describe('trailing').addBatch({
             assert.isObject(error)
             assert.equal(error.lineNumber, 2)
             assert.equal(error.message, 'Line ends with trailing whitespace')
-            assert.equal(error.rule, 'no_trailing_whitespace')
+            assert.equal(error.rule, RULE)
 
     'Trailing tabs':
         topic:

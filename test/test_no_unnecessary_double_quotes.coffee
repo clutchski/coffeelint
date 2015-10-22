@@ -3,7 +3,9 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
-vows.describe('no_unnecessary_double_quotes').addBatch({
+RULE = 'no_unnecessary_double_quotes'
+
+vows.describe(RULE).addBatch({
 
     'Single quotes':
         topic:
@@ -39,7 +41,7 @@ vows.describe('no_unnecessary_double_quotes').addBatch({
             assert.equal(error.message,
                 'Unnecessary double quotes are forbidden'
             )
-            assert.equal(error.rule, 'no_unnecessary_double_quotes')
+            assert.equal(error.rule, RULE)
 
 
     'Useful double quotes':
@@ -74,7 +76,7 @@ vows.describe('no_unnecessary_double_quotes').addBatch({
             assert.equal(error.message,
                 'Unnecessary double quotes are forbidden'
             )
-            assert.equal(error.rule, 'no_unnecessary_double_quotes')
+            assert.equal(error.rule, RULE)
 
 
     'Block strings with useful double quotes':
@@ -122,7 +124,7 @@ vows.describe('no_unnecessary_double_quotes').addBatch({
             assert.equal(error.message,
                 'Unnecessary double quotes are forbidden'
             )
-            assert.equal(error.rule, 'no_unnecessary_double_quotes')
+            assert.equal(error.rule, RULE)
 
     'use strict':
         topic:
@@ -138,7 +140,7 @@ vows.describe('no_unnecessary_double_quotes').addBatch({
             assert.lengthOf(errors, 1)
             error = errors[0]
             assert.equal(error.lineNumber, 1)
-            assert.equal(error.rule, 'no_unnecessary_double_quotes')
+            assert.equal(error.rule, RULE)
 
     'Test RegExp flags #405':
         topic:

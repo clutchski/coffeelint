@@ -69,9 +69,12 @@ shouldFail = (source, config, errorMessages = []) ->
         assert.equal(errors.length, errorMessages.length)
         for error, index in errors
             assert.equal(error.context, errorMessages[index])
+            assert.equal(error.rule, RULE)
     context
 
-vows.describe('braces_spacing').addBatch({
+RULE = 'braces_spacing'
+
+vows.describe(RULE).addBatch({
 
     'disabled by default':
         'with no spaces': shouldPass(sources.sameLine.noSpaces)

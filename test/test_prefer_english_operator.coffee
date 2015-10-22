@@ -5,7 +5,9 @@ coffeelint = require path.join('..', 'lib', 'coffeelint')
 
 configError = {prefer_english_operator: {level: 'error'}}
 
-vows.describe('PreferEnglishOperatorssemicolons').addBatch({
+RULE = 'prefer_english_operator'
+
+vows.describe(RULE).addBatch({
 
     'non-English operators':
         'should warn when == is used': ->
@@ -43,6 +45,7 @@ vows.describe('PreferEnglishOperatorssemicolons').addBatch({
             result = coffeelint.lint('x = !!y', configError)
             assert.equal(result.length, 1)
             assert.equal(result[0].level, 'warn')
+            assert.equal(result[0].rule, RULE)
 
     'English operators':
         'should not warn when \'is\' is used': ->

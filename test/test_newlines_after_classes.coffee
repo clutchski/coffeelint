@@ -3,8 +3,9 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
-rule = 'newlines_after_classes'
-vows.describe(rule).addBatch({
+RULE = 'newlines_after_classes'
+
+vows.describe(RULE).addBatch({
 
     'File ends with end of class':
         topic:
@@ -148,7 +149,7 @@ vows.describe(rule).addBatch({
             assert.equal(errors.length, 1)
             assert.equal(errors[0].lineNumber, 7)
             assert.equal(errors[0].line, '')
-            assert.equal(errors[0].rule, rule)
+            assert.equal(errors[0].rule, RULE)
             assert.equal(errors[0].context, 'Expected 1 got 2')
 
         'passes properly with value of 2': (source) ->
@@ -171,7 +172,7 @@ vows.describe(rule).addBatch({
             assert.equal(errors.length, 1)
             assert.equal(errors[0].lineNumber, 7)
             assert.equal(errors[0].line, '')
-            assert.equal(errors[0].rule, rule)
+            assert.equal(errors[0].rule, RULE)
             assert.equal(errors[0].context, 'Expected 3 got 2')
 
     'Fix #245, other case':
@@ -197,7 +198,7 @@ vows.describe(rule).addBatch({
             assert.equal(errors.length, 1)
             assert.equal(errors[0].lineNumber, 6)
             assert.equal(errors[0].line, '')
-            assert.equal(errors[0].rule, rule)
+            assert.equal(errors[0].rule, RULE)
             assert.equal(errors[0].context, 'Expected 0 got 1')
 
         'passes with value of 1': (source) ->
@@ -220,7 +221,7 @@ vows.describe(rule).addBatch({
             assert.equal(errors.length, 1)
             assert.equal(errors[0].lineNumber, 6)
             assert.equal(errors[0].line, '')
-            assert.equal(errors[0].rule, rule)
+            assert.equal(errors[0].rule, RULE)
             assert.equal(errors[0].context, 'Expected 2 got 1')
 
     'Fix #347, error when class ends with non-function property':
@@ -272,7 +273,7 @@ vows.describe(rule).addBatch({
             assert.equal(errors.length, 1)
             assert.equal(errors[0].lineNumber, 6)
             assert.equal(errors[0].line, '')
-            assert.equal(errors[0].rule, rule)
+            assert.equal(errors[0].rule, RULE)
             assert.equal(errors[0].context, 'Expected 2 got 1')
 
     'Handle comments out after a class':
@@ -300,7 +301,7 @@ vows.describe(rule).addBatch({
             assert.equal(errors.length, 1)
             assert.equal(errors[0].lineNumber, 4)
             assert.equal(errors[0].line, '')
-            assert.equal(errors[0].rule, rule)
+            assert.equal(errors[0].rule, RULE)
             assert.equal(errors[0].context, 'Expected 0 got 2')
 
         'throws error when newlines_after_classes is set to 1': (source) ->
@@ -313,7 +314,7 @@ vows.describe(rule).addBatch({
             assert.equal(errors.length, 1)
             assert.equal(errors[0].lineNumber, 4)
             assert.equal(errors[0].line, '')
-            assert.equal(errors[0].rule, rule)
+            assert.equal(errors[0].rule, RULE)
             assert.equal(errors[0].context, 'Expected 1 got 2')
 
         'passes when newlines_after_classes is set to 2': (source) ->
@@ -349,7 +350,7 @@ vows.describe(rule).addBatch({
             assert.equal(errors.length, 1)
             assert.equal(errors[0].lineNumber, 3)
             assert.equal(errors[0].line, '')
-            assert.equal(errors[0].rule, rule)
+            assert.equal(errors[0].rule, RULE)
             assert.equal(errors[0].context, 'Expected 0 got 1')
 
         'ignores comment when newlines_after_classes is set to 1': (source) ->
@@ -371,7 +372,7 @@ vows.describe(rule).addBatch({
             assert.equal(errors.length, 1)
             assert.equal(errors[0].lineNumber, 3)
             assert.equal(errors[0].line, '')
-            assert.equal(errors[0].rule, rule)
+            assert.equal(errors[0].rule, RULE)
             assert.equal(errors[0].context, 'Expected 2 got 1')
 
         'throws error when newlines_after_classes is set to 3': (source) ->
@@ -384,7 +385,7 @@ vows.describe(rule).addBatch({
             assert.equal(errors.length, 1)
             assert.equal(errors[0].lineNumber, 3)
             assert.equal(errors[0].line, '')
-            assert.equal(errors[0].rule, rule)
+            assert.equal(errors[0].rule, RULE)
             assert.equal(errors[0].context, 'Expected 3 got 1')
 
 }).export(module)

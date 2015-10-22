@@ -3,6 +3,7 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
+RULE = 'cyclomatic_complexity'
 
 # Return the cyclomatic complexity of a code snippet with one function.
 getComplexity = (source) ->
@@ -11,10 +12,10 @@ getComplexity = (source) ->
     assert.isNotEmpty(errors)
     assert.lengthOf(errors, 1)
     error = errors[0]
-    assert.equal(error.rule, 'cyclomatic_complexity')
+    assert.equal(error.rule, RULE)
     return error.context
 
-vows.describe('cyclomatic complexity').addBatch({
+vows.describe(RULE).addBatch({
 
     'Cyclomatic complexity':
         topic:
@@ -37,7 +38,7 @@ vows.describe('cyclomatic complexity').addBatch({
             assert.isArray(errors)
             assert.lengthOf(errors, 1)
             error = errors[0]
-            assert.equal(error.rule, 'cyclomatic_complexity')
+            assert.equal(error.rule, RULE)
             assert.equal(error.context, 11)
             assert.equal(error.lineNumber, 1)
             assert.equal(error.lineNumberEnd, 5)
@@ -275,7 +276,7 @@ vows.describe('cyclomatic complexity').addBatch({
             assert.isArray(errors)
             assert.lengthOf(errors, 1)
             error = errors[0]
-            assert.equal(error.rule, 'cyclomatic_complexity')
+            assert.equal(error.rule, RULE)
             assert.equal(error.lineNumber, 1)
             assert.equal(error.lineNumberEnd, 10)
             assert.equal(error.context, 14)
