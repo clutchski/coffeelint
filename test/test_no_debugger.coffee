@@ -14,11 +14,8 @@ vows.describe(RULE).addBatch({
             '''
 
         'causes a warning when present': (source) ->
-            errors = coffeelint.lint(source, {
-                no_debugger:
-                    level: 'error'
-                    console: true
-            })
+            config = no_debugger: { level: 'error', console: true }
+            errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 1)
 
@@ -38,7 +35,8 @@ vows.describe(RULE).addBatch({
             assert.equal(error.rule, RULE)
 
         'can be set to error': (source) ->
-            errors = coffeelint.lint(source, {no_debugger: {'level': 'error'}})
+            config = no_debugger: level: 'error'
+            errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.isArray(errors)
             assert.lengthOf(errors, 1)

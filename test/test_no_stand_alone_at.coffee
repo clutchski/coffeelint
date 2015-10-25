@@ -27,7 +27,7 @@ vows.describe(RULE).addBatch({
             assert.isEmpty(errors)
 
         'can be forbidden': (source) ->
-            config = {no_stand_alone_at: {level: 'error'}}
+            config = no_stand_alone_at: { level: 'error' }
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 4)

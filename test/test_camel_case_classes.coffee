@@ -55,8 +55,7 @@ vows.describe(RULE).addBatch({
             assert.equal(error.rule, RULE)
 
         'can be permitted': (source) ->
-            config =
-                camel_case_classes: {level: 'ignore'}
+            config = camel_case_classes: { level: 'ignore' }
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 

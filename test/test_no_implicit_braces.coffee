@@ -22,7 +22,7 @@ vows.describe(RULE).addBatch({
             assert.isEmpty(errors)
 
         'can be forbidden': (source) ->
-            config = {no_implicit_braces: {level: 'error'}}
+            config = no_implicit_braces: { level: 'error' }
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 2)
@@ -42,17 +42,18 @@ vows.describe(RULE).addBatch({
             '''
 
         'blocks all implicit braces by default': (source) ->
-            config = {no_implicit_braces: {level: 'error'}}
+            config = no_implicit_braces: { level: 'error' }
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 2)
-            assert.equal(rule, RULE) for {rule} in errors
+            assert.equal(rule, RULE) for { rule } in errors
 
         'allows braces at the end of lines when strict is false': (source) ->
             config =
                 no_implicit_braces:
                     level: 'error'
                     strict: false
+
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.isEmpty(errors)
@@ -84,7 +85,7 @@ vows.describe(RULE).addBatch({
             '''
 
         'are always ignored': (source) ->
-            config = {no_implicit_braces: {level: 'error'}}
+            config = no_implicit_braces: { level: 'error' }
             errors = coffeelint.lint(source)
             assert.isArray(errors)
             assert.isEmpty(errors)
@@ -109,6 +110,7 @@ vows.describe(RULE).addBatch({
                 no_implicit_braces:
                     level: 'error'
                     strict: false
+
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 0)
@@ -177,6 +179,7 @@ vows.describe(RULE).addBatch({
                 no_implicit_braces:
                     level: 'error'
                     strict: false
+
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 0)
@@ -186,6 +189,7 @@ vows.describe(RULE).addBatch({
                 no_implicit_braces:
                     level: 'error'
                     strict: true
+
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 3)

@@ -3,8 +3,8 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
-configError = {no_trailing_semicolons: {level: 'error'}}
-configIgnore = {no_trailing_semicolons: {level: 'ignore'}}
+configError = no_trailing_semicolons: { level: 'error' }
+configIgnore = no_trailing_semicolons: { level: 'ignore' }
 
 RULE = 'no_trailing_semicolons'
 
@@ -119,7 +119,7 @@ vows.describe(RULE).addBatch({
             '''
 
         'works as expected': (source) ->
-            config = { line_endings: { value: 'windows' } }
+            config = line_endings: { value: 'windows' }
             errors = coffeelint.lint(source, config)
             assert.lengthOf(errors, 1)
             error = errors[0]

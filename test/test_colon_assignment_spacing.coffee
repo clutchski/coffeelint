@@ -85,7 +85,7 @@ vows.describe(RULE).addBatch({
                         left: 1
                         right: 1
             errors = coffeelint.lint(source, config)
-            assert.equal(rule, RULE) for {rule} in errors
+            assert.equal(rule, RULE) for { rule } in errors
             assert.lengthOf(errors, 3)
 
         'will ignore an error': (source) ->

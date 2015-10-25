@@ -22,7 +22,7 @@ vows.describe(RULE).addBatch({
             assert.isEmpty(errors)
 
         'can be forbidden': (source) ->
-            errors = coffeelint.lint(source, {no_plusplus: {'level': 'error'}})
+            errors = coffeelint.lint(source, { no_plusplus: 'level': 'error' })
             assert.isArray(errors)
             assert.lengthOf(errors, 4)
             error = errors[0]

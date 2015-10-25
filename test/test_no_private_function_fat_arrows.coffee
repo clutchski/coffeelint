@@ -3,10 +3,9 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
-config = {
-    no_unnecessary_fat_arrows: {level: 'ignore'}
-    no_private_function_fat_arrows: {level: 'error'}
-}
+config =
+    no_unnecessary_fat_arrows: { level: 'ignore' }
+    no_private_function_fat_arrows: { level: 'error' }
 
 RULE = 'no_private_function_fat_arrows'
 

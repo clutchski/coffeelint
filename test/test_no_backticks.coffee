@@ -23,7 +23,7 @@ vows.describe(RULE).addBatch({
             assert.equal(error.message, 'Backticks are forbidden')
 
         'can be permitted': (source) ->
-            config = {no_backticks: {level: 'ignore'}}
+            config = no_backticks: { level: 'ignore' }
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.isEmpty(errors)

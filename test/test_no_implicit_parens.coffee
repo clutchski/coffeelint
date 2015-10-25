@@ -32,7 +32,7 @@ vows.describe(RULE).addBatch({
             assert.isEmpty(errors)
 
         'can be forbidden': (source) ->
-            config = {no_implicit_parens: {level: 'error'}}
+            config = no_implicit_parens: { level: 'error' }
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 2)
@@ -54,11 +54,11 @@ vows.describe(RULE).addBatch({
             '''
 
         'blocks all implicit parens by default': (source) ->
-            config = {no_implicit_parens: {level: 'error'}}
+            config = no_implicit_parens: { level: 'error' }
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 2)
-            assert.equal(rule, RULE) for {rule} in errors
+            assert.equal(rule, RULE) for { rule } in errors
 
         'allows parens at the end of lines when strict is false': (source) ->
             config =
@@ -87,11 +87,11 @@ vows.describe(RULE).addBatch({
             '''
 
         'blocks all implicit parens by default': (source) ->
-            config = {no_implicit_parens: {level: 'error'}}
+            config = no_implicit_parens: { level: 'error' }
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
             assert.lengthOf(errors, 4)
-            assert.equal(rule, RULE) for {rule} in errors
+            assert.equal(rule, RULE) for { rule } in errors
 
         'allows parens at the end of lines when strict is false': (source) ->
             config =

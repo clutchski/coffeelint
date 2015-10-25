@@ -31,5 +31,9 @@
     },
     "no_unnecessary_double_quotes": {
         "level": "error"
+    },
+    "braces_spacing": {
+        "level": "error",
+        "spaces": 1
     }
 }

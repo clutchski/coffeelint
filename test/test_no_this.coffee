@@ -3,7 +3,7 @@ vows = require 'vows'
 assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
-configError = {no_this: {level: 'error'}}
+configError = { no_this: { level: 'error' } }
 
 RULE = 'no_this'
 
