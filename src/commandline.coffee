@@ -95,9 +95,6 @@ loadConfig = (options) ->
             # If -f was specifying a package.json, extract the config
             if config.coffeelintConfig
                 config = config.coffeelintConfig
-        else if (process.env.COFFEELINT_CONFIG and
-                fs.existsSync(process.env.COFFEELINT_CONFIG))
-            config = readConfigFile(process.env.COFFEELINT_CONFIG)
     config
 
 # Get fallback configuration. With the -F flag found configs in standard places
