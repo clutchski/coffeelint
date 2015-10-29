@@ -1,9 +1,10 @@
 _ = require 'underscore'
-{ RULES: rules } = (require './coffeelint')
+{ RULES: rules } = require './coffeelint'
 
 render = () ->
     rulesHTML = ''
-    for ruleName in Object.keys(rules).sort()
+    ruleNames = Object.keys(rules).sort()
+    for ruleName in ruleNames
         rule = rules[ruleName]
         rule.name = ruleName
         rule.description = '[no description provided]' unless rule.description
