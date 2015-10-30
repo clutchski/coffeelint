@@ -1,5 +1,3 @@
-
-
 module.exports = class NoInterpolationInSingleQuotes
 
     rule:

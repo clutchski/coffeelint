@@ -1,4 +1,3 @@
-
 module.exports = class SpacingAfterComma
     rule:
         name: 'spacing_after_comma'

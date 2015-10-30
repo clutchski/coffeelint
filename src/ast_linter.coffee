@@ -82,4 +82,4 @@ module.exports = class ASTLinter extends BaseLinter
             level: rule.level
             lineNumber: lineNumber
         }
-        return  @createError 'coffeescript_error', attrs
+        return @createError 'coffeescript_error', attrs

@@ -1,4 +1,3 @@
-
 JsLintReporter = require './jslint'
 
 module.exports = class CheckstyleReporter

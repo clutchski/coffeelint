@@ -10,6 +10,7 @@ prefix = path.join(thisdir, 'fixtures', 'prefix_transform.coffee')
 cloud = path.join(thisdir, 'fixtures', 'cloud_transform.coffee')
 
 vows.describe('transform_messes_up_line_numbers').addBatch({
+
     'transform_messes_up_line_numbers':
         topic:
             '''

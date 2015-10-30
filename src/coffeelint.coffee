@@ -5,7 +5,6 @@ Copyright (c) 2011 Matthew Perpick.
 CoffeeLint is freely distributable under the MIT license.
 ###
 
-
 # Coffeelint's namespace.
 # Browserify wrapps this file in a UMD that will set window.coffeelint to
 # exports
@@ -70,7 +69,6 @@ ASTLinter = require './ast_linter.coffee'
 # Cache instance, disabled by default
 cache = null
 
-
 # Merge default and user configuration.
 mergeDefaultConfig = (userConfig) ->
     # When run from the browser it may not be able to find the ruleLoader.
@@ -91,7 +89,6 @@ sameJSON = (a, b) ->
 coffeelint.trimConfig = (userConfig) ->
     newConfig = {}
     userConfig = mergeDefaultConfig(userConfig)
-
     for rule, config of userConfig
         dConfig = RULES[rule]
 
@@ -114,7 +111,6 @@ coffeelint.trimConfig = (userConfig) ->
         else
             config.module = config._module
             delete config._module
-
             for key, value of config
                 continue if key in ['message', 'description', 'name']
 

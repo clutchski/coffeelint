@@ -18,7 +18,6 @@ vows.describe(RULE).addBatch({
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 0)
 
-
     'Whitespace after commas':
         topic:
             '''

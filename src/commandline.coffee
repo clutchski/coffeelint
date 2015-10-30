@@ -138,7 +138,6 @@ reportAndExit = (errorReport, options) ->
     else
         options.argv.reporter
 
-
     strReporter ?= 'default'
     SelectedReporter = coreReporters[strReporter] ? do ->
         try

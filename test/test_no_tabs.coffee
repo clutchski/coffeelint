@@ -1,8 +1,3 @@
-#
-# Tab tests.
-#
-
-
 path = require 'path'
 vows = require 'vows'
 assert = require 'assert'
@@ -84,6 +79,5 @@ vows.describe(RULE).addBatch({
         'are ignored': (errors) ->
             errors = coffeelint.lint(errors)
             assert.isEmpty(errors)
-
 
 }).export(module)

@@ -1,4 +1,3 @@
-
 module.exports = class NoUnnecessaryDoubleQuotes
 
     rule:
@@ -21,6 +20,7 @@ module.exports = class NoUnnecessaryDoubleQuotes
             </pre>
             Double quotes are permitted by default.
             '''
+
     constructor: ->
         @regexps = []
         @interpolationLevel = 0

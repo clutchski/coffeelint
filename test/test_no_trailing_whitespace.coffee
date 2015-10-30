@@ -48,7 +48,9 @@ vows.describe(RULE).addBatch({
             assert.equal(errors.length, 0)
 
     'a # in a string':
-        topic: "x = 'some # string'   "
+        # writen this way to preserve spacing
+        topic: '''x = "some # string"   '''
+
         'does not confuse trailing_whitespace': (source) ->
             config = no_trailing_whitespace: { allowed_in_comments: true }
             errors = coffeelint.lint(source, config)

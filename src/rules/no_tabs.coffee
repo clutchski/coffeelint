@@ -1,6 +1,7 @@
-
 indentationRegex = /\S/
+
 module.exports = class NoTabs
+
     rule:
         name: 'no_tabs'
         level: 'error'

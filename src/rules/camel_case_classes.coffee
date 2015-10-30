@@ -1,4 +1,3 @@
-
 regexes =
     camelCase: /^[A-Z_][a-zA-Z\d]*$/
 

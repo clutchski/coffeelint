@@ -1,5 +1,5 @@
-
 module.exports = class PreferEnglishOperator
+
     rule:
         name: 'prefer_english_operator'
         level: 'ignore'
@@ -12,6 +12,7 @@ module.exports = class PreferEnglishOperator
             '''
 
     tokens: ['COMPARE', 'UNARY_MATH', 'LOGIC']
+
     lintToken: (token, tokenApi) ->
         config = tokenApi.config[@rule.name]
         level = config.level

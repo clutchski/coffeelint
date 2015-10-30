@@ -93,7 +93,3 @@ vows.describe(RULE).addBatch({
             assert.isEmpty(coffeelint.lint(source, configError))
 
 }).export(module)
-
-
-
-

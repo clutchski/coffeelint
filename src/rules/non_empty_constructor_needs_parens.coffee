@@ -1,4 +1,3 @@
-
 ParentClass = require './empty_constructor_needs_parens.coffee'
 
 module.exports = class NonEmptyConstructorNeedsParens extends ParentClass

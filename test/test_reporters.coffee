@@ -7,6 +7,7 @@ assert = require 'assert'
 # coffeelint = require 'coffeelint'
 # RawReporter = require 'coffeelint/lib/reporters/raw'
 ###
+
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 RawReporter = require path.join('..', 'lib', 'reporters', 'raw')
 

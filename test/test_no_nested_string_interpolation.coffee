@@ -58,4 +58,5 @@ vows.describe(RULE).addBatch({
             assert.equal(errors[1].lineNumber, 2)
             assert.equal(errors[2].lineNumber, 3)
             assert.equal(errors[3].lineNumber, 3)
+
 }).export(module)

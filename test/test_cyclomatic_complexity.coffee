@@ -70,7 +70,6 @@ vows.describe(RULE).addBatch({
             assert.equal(complexity, 2)
 
 
-
     'If Else statement':
         topic:
             '''
@@ -111,7 +110,6 @@ vows.describe(RULE).addBatch({
             complexity = getComplexity(source)
             assert.equal(complexity, 3)
 
-
     'Nested if statements':
         topic:
             '''
@@ -125,8 +123,6 @@ vows.describe(RULE).addBatch({
             complexity = getComplexity(source)
             assert.equal(complexity, 3)
 
-
-
     'A while loop':
         topic:
             '''
@@ -138,7 +134,6 @@ vows.describe(RULE).addBatch({
             complexity = getComplexity(source)
             assert.equal(complexity, 2)
 
-
     'An until loop':
         topic:
             '''
@@ -148,7 +143,6 @@ vows.describe(RULE).addBatch({
         'increments complexity': (source) ->
             complexity = getComplexity(source)
             assert.equal(complexity, 2)
-
 
     'A for loop':
         topic:
@@ -172,7 +166,6 @@ vows.describe(RULE).addBatch({
             complexity = getComplexity(source)
             assert.equal(complexity, 2)
 
-
     'Try / Catch blocks':
         topic:
             '''
@@ -185,7 +178,6 @@ vows.describe(RULE).addBatch({
 
         'increments complexity': (source) ->
             assert.equal(getComplexity(source), 2)
-
 
     'Try / Catch / Finally blocks':
         topic:
@@ -202,7 +194,6 @@ vows.describe(RULE).addBatch({
         'increments complexity': (source) ->
             assert.equal(getComplexity(source), 2)
 
-
     'Switch statements without an else':
         topic:
             '''
@@ -216,7 +207,6 @@ vows.describe(RULE).addBatch({
         'increase complexity by the number of cases': (source) ->
             complexity = getComplexity(source)
             assert.equal(complexity, 4)
-
 
     'Switch statements with an else':
         topic:
@@ -232,7 +222,6 @@ vows.describe(RULE).addBatch({
         'increase complexity by the number of cases': (source) ->
             complexity = getComplexity(source)
             assert.equal(complexity, 4)
-
 
     'And operators':
         topic:
@@ -253,7 +242,6 @@ vows.describe(RULE).addBatch({
         'increments the complexity': (source) ->
             complexity = getComplexity(source)
             assert.equal(complexity, 2)
-
 
     'A complicated example':
         topic:

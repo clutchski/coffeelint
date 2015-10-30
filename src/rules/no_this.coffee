@@ -1,4 +1,5 @@
 module.exports = class NoThis
+
     rule:
         name: 'no_this'
         level: 'ignore'

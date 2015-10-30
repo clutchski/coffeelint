@@ -9,6 +9,7 @@ runLint = (source) ->
 
 shouldError = (source, numErrors = 1) ->
     topic: source
+
     'errors for unnecessary arrow': (source) ->
         errors = runLint source
         assert.lengthOf errors, numErrors, "Expected #{numErrors} errors"

@@ -1,4 +1,3 @@
-
 regexes =
     trailingWhitespace: /[^\s]+[\t ]+\r?$/
     onlySpaces: /^[\t ]+\r?$/

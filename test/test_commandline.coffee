@@ -9,7 +9,6 @@ assert = require 'assert'
 { spawn, exec } = require 'child_process'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
-
 # The path to the command line tool.
 coffeelintPath = path.join('..', 'bin', 'coffeelint')
 
@@ -30,7 +29,7 @@ process.env.COFFEELINT_CONFIG = ''
 # an unrealistic example when rules can be installed with `npm install -g
 # some-custom-rule`. This will setup a fake version of node_modules to a
 # relative path doesn't have to be used.
-process.env.NODE_PATH += ':' + path.resolve( __dirname,
+process.env.NODE_PATH += ':' + path.resolve(__dirname,
     'fixtures/mock_node_modules/')
 
 vows.describe('commandline').addBatch({

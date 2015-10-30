@@ -46,7 +46,6 @@ sources =
         ]
         '''
 
-
 configs =
     oneEmptyObjectSpace:
         braces_spacing: { level: 'error', empty_object_spaces: 1 }

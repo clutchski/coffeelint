@@ -8,7 +8,6 @@ RULE = 'line_endings'
 vows.describe(RULE).addBatch({
 
     'Unix line endings':
-
         topic:
             '''
             x = 1\ny=2
@@ -60,6 +59,5 @@ vows.describe(RULE).addBatch({
             config = line_endings: { level: 'error', value: 'osx' }
             assert.throws () ->
                 coffeelint.lint(source, config)
-
 
 }).export(module)

@@ -1,16 +1,15 @@
-
 class TokenApi
+
     constructor: (CoffeeScript, source, @config, @tokensByLine) ->
         @tokens = CoffeeScript.tokens(source)
         @lines = source.split('\n')
         @tokensByLine = {}  # A map of tokens by line.
 
-    i: 0              # The index of the current token we're linting.
+    i: 0 # The index of the current token we're linting.
 
     # Return the token n places away from the current token.
     peek: (n = 1) ->
         @tokens[@i + n] || null
-
 
 BaseLinter = require './base_linter.coffee'
 

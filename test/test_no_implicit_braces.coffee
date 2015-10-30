@@ -93,7 +93,6 @@ vows.describe(RULE).addBatch({
     'Test against use of implicit braces in loop with conditional (#459)':
         topic:
             '''
-
             list =
               count: 10
               items:

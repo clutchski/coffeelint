@@ -52,4 +52,3 @@ vows.describe(RULE).addBatch({
                 assert.isEmpty(errors)
 
 }).export(module)
-

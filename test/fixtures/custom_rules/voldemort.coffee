@@ -1,4 +1,3 @@
-
 class Voldemort
 
     avadaKadavra: (enemy) ->
