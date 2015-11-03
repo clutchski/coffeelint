@@ -43,6 +43,9 @@ loadJSON = (filename) ->
 # specific 'coffeelint.json' or a global 'coffeelint.json' in the home
 # directory.
 getConfig = (dir) ->
+    if (process.env.COFFEELINT_CONFIG and
+            fs.existsSync(process.env.COFFEELINT_CONFIG))
+        return loadJSON(process.env.COFFEELINT_CONFIG)
 
     npmConfig = loadNpmConfig(dir)
     return npmConfig  if npmConfig
