@@ -243,6 +243,25 @@ vows.describe(RULE).addBatch({
             complexity = getComplexity(source)
             assert.equal(complexity, 2)
 
+    'Nested functions':
+        topic:
+            '''
+            x = () ->
+              a = () ->
+                1 or 2
+            '''
+
+        'complexity are not aggregated into the parent function': (source) ->
+            config = cyclomatic_complexity: { level: 'error', value: 1 }
+            errors = coffeelint.lint(source, config)
+            assert.isArray(errors)
+            assert.lengthOf(errors, 1)
+            error = errors[0]
+            assert.equal(error.rule, RULE)
+            assert.equal(error.lineNumber, 2)
+            assert.equal(error.lineNumberEnd, 3)
+            assert.equal(error.context, 2)
+
     'A complicated example':
         topic:
             '''
