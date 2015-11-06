@@ -6,7 +6,7 @@ module.exports = class CyclomaticComplexity
         message: 'The cyclomatic complexity is too damn high'
         value: 10
         description: '''
-            Examine the complexity of your application.
+            Examine the complexity of your function.
             '''
 
     # returns the "complexity" value of the current node.
@@ -27,16 +27,16 @@ module.exports = class CyclomaticComplexity
         undefined
 
     # Lint the AST node and return its cyclomatic complexity.
-    lintNode: (node, line) ->
-
+    lintNode: (node) ->
         # Get the complexity of the current node.
         name = @astApi?.getNodeName node
         complexity = @getComplexity(node)
 
         # Add the complexity of all child's nodes to this one.
         node.eachChild (childNode) =>
-            nodeLine = childNode.locationData.first_line
-            complexity += @lintNode(childNode, nodeLine) if childNode
+            childComplexity = @lintNode(childNode)
+            if @astApi?.getNodeName(childNode) isnt 'Code'
+                complexity += childComplexity
 
         rule = @astApi.config[@rule.name]
 
@@ -45,7 +45,7 @@ module.exports = class CyclomaticComplexity
         if name is 'Code' and complexity >= rule.value
             error = @astApi.createError {
                 context: complexity + 1
-                lineNumber: line + 1
+                lineNumber: node.locationData.first_line + 1
                 lineNumberEnd: node.locationData.last_line + 1
             }
             @errors.push error if error
