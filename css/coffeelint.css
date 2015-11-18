@@ -89,6 +89,11 @@ body {
   padding-right:75px;
 }
 
+.row.doc_row .options pre {
+  overflow-x: scroll;
+  max-width: 400px;
+}
+
 .doc_row {
   font-family: "Helvetica Neue", "Lucida Grande", "Lucida Sans Unicode",
     Helvetica, Arial, sans-serif !important;
