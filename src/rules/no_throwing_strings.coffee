@@ -25,7 +25,7 @@ module.exports = class NoThrowingStrings
             This rule is enabled by default.
             '''
 
-    tokens: [ 'THROW' ]
+    tokens: ['THROW']
 
     lintToken: (token, tokenApi) ->
         [n1, ...] = tokenApi.peek()

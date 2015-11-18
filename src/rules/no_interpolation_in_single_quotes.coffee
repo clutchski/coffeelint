@@ -18,7 +18,7 @@ module.exports = class NoInterpolationInSingleQuotes
             default.
             '''
 
-    tokens: [ 'STRING' ]
+    tokens: ['STRING']
 
     lintToken: (token, tokenApi) ->
         tokenValue = token[1]

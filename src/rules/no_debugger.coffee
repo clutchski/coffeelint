@@ -10,7 +10,7 @@ module.exports = class NoDebugger
             This rule is `warn` by default.
             '''
 
-    tokens: [ 'DEBUGGER', 'IDENTIFIER' ]
+    tokens: ['DEBUGGER', 'IDENTIFIER']
 
     lintToken: (token, tokenApi) ->
         if token[0] is 'DEBUGGER'

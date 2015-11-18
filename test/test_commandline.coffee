@@ -430,7 +430,7 @@ vows.describe('commandline').addBatch({
         'with option q set':
             'and no errors occured':
                 topic: () ->
-                    args = [ '-q', '--noconfig', 'fixtures/clean.coffee' ]
+                    args = ['-q', '--noconfig', 'fixtures/clean.coffee']
                     commandline args, this.callback
                     return undefined
 
@@ -439,7 +439,7 @@ vows.describe('commandline').addBatch({
 
             'and errors occured':
                 topic: () ->
-                    args = [ '-q', 'fixtures/syntax_error.coffee' ]
+                    args = ['-q', 'fixtures/syntax_error.coffee']
                     commandline args, this.callback
                     return undefined
 
@@ -449,7 +449,7 @@ vows.describe('commandline').addBatch({
         'with option q not set':
             'and no errors occured':
                 topic: () ->
-                    args = [ 'fixtures/clean.coffee' ]
+                    args = ['fixtures/clean.coffee']
                     commandline args, this.callback
                     return undefined
 
@@ -458,7 +458,7 @@ vows.describe('commandline').addBatch({
 
             'and errors occured':
                 topic: () ->
-                    args = [ 'fixtures/syntax_error.coffee' ]
+                    args = ['fixtures/syntax_error.coffee']
                     commandline args, this.callback
                     return undefined
 

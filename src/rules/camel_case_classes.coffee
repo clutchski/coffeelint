@@ -23,7 +23,7 @@ module.exports = class CamelCaseClasses
             This rule is enabled by default.
             '''
 
-    tokens: [ 'CLASS' ]
+    tokens: ['CLASS']
 
     lintToken: (token, tokenApi) ->
         # TODO: you can do some crazy shit in CoffeeScript, like

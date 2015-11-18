@@ -12,14 +12,14 @@ module.exports = class DuplicateKey
             Prevents defining duplicate keys in object literals and classes
             '''
 
-    tokens: [ 'IDENTIFIER', '{', '}' ]
+    tokens: ['IDENTIFIER', '{', '}']
 
     constructor: ->
         @braceScopes = []   # A stack tracking keys defined in nexted scopes.
 
     lintToken: ([type], tokenApi) ->
 
-        if type in [ '{', '}' ]
+        if type in ['{', '}']
             @lintBrace arguments...
             return undefined
 

@@ -12,7 +12,7 @@ module.exports = class NoPlusPlus
             This rule is disabled by default.
             '''
 
-    tokens: [ '++', '--' ]
+    tokens: ['++', '--']
 
     lintToken: (token, tokenApi) ->
         return { context: "found '#{token[0]}'" }

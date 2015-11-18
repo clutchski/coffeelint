@@ -13,7 +13,7 @@ module.exports = class SpacingAfterComma
         @inRegex = false
 
     lintToken: (token, tokenApi) ->
-        [ type ] = token
+        [type] = token
 
         if type is 'REGEX_START'
             @inRegex = true
