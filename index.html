@@ -258,12 +258,12 @@ A zero value means no spacing required.
 # If spacing.left and spacing.right is 1
 #
 
-# Good
+# Doesn't throw an error
 object = {spacing : true}
 class Dog
   canBark : true
 
-# Bad
+# Throws an error
 object = {spacing: true}
 class Cat
   canBark: false
@@ -274,7 +274,7 @@ class Cat
 <tr>
 <td class="rule">cyclomatic_complexity</td>
 <td class="description">
-    Examine the complexity of your application.
+    Examine the complexity of your function.
     <p><em>default level: ignore</em></p>
 </td>
 </tr>
@@ -532,7 +532,7 @@ it does not do anything.
 <td class="rule">no_stand_alone_at</td>
 <td class="description">
     This rule checks that no stand alone @ are in use, they are
-discouraged. Further information in CoffeScript issue <a
+discouraged. Further information in CoffeeScript issue <a
 href="https://github.com/jashkenas/coffee-script/issues/1601">
 #1601</a>
     <p><em>default level: ignore</em></p>
@@ -650,14 +650,14 @@ Use and, or, is, isnt, and not instead.
 <tr>
 <td class="rule">space_operators</td>
 <td class="description">
-    This rule enforces that operators have space around them.
+    This rule enforces that operators have spaces around them.
     <p><em>default level: ignore</em></p>
 </td>
 </tr>
 <tr>
 <td class="rule">spacing_after_comma</td>
 <td class="description">
-    This rule requires a space after commas.
+    This rule checks to make sure you have a space after commas.
     <p><em>default level: ignore</em></p>
 </td>
 </tr>
