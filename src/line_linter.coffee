@@ -85,7 +85,7 @@ module.exports = class LineLinter extends BaseLinter
         @lineApi = new LineApi source, config, tokensByLine, literate
 
         # Store suppressions in the form of { line #: type }
-        @block_config =
+        @inlineConfig =
             enable: {}
             disable: {}
 
@@ -124,7 +124,7 @@ module.exports = class LineLinter extends BaseLinter
             if result[2]?
                 for r in result[2].split(',')
                     rules.push r.replace(/^\s+|\s+$/g, '')
-            @block_config[cmd][@lineNumber] = rules
+            @inlineConfig[cmd][@lineNumber] = rules
         return null
 
 
