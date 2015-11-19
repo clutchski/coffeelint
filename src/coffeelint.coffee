@@ -35,7 +35,6 @@ packageJSON = require('./../package.json')
 # The current version of Coffeelint.
 coffeelint.VERSION = packageJSON.version
 
-
 # CoffeeLint error levels.
 ERROR   = 'error'
 WARN    = 'warn'
@@ -289,17 +288,15 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
             # warnings for configuration.
             undefined
 
-
-    # Check ahead for inline enabled rules
+    # disabled initially is to prevent the rule from becoming active before
+    # the actual inlined comment appears
     disabled_initially = []
+    # Check ahead for inline enabled rules
     for l in source.split('\n')
-        s = LineLinter.configStatement.exec(l)
-        if s?.length > 2 and 'enable' in s
-            for r in s[1..]
-                unless r in ['enable', 'disable']
-                    unless r of config and config[r].level in ['warn', 'error']
-                        disabled_initially.push r
-                        config[r] = { level: 'error' }
+        [ regex, set, rule ] = LineLinter.configStatement.exec(l) or []
+        if set is 'enable' and config[rule]?.level is 'ignore'
+            disabled_initially.push rule
+            config[rule].level = 'error'
 
     # Do AST linting first so all compile errors are caught.
     astErrors = new ASTLinter(source, config, _rules, CoffeeScript).lint()

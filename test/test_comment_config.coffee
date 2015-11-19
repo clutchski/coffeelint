@@ -20,6 +20,10 @@ vows.describe('comment_config').addBatch({
                 no_trailing_semicolons: { level: 'error' }
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 1)
+            assert.equal(errors[0].level, 'error')
+            assert.equal(errors[0].lineNumber, 5)
+            assert.equal(errors[0].rule, 'no_trailing_semicolons')
+            # assert.ok(errors[0].message)
 
     'Enable statements':
         topic: () ->
@@ -34,6 +38,16 @@ vows.describe('comment_config').addBatch({
         'can enable rules not in your config': (source) ->
             errors = coffeelint.lint(source)
             assert.equal(errors.length, 2)
+
+            assert.equal(errors[0].rule, 'no_implicit_parens')
+            assert.equal(errors[0].level, 'error')
+            assert.equal(errors[0].lineNumber, 2)
+            assert.ok(errors[0].message)
+
+            assert.equal(errors[1].rule, 'no_implicit_parens')
+            assert.equal(errors[1].level, 'error')
+            assert.equal(errors[1].lineNumber, 3)
+            assert.ok(errors[1].message)
 
     'Enable all statements':
         topic: () ->
@@ -51,5 +65,15 @@ vows.describe('comment_config').addBatch({
                 no_trailing_semicolons: { level: 'error' }
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 2)
+
+            assert.equal(errors[0].rule, 'no_implicit_parens')
+            assert.equal(errors[0].level, 'error')
+            assert.equal(errors[0].lineNumber, 5)
+            assert.ok(errors[0].message)
+
+            assert.equal(errors[1].rule, 'no_trailing_semicolons')
+            assert.equal(errors[1].level, 'error')
+            assert.equal(errors[1].lineNumber, 5)
+            assert.ok(errors[1].message)
 
 }).export(module)
