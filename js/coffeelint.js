@@ -295,7 +295,7 @@ coffeelint.getErrorReport = function() {
 };
 
 coffeelint.lint = function(source, userConfig, literate) {
-  var all_errors, astErrors, block_config, cmd, config, disabled, disabled_initially, e, errors, i, l, len, len1, len2, lexErrors, lexicalLinter, lineErrors, lineLinter, m, n, name, next_line, o, q, r, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ruleLoader, rules, s, sourceLength, t, tokensByLine, transform;
+  var allErrors, astErrors, cmd, config, disabled, disabledInitially, e, errors, i, inlineConfig, l, len, len1, lexErrors, lexicalLinter, lineErrors, lineLinter, m, n, name, nextLine, o, q, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, regex, rule, ruleLoader, rules, set, sourceLength, tokensByLine, transform;
   if (userConfig == null) {
     userConfig = {};
   }
@@ -341,24 +341,14 @@ coffeelint.lint = function(source, userConfig, literate) {
       }
     }
   }
-  disabled_initially = [];
+  disabledInitially = [];
   ref4 = source.split('\n');
   for (o = 0, len1 = ref4.length; o < len1; o++) {
     l = ref4[o];
-    s = LineLinter.configStatement.exec(l);
-    if ((s != null ? s.length : void 0) > 2 && indexOf.call(s, 'enable') >= 0) {
-      ref5 = s.slice(1);
-      for (q = 0, len2 = ref5.length; q < len2; q++) {
-        r = ref5[q];
-        if (r !== 'enable' && r !== 'disable') {
-          if (!(r in config && ((ref6 = config[r].level) === 'warn' || ref6 === 'error'))) {
-            disabled_initially.push(r);
-            config[r] = {
-              level: 'error'
-            };
-          }
-        }
-      }
+    ref5 = LineLinter.configStatement.exec(l) || [], regex = ref5[0], set = ref5[1], rule = ref5[2];
+    if (set === 'enable' && ((ref6 = config[rule]) != null ? ref6.level : void 0) === 'ignore') {
+      disabledInitially.push(rule);
+      config[rule].level = 'error';
     }
   }
   astErrors = new ASTLinter(source, config, _rules, CoffeeScript).lint();
@@ -371,9 +361,9 @@ coffeelint.lint = function(source, userConfig, literate) {
     lineLinter = new LineLinter(source, config, _rules, tokensByLine, literate);
     lineErrors = lineLinter.lint();
     errors = errors.concat(lineErrors);
-    block_config = lineLinter.block_config;
+    inlineConfig = lineLinter.inlineConfig;
   } else {
-    block_config = {
+    inlineConfig = {
       enable: {},
       disable: {}
     };
@@ -381,13 +371,13 @@ coffeelint.lint = function(source, userConfig, literate) {
   errors.sort(function(a, b) {
     return a.lineNumber - b.lineNumber;
   });
-  all_errors = errors;
+  allErrors = errors;
   errors = [];
-  disabled = disabled_initially;
-  next_line = 0;
-  for (i = t = 0, ref7 = source.split('\n').length; 0 <= ref7 ? t < ref7 : t > ref7; i = 0 <= ref7 ? ++t : --t) {
-    for (cmd in block_config) {
-      rules = block_config[cmd][i];
+  disabled = disabledInitially;
+  nextLine = 0;
+  for (i = q = 0, ref7 = source.split('\n').length; 0 <= ref7 ? q < ref7 : q > ref7; i = 0 <= ref7 ? ++q : --q) {
+    for (cmd in inlineConfig) {
+      rules = inlineConfig[cmd][i];
       if (rules != null) {
         ({
           'disable': function() {
@@ -396,17 +386,17 @@ coffeelint.lint = function(source, userConfig, literate) {
           'enable': function() {
             difference(disabled, rules);
             if (rules.length === 0) {
-              return disabled = disabled_initially;
+              return disabled = disabledInitially;
             }
           }
         })[cmd]();
       }
     }
-    while (next_line === i && all_errors.length > 0) {
-      next_line = all_errors[0].lineNumber - 1;
-      e = all_errors[0];
+    while (nextLine === i && allErrors.length > 0) {
+      nextLine = allErrors[0].lineNumber - 1;
+      e = allErrors[0];
       if (e.lineNumber === i + 1 || (e.lineNumber == null)) {
-        e = all_errors.shift();
+        e = allErrors.shift();
         if (ref8 = e.rule, indexOf.call(disabled, ref8) < 0) {
           errors.push(e);
         }
@@ -1001,7 +991,7 @@ module.exports = LineLinter = (function(superClass) {
     }
     LineLinter.__super__.constructor.call(this, source, config, rules);
     this.lineApi = new LineApi(source, config, tokensByLine, literate);
-    this.block_config = {
+    this.inlineConfig = {
       enable: {},
       disable: {}
     };
@@ -1057,7 +1047,7 @@ module.exports = LineLinter = (function(superClass) {
           rules.push(r.replace(/^\s+|\s+$/g, ''));
         }
       }
-      this.block_config[cmd][this.lineNumber] = rules;
+      this.inlineConfig[cmd][this.lineNumber] = rules;
     }
     return null;
   };
