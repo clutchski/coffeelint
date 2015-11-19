@@ -288,14 +288,14 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
             # warnings for configuration.
             undefined
 
-    # disabled initially is to prevent the rule from becoming active before
+    # disabledInitially is to prevent the rule from becoming active before
     # the actual inlined comment appears
-    disabled_initially = []
+    disabledInitially = []
     # Check ahead for inline enabled rules
     for l in source.split('\n')
         [ regex, set, rule ] = LineLinter.configStatement.exec(l) or []
         if set is 'enable' and config[rule]?.level is 'ignore'
-            disabled_initially.push rule
+            disabledInitially.push rule
             config[rule].level = 'error'
 
     # Do AST linting first so all compile errors are caught.
@@ -316,10 +316,10 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
             literate)
         lineErrors = lineLinter.lint()
         errors = errors.concat(lineErrors)
-        block_config = lineLinter.block_config
+        inlineConfig = lineLinter.inlineConfig
     else
         # default this so it knows what to do
-        block_config =
+        inlineConfig =
             enable: {}
             disable: {}
 
@@ -327,26 +327,26 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
     errors.sort((a, b) -> a.lineNumber - b.lineNumber)
 
     # Disable/enable rules for inline blocks
-    all_errors = errors
+    allErrors = errors
     errors = []
-    disabled = disabled_initially
-    next_line = 0
+    disabled = disabledInitially
+    nextLine = 0
     for i in [0...source.split('\n').length]
-        for cmd of block_config
-            rules = block_config[cmd][i]
+        for cmd of inlineConfig
+            rules = inlineConfig[cmd][i]
             {
                 'disable': ->
                     disabled = disabled.concat(rules)
                 'enable': ->
                     difference(disabled, rules)
-                    disabled = disabled_initially if rules.length is 0
+                    disabled = disabledInitially if rules.length is 0
             }[cmd]() if rules?
         # advance line and append relevant messages
-        while next_line is i and all_errors.length > 0
-            next_line = all_errors[0].lineNumber - 1
-            e = all_errors[0]
+        while nextLine is i and allErrors.length > 0
+            nextLine = allErrors[0].lineNumber - 1
+            e = allErrors[0]
             if e.lineNumber is i + 1 or not e.lineNumber?
-                e = all_errors.shift()
+                e = allErrors.shift()
                 errors.push e unless e.rule in disabled
 
     cache?.set source, errors
