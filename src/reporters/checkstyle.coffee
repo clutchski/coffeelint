@@ -26,12 +26,12 @@ module.exports = class CheckstyleReporter
                     # context is optional, this avoids generating the string
                     # "context: undefined"
                     context = e.context ? ''
-                    @print '''
+                    @print """
                     <error line="#{e.lineNumber}"
                         severity="#{@escape(level)}"
                         message="#{@escape(e.message+'; context: '+context)}"
                         source="coffeelint"/>
-                    '''
+                    """
                 @print '</file>'
 
         @print '</checkstyle>'
