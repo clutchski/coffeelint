@@ -65,7 +65,8 @@ expandModuleNames = (dir, config) ->
     for ruleName, data of config when data?.module?
         config[ruleName]._module = config[ruleName].module
         config[ruleName].module = resolve data.module, {
-            basedir: dir
+            basedir: dir,
+            extensions: ['.js', '.coffee', '.litcoffee', '.coffee.md']
         }
 
     coffeelint = config.coffeelint
@@ -73,12 +74,14 @@ expandModuleNames = (dir, config) ->
         coffeelint._transforms = coffeelint.transforms
         coffeelint.transforms = coffeelint.transforms.map (moduleName) ->
             return resolve moduleName, {
-                basedir: dir
+                basedir: dir,
+                extensions: ['.js', '.coffee', '.litcoffee', '.coffee.md']
             }
     if coffeelint?.coffeescript?
         coffeelint._coffeescript = coffeelint.coffeescript
         coffeelint.coffeescript = resolve coffeelint.coffeescript, {
-            basedir: dir
+            basedir: dir,
+            extensions: ['.js', '.coffee', '.litcoffee', '.coffee.md']
         }
 
     config
