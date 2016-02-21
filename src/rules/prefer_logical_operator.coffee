@@ -13,9 +13,6 @@ module.exports = class PreferLogicalOperator
     tokens: ['COMPARE', 'UNARY', 'LOGIC', 'BOOL', 'COMPOUND_ASSIGN']
 
     lintToken: (token, tokenApi) ->
-        # console.log "lintToken :: ", token
-        config = tokenApi.config[@rule.name]
-        level = config.level
         # Compare the actual token with the lexed token.
         { first_column, last_column } = token[2]
         line = tokenApi.lines[tokenApi.lineNumber]
@@ -34,4 +31,4 @@ module.exports = class PreferLogicalOperator
                 else undefined
 
         if context?
-            { level, context }
+            { context }
