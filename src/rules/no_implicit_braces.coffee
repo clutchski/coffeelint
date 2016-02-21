@@ -23,27 +23,34 @@ module.exports = class NoImplicitBraces
             idiomatic CoffeeScript.
             '''
 
-    tokens: ['{', 'OUTDENT', 'CLASS', 'IDENTIFIER']
+    tokens: ['{', 'OUTDENT', 'CLASS', 'IDENTIFIER', 'EXTENDS']
 
     constructor: ->
         @isClass = false
-        @className = undefined
+        @className = ''
 
     lintToken: (token, tokenApi) ->
         [type, val, lineNum] = token
-
         if type in ['OUTDENT', 'CLASS']
             return @trackClass arguments...
 
+        # reset "className" if class uses EXTENDS keyword
+        if type is 'EXTENDS'
+            @className = ''
+            return
+
         # If we're looking at an IDENTIFIER, and we're in a class, and we've not
-        # set a className (or the previous token was 'EXTENDS', set the current
-        # identifier as the class name)
-        if type is 'IDENTIFIER' and @isClass and
-                (not @className? or tokenApi.peek(-1)[0] is 'EXTENDS')
-            @className = val
+        # set a className (or the previous non-identifier was 'EXTENDS', set the
+        # current identifier as the class name)
+        if type is 'IDENTIFIER' and @isClass and @className is ''
+            # Backtrack to get the full classname
+            c = 0
+            while tokenApi.peek(c)[0] in ['IDENTIFIER', '.']
+                @className += tokenApi.peek(c)[1]
+                c++
 
         if token.generated and type is '{'
-            # If strict mode is turned off it allows implicit braces when the
+            # If strict mode is set to false it allows implicit braces when the
             # object is declared over multiple lines.
             unless tokenApi.config[@rule.name].strict
                 [prevToken] = tokenApi.peek(-1)
@@ -60,10 +67,15 @@ module.exports = class NoImplicitBraces
                 if prevToken is 'TERMINATOR'
                     return
 
-                # If we're at a '{' token, and the token 2 before it is the
-                # class name, then ignore
-                peekTwo = tokenApi.peek(-2)
-                if peekTwo[0] is 'IDENTIFIER' and peekTwo[1] is @className
+                peekIdent = ''
+                c = -2
+                # Go back until you grab all the tokens with IDENTIFIER or '.'
+                while ([_type, _val] = tokenApi.peek(c))
+                    break if _type not in ['IDENTIFIER', '.']
+                    peekIdent = _val + peekIdent
+                    c--
+
+                if peekIdent is @className
                     return
 
             return true
@@ -75,5 +87,5 @@ module.exports = class NoImplicitBraces
             @isClass = false
         if n0 is 'CLASS'
             @isClass = true
-            @className = undefined
+            @className = ''
         return null

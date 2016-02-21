@@ -171,6 +171,9 @@ vows.describe(RULE).addBatch({
               toString: ->
                 'foo'
 
+            class X extends A.B # check for . in class name.
+              toString: ->
+                'foo'
             '''
 
         'throws no errors for this when strict is false': (source) ->
