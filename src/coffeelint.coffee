@@ -333,6 +333,16 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
     # Sort by line number and return.
     errors.sort((a, b) -> a.lineNumber - b.lineNumber)
 
+    # Create a list of all errors
+    disabledEntirely = do ->
+        result = []
+        map = {}
+        for { name } in errors or []
+            if not map[name]
+                result.push(name)
+                map[name] = true
+        result
+
     # Disable/enable rules for inline blocks
     allErrors = errors
     errors = []
@@ -344,9 +354,16 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
             rules = inlineConfig[cmd][i]
             {
                 'disable': ->
-                    disabled = union(disabled, rules)
+                    if rules.length
+                        disabled = union(disabled, rules)
+                        disabledLine = union(disabledLine, rules)
+                    else
+                        disabled = disabledLine = disabledEntirely
                 'disable-line': ->
-                    disabledLine = disabledLine.concat(rules)
+                    if rules.length
+                        disabledLine = union(disabledLine, rules)
+                    else
+                        disabledLine = disabledEntirely
                 'enable': ->
                     if rules.length
                         disabled = difference(disabled, rules)

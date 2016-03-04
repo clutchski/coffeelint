@@ -25,6 +25,26 @@ vows.describe('comment_config').addBatch({
             assert.equal(errors[0].lineNumber, 5)
             assert.ok(errors[0].message)
 
+    'Disable all statements':
+        topic: () ->
+            '''
+            # coffeelint: disable
+            a 'you get a semi-colon';
+            b 'you get a semi-colon';
+            # coffeelint: enable
+            c 'everybody gets a semi-colon';
+            '''
+
+        'can disable rules in your config': (source) ->
+            config =
+                no_trailing_semicolons: level: 'error'
+            errors = coffeelint.lint(source, config)
+            assert.equal(errors.length, 1)
+            assert.equal(errors[0].rule, 'no_trailing_semicolons')
+            assert.equal(errors[0].level, 'error')
+            assert.equal(errors[0].lineNumber, 5)
+            assert.ok(errors[0].message)
+
     'Disable statements per line':
         topic: () ->
             '''
@@ -41,6 +61,28 @@ vows.describe('comment_config').addBatch({
             assert.equal(errors[0].level, 'error')
             assert.equal(errors[0].lineNumber, 2)
             assert.ok(errors[0].message)
+
+    'Disable all statements per line':
+        topic: () ->
+            '''
+            a 'foo';  # coffeelint: disable-line
+            b 'bar';
+            '''
+
+        'can disable rules in your config': (source) ->
+            config =
+                no_trailing_semicolons: level: 'error'
+                no_implicit_parens: level: 'error'
+            errors = coffeelint.lint(source, config)
+            assert.equal(errors.length, 2)
+            assert.equal(errors[0].rule, 'no_implicit_parens')
+            assert.equal(errors[0].level, 'error')
+            assert.equal(errors[0].lineNumber, 2)
+            assert.ok(errors[0].message)
+            assert.equal(errors[1].rule, 'no_trailing_semicolons')
+            assert.equal(errors[1].level, 'error')
+            assert.equal(errors[1].lineNumber, 2)
+            assert.ok(errors[1].message)
 
     'Enable statements':
         topic: () ->
