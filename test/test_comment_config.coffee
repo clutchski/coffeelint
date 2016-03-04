@@ -49,7 +49,7 @@ vows.describe('comment_config').addBatch({
             assert.equal(errors[1].lineNumber, 3)
             assert.ok(errors[1].message)
 
-    'Enable all statements':
+    'Revert to post-config state':
         topic: () ->
             '''
             # coffeelint: disable=no_trailing_semicolons,no_implicit_parens

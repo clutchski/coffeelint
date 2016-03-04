@@ -52,14 +52,19 @@ extend = (destination, sources...) ->
 defaults = (source, defaults) ->
     extend({}, defaults, source)
 
+# Helper to add rules to disabled list
+union = (a, b) ->
+    c = {}
+    for x in a
+        c[x] = true
+    for x in b
+        c[x] = true
+
+    x for x of c
+
 # Helper to remove rules from disabled list
 difference = (a, b) ->
-    j = 0
-    while j < a.length
-        if a[j] in b
-            a.splice(j, 1)
-        else
-            j++
+    x for x in a when x not in b
 
 LineLinter = require './line_linter.coffee'
 LexicalLinter = require './lexical_linter.coffee'
@@ -336,10 +341,12 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
             rules = inlineConfig[cmd][i]
             {
                 'disable': ->
-                    disabled = disabled.concat(rules)
+                    disabled = union(disabled, rules)
                 'enable': ->
-                    difference(disabled, rules)
-                    disabled = disabledInitially if rules.length is 0
+                    if rules.length
+                        disabled = difference(disabled, rules)
+                    else
+                        disabled = disabledInitially
             }[cmd]() if rules?
         # advance line and append relevant messages
         while nextLine is i and allErrors.length > 0
