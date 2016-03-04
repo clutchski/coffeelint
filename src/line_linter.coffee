@@ -69,7 +69,7 @@ class LineApi
 BaseLinter = require './base_linter.coffee'
 
 # Some repeatedly used regular expressions.
-configStatement = /coffeelint:\s*(disable|enable)(?:=([\w\s,]*))?/
+configStatement = /coffeelint:\s*((disable|enable)(-line)?)(?:=([\w\s,]*))?/
 
 #
 # A class that performs regex checks on each line of the source.
@@ -88,6 +88,8 @@ module.exports = class LineLinter extends BaseLinter
         @inlineConfig =
             enable: {}
             disable: {}
+            'enable-line': {}
+            'disable-line': {}
 
     acceptRule: (rule) ->
         return typeof rule.lintLine is 'function'
@@ -121,8 +123,8 @@ module.exports = class LineLinter extends BaseLinter
         if result?
             cmd = result[1]
             rules = []
-            if result[2]?
-                for r in result[2].split(',')
+            if result[4]?
+                for r in result[4].split(',')
                     rules.push r.replace(/^\s+|\s+$/g, '')
             @inlineConfig[cmd][@lineNumber] = rules
         return null

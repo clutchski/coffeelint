@@ -298,8 +298,8 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
     disabledInitially = []
     # Check ahead for inline enabled rules
     for l in source.split('\n')
-        [ regex, set, rule ] = LineLinter.configStatement.exec(l) or []
-        if set is 'enable' and config[rule]?.level is 'ignore'
+        [ regex, set, ..., rule ] = LineLinter.configStatement.exec(l) or []
+        if set in ['enable', 'enable-line'] and config[rule]?.level is 'ignore'
             disabledInitially.push rule
             config[rule].level = 'error'
 
@@ -327,6 +327,8 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
         inlineConfig =
             enable: {}
             disable: {}
+            'enable-line': {}
+            'disable-line': {}
 
     # Sort by line number and return.
     errors.sort((a, b) -> a.lineNumber - b.lineNumber)
@@ -337,16 +339,25 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
     disabled = disabledInitially
     nextLine = 0
     for i in [0...source.split('\n').length]
+        disabledLine = disabled
         for cmd of inlineConfig
             rules = inlineConfig[cmd][i]
             {
                 'disable': ->
                     disabled = union(disabled, rules)
+                'disable-line': ->
+                    disabledLine = disabledLine.concat(rules)
                 'enable': ->
                     if rules.length
                         disabled = difference(disabled, rules)
+                        disabledLine = difference(disabledLine, rules)
                     else
-                        disabled = disabledInitially
+                        disabled = disabledLine = disabledInitially
+                'enable-line': ->
+                    if rules.length
+                        disabledLine = difference(disabledLine, rules)
+                    else
+                        disabledLine = disabledInitially
             }[cmd]() if rules?
         # advance line and append relevant messages
         while nextLine is i and allErrors.length > 0
@@ -354,7 +365,7 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
             e = allErrors[0]
             if e.lineNumber is i + 1 or not e.lineNumber?
                 e = allErrors.shift()
-                errors.push e unless e.rule in disabled
+                errors.push e unless e.rule in disabledLine
 
     cache?.set source, errors
 
