@@ -70,14 +70,21 @@ BaseLinter = require './base_linter.coffee'
 
 # Some repeatedly used regular expressions.
 configStatement = /coffeelint:\s*((disable|enable)(-line)?)(?:=([\w\s,]*))?/
+configShortcuts = [
+    # TODO: make this user (and / or api) configurable
+    [/\#.*noqa/, 'coffeelint: disable-line']
+]
 
 #
 # A class that performs regex checks on each line of the source.
 #
 module.exports = class LineLinter extends BaseLinter
 
-    # This is exposed here so coffeelint.coffee can reuse it
-    @configStatement: configStatement
+    @getDirective: (line) ->
+        for [shortcut, replacement] in configShortcuts
+            if line.match(shortcut)
+                return configStatement.exec(replacement)
+        return configStatement.exec(line)
 
     constructor: (source, config, rules, tokensByLine, literate = false) ->
         super source, config, rules
@@ -119,7 +126,7 @@ module.exports = class LineLinter extends BaseLinter
 
     collectInlineConfig: (line) ->
         # Check for block config statements enable and disable
-        result = configStatement.exec(line)
+        result = @constructor.getDirective(line)
         if result?
             cmd = result[1]
             rules = []

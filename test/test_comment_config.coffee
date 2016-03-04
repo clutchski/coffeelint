@@ -62,6 +62,23 @@ vows.describe('comment_config').addBatch({
             assert.equal(errors[0].lineNumber, 2)
             assert.ok(errors[0].message)
 
+    'Expand shortcuts':
+        topic: () ->
+            '''
+            a 'foo';  # noqa
+            b 'bar';
+            '''
+
+        'will expand and honor directive shortcuts': (source) ->
+            config =
+                no_trailing_semicolons: level: 'error'
+            errors = coffeelint.lint(source, config)
+            assert.equal(errors.length, 1)
+            assert.equal(errors[0].rule, 'no_trailing_semicolons')
+            assert.equal(errors[0].level, 'error')
+            assert.equal(errors[0].lineNumber, 2)
+            assert.ok(errors[0].message)
+
     'Disable all statements per line':
         topic: () ->
             '''

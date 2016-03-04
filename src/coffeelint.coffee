@@ -298,7 +298,7 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
     disabledInitially = []
     # Check ahead for inline enabled rules
     for l in source.split('\n')
-        [ regex, set, ..., rule ] = LineLinter.configStatement.exec(l) or []
+        [ regex, set, ..., rule ] = LineLinter.getDirective(l) or []
         if set in ['enable', 'enable-line'] and config[rule]?.level is 'ignore'
             disabledInitially.push rule
             config[rule].level = 'error'
