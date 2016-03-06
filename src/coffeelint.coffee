@@ -52,14 +52,19 @@ extend = (destination, sources...) ->
 defaults = (source, defaults) ->
     extend({}, defaults, source)
 
+# Helper to add rules to disabled list
+union = (a, b) ->
+    c = {}
+    for x in a
+        c[x] = true
+    for x in b
+        c[x] = true
+
+    x for x of c
+
 # Helper to remove rules from disabled list
 difference = (a, b) ->
-    j = 0
-    while j < a.length
-        if a[j] in b
-            a.splice(j, 1)
-        else
-            j++
+    x for x in a when x not in b
 
 LineLinter = require './line_linter.coffee'
 LexicalLinter = require './lexical_linter.coffee'
@@ -293,8 +298,8 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
     disabledInitially = []
     # Check ahead for inline enabled rules
     for l in source.split('\n')
-        [ regex, set, rule ] = LineLinter.configStatement.exec(l) or []
-        if set is 'enable' and config[rule]?.level is 'ignore'
+        [ regex, set, ..., rule ] = LineLinter.getDirective(l) or []
+        if set in ['enable', 'enable-line'] and config[rule]?.level is 'ignore'
             disabledInitially.push rule
             config[rule].level = 'error'
 
@@ -322,9 +327,21 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
         inlineConfig =
             enable: {}
             disable: {}
+            'enable-line': {}
+            'disable-line': {}
 
     # Sort by line number and return.
     errors.sort((a, b) -> a.lineNumber - b.lineNumber)
+
+    # Create a list of all errors
+    disabledEntirely = do ->
+        result = []
+        map = {}
+        for { name } in errors or []
+            if not map[name]
+                result.push(name)
+                map[name] = true
+        result
 
     # Disable/enable rules for inline blocks
     allErrors = errors
@@ -332,14 +349,32 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
     disabled = disabledInitially
     nextLine = 0
     for i in [0...source.split('\n').length]
+        disabledLine = disabled
         for cmd of inlineConfig
             rules = inlineConfig[cmd][i]
             {
                 'disable': ->
-                    disabled = disabled.concat(rules)
+                    if rules.length
+                        disabled = union(disabled, rules)
+                        disabledLine = union(disabledLine, rules)
+                    else
+                        disabled = disabledLine = disabledEntirely
+                'disable-line': ->
+                    if rules.length
+                        disabledLine = union(disabledLine, rules)
+                    else
+                        disabledLine = disabledEntirely
                 'enable': ->
-                    difference(disabled, rules)
-                    disabled = disabledInitially if rules.length is 0
+                    if rules.length
+                        disabled = difference(disabled, rules)
+                        disabledLine = difference(disabledLine, rules)
+                    else
+                        disabled = disabledLine = disabledInitially
+                'enable-line': ->
+                    if rules.length
+                        disabledLine = difference(disabledLine, rules)
+                    else
+                        disabledLine = disabledInitially
             }[cmd]() if rules?
         # advance line and append relevant messages
         while nextLine is i and allErrors.length > 0
@@ -347,7 +382,7 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
             e = allErrors[0]
             if e.lineNumber is i + 1 or not e.lineNumber?
                 e = allErrors.shift()
-                errors.push e unless e.rule in disabled
+                errors.push e unless e.rule in disabledLine
 
     cache?.set source, errors
 
