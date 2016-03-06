@@ -6,7 +6,7 @@ CoffeeLint
 Copyright (c) 2011 Matthew Perpick.
 CoffeeLint is freely distributable under the MIT license.
  */
-var ASTLinter, CoffeeScript, ERROR, ErrorReport, IGNORE, LexicalLinter, LineLinter, RULES, WARN, _rules, cache, coffeelint, defaults, difference, extend, hasSyntaxError, mergeDefaultConfig, nodeRequire, packageJSON, sameJSON,
+var ASTLinter, CoffeeScript, ERROR, ErrorReport, IGNORE, LexicalLinter, LineLinter, RULES, WARN, _rules, cache, coffeelint, defaults, difference, extend, hasSyntaxError, mergeDefaultConfig, nodeRequire, packageJSON, sameJSON, union,
   slice = [].slice,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -39,10 +39,10 @@ IGNORE = 'ignore';
 coffeelint.RULES = RULES = require('./rules.coffee');
 
 extend = function() {
-  var destination, k, len, n, source, sources, v;
+  var destination, j, k, len, source, sources, v;
   destination = arguments[0], sources = 2 <= arguments.length ? slice.call(arguments, 1) : [];
-  for (n = 0, len = sources.length; n < len; n++) {
-    source = sources[n];
+  for (j = 0, len = sources.length; j < len; j++) {
+    source = sources[j];
     for (k in source) {
       v = source[k];
       destination[k] = v;
@@ -55,15 +55,31 @@ defaults = function(source, defaults) {
   return extend({}, defaults, source);
 };
 
-difference = function(a, b) {
-  var j, ref, results;
-  j = 0;
+union = function(a, b) {
+  var c, j, len, len1, n, results, x;
+  c = {};
+  for (j = 0, len = a.length; j < len; j++) {
+    x = a[j];
+    c[x] = true;
+  }
+  for (n = 0, len1 = b.length; n < len1; n++) {
+    x = b[n];
+    c[x] = true;
+  }
   results = [];
-  while (j < a.length) {
-    if (ref = a[j], indexOf.call(b, ref) >= 0) {
-      results.push(a.splice(j, 1));
-    } else {
-      results.push(j++);
+  for (x in c) {
+    results.push(x);
+  }
+  return results;
+};
+
+difference = function(a, b) {
+  var j, len, results, x;
+  results = [];
+  for (j = 0, len = a.length; j < len; j++) {
+    x = a[j];
+    if (indexOf.call(b, x) < 0) {
+      results.push(x);
     }
   }
   return results;
@@ -82,7 +98,7 @@ mergeDefaultConfig = function(userConfig) {
   try {
     ruleLoader = nodeRequire('./ruleLoader');
     ruleLoader.loadFromConfig(coffeelint, userConfig);
-  } catch (undefined) {}
+  } catch (_error) {}
   config = {};
   if (userConfig.coffeelint) {
     config.coffeelint = userConfig.coffeelint;
@@ -139,12 +155,12 @@ coffeelint.trimConfig = function(userConfig) {
 };
 
 coffeelint.invertLiterate = function(source) {
-  var len, line, n, newSource, ref;
+  var j, len, line, newSource, ref;
   source = CoffeeScript.helpers.invertLiterate(source);
   newSource = '';
   ref = source.split('\n');
-  for (n = 0, len = ref.length; n < len; n++) {
-    line = ref[n];
+  for (j = 0, len = ref.length; j < len; j++) {
+    line = ref[j];
     if (line.match(/^#/)) {
       line = line.replace(/\s*$/, '');
     }
@@ -196,11 +212,11 @@ coffeelint.registerRule = function(RuleConstructor, ruleName) {
 };
 
 coffeelint.getRules = function() {
-  var key, len, n, output, ref;
+  var j, key, len, output, ref;
   output = {};
   ref = Object.keys(RULES).sort();
-  for (n = 0, len = ref.length; n < len; n++) {
-    key = ref[n];
+  for (j = 0, len = ref.length; j < len; j++) {
+    key = ref[j];
     output[key] = RULES[key];
   }
   return output;
@@ -284,7 +300,7 @@ hasSyntaxError = function(source) {
   try {
     CoffeeScript.tokens(source);
     return false;
-  } catch (undefined) {}
+  } catch (_error) {}
   return true;
 };
 
@@ -295,7 +311,7 @@ coffeelint.getErrorReport = function() {
 };
 
 coffeelint.lint = function(source, userConfig, literate) {
-  var allErrors, astErrors, cmd, config, disabled, disabledInitially, e, errors, i, inlineConfig, l, len, len1, lexErrors, lexicalLinter, lineErrors, lineLinter, m, n, name, nextLine, o, q, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, regex, rule, ruleLoader, rules, set, sourceLength, tokensByLine, transform;
+  var allErrors, astErrors, cmd, config, disabled, disabledEntirely, disabledInitially, disabledLine, e, errors, i, inlineConfig, j, l, len, len1, lexErrors, lexicalLinter, lineErrors, lineLinter, m, n, name, nextLine, o, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, regex, rule, ruleLoader, rules, set, sourceLength, tokensByLine, transform;
   if (userConfig == null) {
     userConfig = {};
   }
@@ -316,13 +332,13 @@ coffeelint.lint = function(source, userConfig, literate) {
   if ((userConfig != null ? (ref = userConfig.coffeelint) != null ? ref.transforms : void 0 : void 0) != null) {
     sourceLength = source.split('\n').length;
     ref2 = userConfig != null ? (ref1 = userConfig.coffeelint) != null ? ref1.transforms : void 0 : void 0;
-    for (n = 0, len = ref2.length; n < len; n++) {
-      m = ref2[n];
+    for (j = 0, len = ref2.length; j < len; j++) {
+      m = ref2[j];
       try {
         ruleLoader = nodeRequire('./ruleLoader');
         transform = ruleLoader.require(m);
         source = transform(source);
-      } catch (undefined) {}
+      } catch (_error) {}
     }
     if (sourceLength !== source.split('\n').length && config.transform_messes_up_line_numbers.level !== 'ignore') {
       errors.push(extend({
@@ -343,10 +359,10 @@ coffeelint.lint = function(source, userConfig, literate) {
   }
   disabledInitially = [];
   ref4 = source.split('\n');
-  for (o = 0, len1 = ref4.length; o < len1; o++) {
-    l = ref4[o];
-    ref5 = LineLinter.configStatement.exec(l) || [], regex = ref5[0], set = ref5[1], rule = ref5[2];
-    if (set === 'enable' && ((ref6 = config[rule]) != null ? ref6.level : void 0) === 'ignore') {
+  for (n = 0, len1 = ref4.length; n < len1; n++) {
+    l = ref4[n];
+    ref5 = LineLinter.getDirective(l) || [], regex = ref5[0], set = ref5[1], rule = ref5[ref5.length - 1];
+    if ((set === 'enable' || set === 'enable-line') && ((ref6 = config[rule]) != null ? ref6.level : void 0) === 'ignore') {
       disabledInitially.push(rule);
       config[rule].level = 'error';
     }
@@ -365,28 +381,66 @@ coffeelint.lint = function(source, userConfig, literate) {
   } else {
     inlineConfig = {
       enable: {},
-      disable: {}
+      disable: {},
+      'enable-line': {},
+      'disable-line': {}
     };
   }
   errors.sort(function(a, b) {
     return a.lineNumber - b.lineNumber;
   });
+  disabledEntirely = (function() {
+    var len2, map, o, ref7, result;
+    result = [];
+    map = {};
+    ref7 = errors || [];
+    for (o = 0, len2 = ref7.length; o < len2; o++) {
+      name = ref7[o].name;
+      if (!map[name]) {
+        result.push(name);
+        map[name] = true;
+      }
+    }
+    return result;
+  })();
   allErrors = errors;
   errors = [];
   disabled = disabledInitially;
   nextLine = 0;
-  for (i = q = 0, ref7 = source.split('\n').length; 0 <= ref7 ? q < ref7 : q > ref7; i = 0 <= ref7 ? ++q : --q) {
+  for (i = o = 0, ref7 = source.split('\n').length; 0 <= ref7 ? o < ref7 : o > ref7; i = 0 <= ref7 ? ++o : --o) {
+    disabledLine = disabled;
     for (cmd in inlineConfig) {
       rules = inlineConfig[cmd][i];
       if (rules != null) {
         ({
           'disable': function() {
-            return disabled = disabled.concat(rules);
+            if (rules.length) {
+              disabled = union(disabled, rules);
+              return disabledLine = union(disabledLine, rules);
+            } else {
+              return disabled = disabledLine = disabledEntirely;
+            }
+          },
+          'disable-line': function() {
+            if (rules.length) {
+              return disabledLine = union(disabledLine, rules);
+            } else {
+              return disabledLine = disabledEntirely;
+            }
           },
           'enable': function() {
-            difference(disabled, rules);
-            if (rules.length === 0) {
-              return disabled = disabledInitially;
+            if (rules.length) {
+              disabled = difference(disabled, rules);
+              return disabledLine = difference(disabledLine, rules);
+            } else {
+              return disabled = disabledLine = disabledInitially;
+            }
+          },
+          'enable-line': function() {
+            if (rules.length) {
+              return disabledLine = difference(disabledLine, rules);
+            } else {
+              return disabledLine = disabledInitially;
             }
           }
         })[cmd]();
@@ -397,7 +451,7 @@ coffeelint.lint = function(source, userConfig, literate) {
       e = allErrors[0];
       if (e.lineNumber === i + 1 || (e.lineNumber == null)) {
         e = allErrors.shift();
-        if (ref8 = e.rule, indexOf.call(disabled, ref8) < 0) {
+        if (ref8 = e.rule, indexOf.call(disabledLine, ref8) < 0) {
           errors.push(e);
         }
       }
@@ -419,7 +473,7 @@ coffeelint.setCache = function(obj) {
 module.exports={
   "name": "coffeelint",
   "description": "Lint your CoffeeScript",
-  "version": "1.14.0",
+  "version": "1.15.0",
   "homepage": "http://www.coffeelint.org",
   "keywords": [
     "lint",
@@ -536,12 +590,12 @@ module.exports = ASTLinter = (function(superClass) {
   };
 
   ASTLinter.prototype.lint = function() {
-    var coffeeError, err, error, errors, j, len, ref, rule, v;
+    var coffeeError, err, errors, j, len, ref, rule, v;
     errors = [];
     try {
       this.node = this.CoffeeScript.nodes(this.source);
-    } catch (error) {
-      coffeeError = error;
+    } catch (_error) {
+      coffeeError = _error;
       err = this._parseCoffeeScriptError(coffeeError);
       if (err != null) {
         errors.push(err);
@@ -884,7 +938,7 @@ module.exports = LexicalLinter = (function(superClass) {
 
 
 },{"./base_linter.coffee":4}],7:[function(require,module,exports){
-var BaseLinter, LineApi, LineLinter, configStatement,
+var BaseLinter, LineApi, LineLinter, configShortcuts, configStatement,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
@@ -978,12 +1032,23 @@ LineApi = (function() {
 
 BaseLinter = require('./base_linter.coffee');
 
-configStatement = /coffeelint:\s*(disable|enable)(?:=([\w\s,]*))?/;
+configStatement = /coffeelint:\s*((disable|enable)(-line)?)(?:=([\w\s,]*))?/;
+
+configShortcuts = [[/\#.*noqa/, 'coffeelint: disable-line']];
 
 module.exports = LineLinter = (function(superClass) {
   extend(LineLinter, superClass);
 
-  LineLinter.configStatement = configStatement;
+  LineLinter.getDirective = function(line) {
+    var i, len, ref, replacement, shortcut;
+    for (i = 0, len = configShortcuts.length; i < len; i++) {
+      ref = configShortcuts[i], shortcut = ref[0], replacement = ref[1];
+      if (line.match(shortcut)) {
+        return configStatement.exec(replacement);
+      }
+    }
+    return configStatement.exec(line);
+  };
 
   function LineLinter(source, config, rules, tokensByLine, literate) {
     if (literate == null) {
@@ -993,7 +1058,9 @@ module.exports = LineLinter = (function(superClass) {
     this.lineApi = new LineApi(source, config, tokensByLine, literate);
     this.inlineConfig = {
       enable: {},
-      disable: {}
+      disable: {},
+      'enable-line': {},
+      'disable-line': {}
     };
   }
 
@@ -1036,12 +1103,12 @@ module.exports = LineLinter = (function(superClass) {
 
   LineLinter.prototype.collectInlineConfig = function(line) {
     var cmd, i, len, r, ref, result, rules;
-    result = configStatement.exec(line);
+    result = this.constructor.getDirective(line);
     if (result != null) {
       cmd = result[1];
       rules = [];
-      if (result[2] != null) {
-        ref = result[2].split(',');
+      if (result[4] != null) {
+        ref = result[4].split(',');
         for (i = 0, len = ref.length; i < len; i++) {
           r = ref[i];
           rules.push(r.replace(/^\s+|\s+$/g, ''));
@@ -2272,21 +2339,29 @@ module.exports = NoImplicitBraces = (function() {
     description: 'This rule prohibits implicit braces when declaring object literals.\nImplicit braces can make code more difficult to understand,\nespecially when used in combination with optional parenthesis.\n<pre>\n<code># Do you find this code ambiguous? Is it a\n# function call with three arguments or four?\nmyFunction a, b, 1:2, 3:4\n\n# While the same code written in a more\n# explicit manner has no ambiguity.\nmyFunction(a, b, {1:2, 3:4})\n</code>\n</pre>\nImplicit braces are permitted by default, since their use is\nidiomatic CoffeeScript.'
   };
 
-  NoImplicitBraces.prototype.tokens = ['{', 'OUTDENT', 'CLASS', 'IDENTIFIER'];
+  NoImplicitBraces.prototype.tokens = ['{', 'OUTDENT', 'CLASS', 'IDENTIFIER', 'EXTENDS'];
 
   function NoImplicitBraces() {
     this.isClass = false;
-    this.className = void 0;
+    this.className = '';
   }
 
   NoImplicitBraces.prototype.lintToken = function(token, tokenApi) {
-    var lineNum, peekTwo, prevToken, type, val;
+    var _type, _val, c, lineNum, peekIdent, prevToken, ref, ref1, type, val;
     type = token[0], val = token[1], lineNum = token[2];
     if (type === 'OUTDENT' || type === 'CLASS') {
       return this.trackClass.apply(this, arguments);
     }
-    if (type === 'IDENTIFIER' && this.isClass && ((this.className == null) || tokenApi.peek(-1)[0] === 'EXTENDS')) {
-      this.className = val;
+    if (type === 'EXTENDS') {
+      this.className = '';
+      return;
+    }
+    if (type === 'IDENTIFIER' && this.isClass && this.className === '') {
+      c = 0;
+      while ((ref = tokenApi.peek(c)[0]) === 'IDENTIFIER' || ref === '.') {
+        this.className += tokenApi.peek(c)[1];
+        c++;
+      }
     }
     if (token.generated && type === '{') {
       if (!tokenApi.config[this.rule.name].strict) {
@@ -2300,8 +2375,16 @@ module.exports = NoImplicitBraces = (function() {
         if (prevToken === 'TERMINATOR') {
           return;
         }
-        peekTwo = tokenApi.peek(-2);
-        if (peekTwo[0] === 'IDENTIFIER' && peekTwo[1] === this.className) {
+        peekIdent = '';
+        c = -2;
+        while ((ref1 = tokenApi.peek(c), _type = ref1[0], _val = ref1[1], ref1)) {
+          if (_type !== 'IDENTIFIER' && _type !== '.') {
+            break;
+          }
+          peekIdent = _val + peekIdent;
+          c--;
+        }
+        if (peekIdent === this.className) {
           return;
         }
       }
@@ -2317,7 +2400,7 @@ module.exports = NoImplicitBraces = (function() {
     }
     if (n0 === 'CLASS') {
       this.isClass = true;
-      this.className = void 0;
+      this.className = '';
     }
     return null;
   };
