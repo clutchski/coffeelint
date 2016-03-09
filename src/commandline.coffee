@@ -55,7 +55,12 @@ findCoffeeScripts = (paths, extension) ->
             files = files.concat(glob.sync("#{p}/**/*.#{allExtention}"))
         else
             files.push(p)
-    return files
+    # Normalize paths, converting './test/fixtures' to 'test/fixtures'.
+    # Ignore pattern 'test/fixtures' does NOT match './test/fixtures',
+    # because if there is a slash(/) in the pattern, the pattern will not
+    # act as a glob pattern.
+    # Use `path.join()` instead of `path.normalize()` for better compatibility.
+    return files.map((p) -> path.join(p))
 
 # Return an error report from linting the given paths.
 lintFiles = (files, config) ->
@@ -247,7 +252,10 @@ else
         # Find scripts to lint.
         paths = options.argv._
         scripts = findCoffeeScripts(paths, options.argv.ext)
-        scripts = ignore().addIgnoreFile('.coffeelintignore').filter(scripts)
+        if fs.existsSync('.coffeelintignore')
+            scripts = ignore()
+            .add(fs.readFileSync('.coffeelintignore').toString())
+            .filter(scripts)
 
         # Lint the code.
         errorReport = lintFiles(scripts, config, options.argv.literate)
