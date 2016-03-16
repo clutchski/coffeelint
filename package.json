@@ -26,7 +26,7 @@
     "coffee-script": "^1.9.1",
     "coffeeify": "~1.0.0",
     "glob": "^4.0.0",
-    "ignore": "^2.2.15",
+    "ignore": "^3.0.9",
     "optimist": "^0.6.1",
     "resolve": "^0.6.3",
     "strip-json-comments": "^1.0.2"
