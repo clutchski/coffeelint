@@ -45,6 +45,32 @@ vows.describe(RULE).addBatch({
             errors = coffeelint.lint(source, tabsConfig)
             assert.equal(errors.length, 0)
 
+    'Spaces in chains':
+        topic:
+            '''
+            startingChain()
+                .hello()
+            \t.world()
+            \t.today((x) -> x + 2)
+            '''
+
+        'can be forbidden': (source) ->
+            errors = coffeelint.lint(source, tabsConfig)
+            assert.equal(errors.length, 1)
+            error = errors[0]
+            assert.equal(error.lineNumber, 2)
+            assert.equal(error.message, 'Line contains space indentation')
+            assert.equal(error.rule, RULE)
+
+        'can be permitted': (source) ->
+            config =
+                no_tabs: { level: 'ignore' }
+                no_spaces: { level: 'ignore' }
+                indentation: { level: 'ignore' }
+
+            errors = coffeelint.lint(source, config)
+            assert.equal(errors.length, 0)
+
     'Spaces in multi-line strings':
         topic:
             '''
