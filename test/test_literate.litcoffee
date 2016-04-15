@@ -19,8 +19,10 @@ Markdown uses trailing spaces to force a line break.
 The line of code is written weird because I had trouble getting the 4 space
 prefix in place.
 
+The third line in this topic is used to test support for a trailing tab whitespace.
+
                 """This is some `Markdown`.  \n\n
-                \n    x = 1234  \n    y = 1
+                \n    x = 1234  \n    y = 1  \n	z = 1
                 """
 
             'is ignored' : (source) ->
@@ -32,6 +34,6 @@ The 3rd parameter here indicates that the incoming source is literate.
 This intentionally includes trailing whitespace in code so it also verifies
 that the way `Markdown` spaces are stripped are not also stripping code.
 
-                assert.equal(errors.length, 1)
+                assert.equal(errors.length, 2)
 
     }).export(module)

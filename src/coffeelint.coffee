@@ -126,17 +126,18 @@ coffeelint.trimConfig = (userConfig) ->
 
 coffeelint.invertLiterate = (source) ->
     source = CoffeeScript.helpers.invertLiterate source
-    # Strip the first 4 spaces from every line. After this the markdown is
-    # commented and all of the other code should be at their natural location.
+    # Strip the first 4 spaces or a tab from every line.
+    # After this the markdown is commented and all of the other code
+    # should be at their natural location.
     newSource = ''
     for line in source.split '\n'
         if line.match(/^#/)
             # strip trailing space
             line = line.replace /\s*$/, ''
-        # Strip the first 4 spaces of every line. This is how Markdown
+        # Strip the first 4 spaces or a tab of every line. This is how Markdown
         # indicates code, so in the end this pulls everything back to where it
         # would be indented if it hadn't been written in literate style.
-        line = line.replace /^\s{4}/g, ''
+        line = line.replace /^\s{4}|^\t/g, ''
         newSource += "#{line}\n"
 
     newSource
