@@ -137,7 +137,7 @@ coffeelint.invertLiterate = (source) ->
         # Strip the first 4 spaces or a tab of every line. This is how Markdown
         # indicates code, so in the end this pulls everything back to where it
         # would be indented if it hadn't been written in literate style.
-        line = line.replace /^\s{4}|^\t/g, ''
+        line = line.replace /^[ ]{4}|^\t/g, ''
         newSource += "#{line}\n"
 
     newSource
