@@ -3,6 +3,7 @@ JsLintReporter = require './jslint'
 module.exports = class CheckstyleReporter
 
     constructor: (@errorReport, options = {}) ->
+        { @quiet } = options
 
     print: (message) ->
         # coffeelint: disable=no_debugger
@@ -19,7 +20,7 @@ module.exports = class CheckstyleReporter
             if errors.length
                 @print "<file name=\"#{path}\">"
 
-                for e in errors
+                for e in errors when not @quiet or e.level is 'error'
                     level = e.level
                     level = 'warning' if level is 'warn'
 

@@ -1,6 +1,7 @@
 module.exports = class RawReporter
 
     constructor: (@errorReport, options = {}) ->
+        { @quiet } = options
 
     print: (message) ->
         # coffeelint: disable=no_debugger
@@ -8,4 +9,8 @@ module.exports = class RawReporter
         # coffeelint: enable=no_debugger
 
     publish: () ->
-        @print JSON.stringify(@errorReport.paths, undefined, 2)
+        er = {}
+        for path, errors of @errorReport.paths
+            er[path] = (e for e in errors when not @quiet or e.level is 'error')
+
+        @print JSON.stringify(er, undefined, 2)

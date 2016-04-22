@@ -1,6 +1,7 @@
 module.exports = class JSLintReporter
 
     constructor: (@errorReport, options = {}) ->
+        { @quiet } = options
 
     print: (message) ->
         # coffeelint: disable=no_debugger
@@ -14,7 +15,9 @@ module.exports = class JSLintReporter
             if errors.length
                 @print "<file name=\"#{path}\">"
 
-                for e in errors
+                for e in errors when not @quiet or e.level is 'error'
+                    # continue if @quiet and e.level isnt 'error'
+
                     @print """
                     <issue line="#{e.lineNumber}"
                             lineEnd="#{e.lineNumberEnd ? e.lineNumber}"
