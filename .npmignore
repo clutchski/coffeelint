@@ -1,4 +1,5 @@
+src/
 test/
-.git*
-utils/
 coffeelint.json
+.travis.yml
+.package.json
