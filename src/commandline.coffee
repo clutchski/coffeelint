@@ -144,7 +144,8 @@ reportAndExit = (errorReport, options) ->
     SelectedReporter = coreReporters[strReporter] ? do ->
         try
             reporterPath = resolve strReporter, {
-                basedir: process.cwd()
+                basedir: process.cwd(),
+                extensions: ['.js', '.coffee', '.litcoffee', '.coffee.md']
             }
         catch
             reporterPath = strReporter

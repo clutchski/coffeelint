@@ -7,7 +7,8 @@ module.exports =
         try
             # Try to find the project-level rule first.
             rulePath = resolve moduleName, {
-                basedir: process.cwd()
+                basedir: process.cwd(),
+                extensions: ['.js', '.coffee', '.litcoffee', '.coffee.md']
             }
             return require rulePath
         try
