@@ -17,7 +17,7 @@ module.exports = class NoStandAloneAt
     lintToken: (token, tokenApi) ->
         nextToken = tokenApi.peek()
         spaced = token.spaced
-        isIdentifier = nextToken[0] is 'IDENTIFIER'
+        isIdentifier = nextToken[0] in ['IDENTIFIER', 'PROPERTY']
         isIndexStart = nextToken[0] is 'INDEX_START'
         isDot = nextToken[0] is '.'
 
@@ -27,7 +27,7 @@ module.exports = class NoStandAloneAt
         # sense to group it into no_stand_alone_at
         if nextToken[0] is '::'
             protoProperty = tokenApi.peek(2)
-            isValidProtoProperty = protoProperty[0] is 'IDENTIFIER'
+            isValidProtoProperty = protoProperty[0] in ['IDENTIFIER', 'PROPERTY']
 
         if spaced or (not isIdentifier and not isIndexStart and
                 not isDot and not isValidProtoProperty)
