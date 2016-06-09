@@ -23,7 +23,7 @@ module.exports = class NoImplicitBraces
             idiomatic CoffeeScript.
             '''
 
-    tokens: ['{', 'OUTDENT', 'CLASS', 'IDENTIFIER', 'EXTENDS']
+    tokens: ['{', 'OUTDENT', 'CLASS', 'IDENTIFIER', 'PROPERTY', 'EXTENDS']
 
     constructor: ->
         @isClass = false
@@ -42,10 +42,10 @@ module.exports = class NoImplicitBraces
         # If we're looking at an IDENTIFIER, and we're in a class, and we've not
         # set a className (or the previous non-identifier was 'EXTENDS', set the
         # current identifier as the class name)
-        if type is 'IDENTIFIER' and @isClass and @className is ''
+        if type in ['IDENTIFIER', 'PROPERTY'] and @isClass and @className is ''
             # Backtrack to get the full classname
             c = 0
-            while tokenApi.peek(c)[0] in ['IDENTIFIER', '.']
+            while tokenApi.peek(c)[0] in ['IDENTIFIER', 'PROPERTY', '.']
                 @className += tokenApi.peek(c)[1]
                 c++
 
@@ -69,9 +69,10 @@ module.exports = class NoImplicitBraces
 
                 peekIdent = ''
                 c = -2
-                # Go back until you grab all the tokens with IDENTIFIER or '.'
+                # Go back until you grab all the tokens with IDENTIFIER,
+                # PROPERTY or '.'
                 while ([_type, _val] = tokenApi.peek(c))
-                    break if _type not in ['IDENTIFIER', '.']
+                    break if _type not in ['IDENTIFIER', 'PROPERTY', '.']
                     peekIdent = _val + peekIdent
                     c--
 

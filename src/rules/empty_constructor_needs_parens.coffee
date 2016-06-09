@@ -19,7 +19,7 @@ module.exports = class EmptyConstructorNeedsParens
             loop
                 expectedIdentifier = peek(identifierIndex)
                 expectedCallStart  = peek(identifierIndex + 1)
-                if expectedIdentifier?[0] is 'IDENTIFIER'
+                if expectedIdentifier?[0] in ['IDENTIFIER', 'PROPERTY']
                     if expectedCallStart?[0] is '.'
                         # skip the dot and start with the next token
                         identifierIndex += 2
@@ -34,7 +34,7 @@ module.exports = class EmptyConstructorNeedsParens
             # The callStart is generated if your parameters are all on the same
             # line with implicit parens, and if your parameters start on the
             # next line, but is missing if there are no params and no parens.
-            if expectedIdentifier?[0] is 'IDENTIFIER' and expectedCallStart?
+            if expectedIdentifier?[0] in ['IDENTIFIER', 'PROPERTY'] and expectedCallStart?
                 return @handleExpectedCallStart expectedCallStart
 
     handleExpectedCallStart: (expectedCallStart) ->

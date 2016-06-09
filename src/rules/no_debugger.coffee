@@ -10,10 +10,10 @@ module.exports = class NoDebugger
             This rule is `warn` by default.
             '''
 
-    tokens: ['DEBUGGER', 'IDENTIFIER']
+    tokens: ['STATEMENT', 'DEBUGGER', 'IDENTIFIER', 'PROPERTY']
 
     lintToken: (token, tokenApi) ->
-        if token[0] is 'DEBUGGER'
+        if token[0] in ['DEBUGGER', 'STATEMENT'] and token[1] is 'debugger'
             return { context: "found '#{token[0]}'" }
 
         if tokenApi.config[@rule.name]?.console

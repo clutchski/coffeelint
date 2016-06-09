@@ -27,6 +27,7 @@ module.exports = class NoUnnecessaryFatArrows
     isValue: (node) -> @astApi.getNodeName(node) is 'Value'
 
     isThis: (node) =>
+        node.constructor?.name is 'ThisLiteral' or
         @isValue(node) and node.base.value is 'this'
 
 
@@ -36,7 +37,8 @@ module.exports = class NoUnnecessaryFatArrows
             node.body.contains(@isThis)? or
             node.body.contains((child) =>
                 unless @astApi.getNodeName(child)
-                    child.isSuper? and child.isSuper
+                    child.constructor?.name is 'SuperCall' or
+                    (child.isSuper? and child.isSuper)
                 else
                     @isFatArrowCode(child) and @needsFatArrow(child))?
         )
