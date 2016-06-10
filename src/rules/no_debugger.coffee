@@ -10,7 +10,8 @@ module.exports = class NoDebugger
             This rule is `warn` by default.
             '''
 
-    tokens: ['STATEMENT', 'DEBUGGER', 'IDENTIFIER', 'PROPERTY']
+    # TODO: after <1.10.0 is not supported, remove 'DEBUGGER' here
+    tokens: ['STATEMENT', 'DEBUGGER', 'IDENTIFIER']
 
     lintToken: (token, tokenApi) ->
         if token[0] in ['DEBUGGER', 'STATEMENT'] and token[1] is 'debugger'

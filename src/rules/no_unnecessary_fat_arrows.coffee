@@ -30,7 +30,6 @@ module.exports = class NoUnnecessaryFatArrows
         node.constructor?.name is 'ThisLiteral' or
         @isValue(node) and node.base.value is 'this'
 
-
     needsFatArrow: (node) =>
         @isCode(node) and (
             any(node.params, (param) => param.contains(@isThis)?) or
@@ -39,6 +38,7 @@ module.exports = class NoUnnecessaryFatArrows
                 unless @astApi.getNodeName(child)
                     child.constructor?.name is 'SuperCall' or
                     (child.isSuper? and child.isSuper)
+                    # TODO: after <1.10.0 is not supported, remove child.isSuper
                 else
                     @isFatArrowCode(child) and @needsFatArrow(child))?
         )
