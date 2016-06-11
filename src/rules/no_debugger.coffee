@@ -10,10 +10,11 @@ module.exports = class NoDebugger
             This rule is `warn` by default.
             '''
 
-    tokens: ['DEBUGGER', 'IDENTIFIER']
+    # TODO: after <1.10.0 is not supported, remove 'DEBUGGER' here
+    tokens: ['STATEMENT', 'DEBUGGER', 'IDENTIFIER']
 
     lintToken: (token, tokenApi) ->
-        if token[0] is 'DEBUGGER'
+        if token[0] in ['DEBUGGER', 'STATEMENT'] and token[1] is 'debugger'
             return { context: "found '#{token[0]}'" }
 
         if tokenApi.config[@rule.name]?.console

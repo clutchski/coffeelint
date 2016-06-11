@@ -15,18 +15,18 @@ module.exports = class EmptyConstructorNeedsParens
         if token[1] is 'new'
             peek = tokenApi.peek.bind(tokenApi)
             # Find the last chained identifier, e.g. Bar in new foo.bar.Bar().
-            identifierIndex = 1
+            identIndex = 1
             loop
-                expectedIdentifier = peek(identifierIndex)
-                expectedCallStart  = peek(identifierIndex + 1)
-                if expectedIdentifier?[0] is 'IDENTIFIER'
-                    if expectedCallStart?[0] is '.'
+                isIdent = peek(identIndex)?[0] in ['IDENTIFIER', 'PROPERTY']
+                nextToken = peek(identIndex + 1)
+                if isIdent
+                    if nextToken?[0] is '.'
                         # skip the dot and start with the next token
-                        identifierIndex += 2
+                        identIndex += 2
                         continue
-                    if expectedCallStart?[0] is 'INDEX_START'
-                        while peek(identifierIndex)?[0] isnt 'INDEX_END'
-                            identifierIndex++
+                    if nextToken?[0] is 'INDEX_START'
+                        while peek(identIndex)?[0] isnt 'INDEX_END'
+                            identIndex++
                         continue
 
                 break
@@ -34,9 +34,9 @@ module.exports = class EmptyConstructorNeedsParens
             # The callStart is generated if your parameters are all on the same
             # line with implicit parens, and if your parameters start on the
             # next line, but is missing if there are no params and no parens.
-            if expectedIdentifier?[0] is 'IDENTIFIER' and expectedCallStart?
-                return @handleExpectedCallStart expectedCallStart
+            if isIdent and nextToken?
+                return @handleExpectedCallStart(nextToken)
 
-    handleExpectedCallStart: (expectedCallStart) ->
-        if expectedCallStart[0] isnt 'CALL_START'
+    handleExpectedCallStart: (isCallStart) ->
+        if isCallStart[0] isnt 'CALL_START'
             return true

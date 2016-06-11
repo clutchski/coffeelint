@@ -19,6 +19,7 @@ vows.describe(RULE).addBatch({
             not(@).ok
             @::ok
             @:: #notok
+            @(fn)
             '''
 
         'are allowed by default': (source) ->
@@ -30,17 +31,14 @@ vows.describe(RULE).addBatch({
             config = no_stand_alone_at: { level: 'error' }
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
-            assert.lengthOf(errors, 4)
+            assert.lengthOf(errors, 3)
             error = errors[0]
-            assert.equal(error.lineNumber, 2)
-            assert.equal(error.rule, RULE)
-            error = errors[1]
             assert.equal(error.lineNumber, 4)
             assert.equal(error.rule, RULE)
-            error = errors[2]
+            error = errors[1]
             assert.equal(error.lineNumber, 7)
             assert.equal(error.rule, RULE)
-            error = errors[3]
+            error = errors[2]
             assert.equal(error.lineNumber, 9)
             assert.equal(error.rule, RULE)
 

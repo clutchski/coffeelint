@@ -12,7 +12,8 @@ module.exports = class DuplicateKey
             Prevents defining duplicate keys in object literals and classes
             '''
 
-    tokens: ['IDENTIFIER', '{', '}']
+    # TODO: after <1.10.0 is not supported, remove 'IDENTIFIER' here
+    tokens: ['IDENTIFIER', 'PROPERTY', '{', '}']
 
     constructor: ->
         @braceScopes = []   # A stack tracking keys defined in nexted scopes.
@@ -23,7 +24,8 @@ module.exports = class DuplicateKey
             @lintBrace arguments...
             return undefined
 
-        if type is 'IDENTIFIER'
+        # TODO: after <1.10.0 is not supported, remove 'IDENTIFIER' here
+        if type in ['IDENTIFIER', 'PROPERTY']
             @lintIdentifier arguments...
 
     lintIdentifier: (token, tokenApi) ->

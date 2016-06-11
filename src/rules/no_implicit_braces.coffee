@@ -45,7 +45,7 @@ module.exports = class NoImplicitBraces
         if type is 'IDENTIFIER' and @isClass and @className is ''
             # Backtrack to get the full classname
             c = 0
-            while tokenApi.peek(c)[0] in ['IDENTIFIER', '.']
+            while tokenApi.peek(c)[0] in ['IDENTIFIER', 'PROPERTY', '.']
                 @className += tokenApi.peek(c)[1]
                 c++
 
@@ -69,9 +69,10 @@ module.exports = class NoImplicitBraces
 
                 peekIdent = ''
                 c = -2
-                # Go back until you grab all the tokens with IDENTIFIER or '.'
+                # Go back until you grab all the tokens with IDENTIFIER,
+                # PROPERTY or '.'
                 while ([_type, _val] = tokenApi.peek(c))
-                    break if _type not in ['IDENTIFIER', '.']
+                    break if _type not in ['IDENTIFIER', 'PROPERTY', '.']
                     peekIdent = _val + peekIdent
                     c--
 

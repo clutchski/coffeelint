@@ -14,6 +14,11 @@ vows.describe(RULE).addBatch({
             y =
               'a': 'b'
               3:4
+
+            z.y =
+              'x': 4
+              3 : 0
+
             '''
 
         'are allowed by default': (source) ->
@@ -25,9 +30,19 @@ vows.describe(RULE).addBatch({
             config = no_implicit_braces: { level: 'error' }
             errors = coffeelint.lint(source, config)
             assert.isArray(errors)
-            assert.lengthOf(errors, 2)
+            assert.lengthOf(errors, 3)
             error = errors[0]
             assert.equal(error.lineNumber, 1)
+            assert.equal(error.message, 'Implicit braces are forbidden')
+            assert.equal(error.rule, RULE)
+
+            error = errors[1]
+            assert.equal(error.lineNumber, 3)
+            assert.equal(error.message, 'Implicit braces are forbidden')
+            assert.equal(error.rule, RULE)
+
+            error = errors[2]
+            assert.equal(error.lineNumber, 7)
             assert.equal(error.message, 'Implicit braces are forbidden')
             assert.equal(error.rule, RULE)
 

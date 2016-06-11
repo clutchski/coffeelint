@@ -11,27 +11,29 @@ module.exports = class NoStandAloneAt
             #1601</a>
             '''
 
-
     tokens: ['@']
 
     lintToken: (token, tokenApi) ->
-        nextToken = tokenApi.peek()
-        spaced = token.spaced
-        isIdentifier = nextToken[0] is 'IDENTIFIER'
-        isIndexStart = nextToken[0] is 'INDEX_START'
-        isDot = nextToken[0] is '.'
+        [nextToken] = tokenApi.peek()
+        noSpace = not token.spaced
+        # TODO: after <1.10.0 is not supported, remove 'IDENTIFIER' here
+        isProp = nextToken in ['IDENTIFIER', 'PROPERTY']
+        isAStart = nextToken in ['INDEX_START', 'CALL_START'] # @[] or @()
+        isDot = nextToken is '.'
 
         # https://github.com/jashkenas/coffee-script/issues/1601
         # @::foo is valid, but @:: behaves inconsistently and is planned for
         # removal. Technically @:: is a stand alone ::, but I think it makes
         # sense to group it into no_stand_alone_at
-        if nextToken[0] is '::'
-            protoProperty = tokenApi.peek(2)
-            isValidProtoProperty = protoProperty[0] is 'IDENTIFIER'
+        #
+        # TODO: after v1.10.0 is not supported, remove 'IDENTIFIER' here
+        isProtoProp = nextToken is '::' and
+            tokenApi.peek(2)?[0] in ['IDENTIFIER', 'PROPERTY']
 
-        if spaced or (not isIdentifier and not isIndexStart and
-                not isDot and not isValidProtoProperty)
+        # Return an error after an '@' token unless:
+        # 1: there is a '.' afterwards (isDot)
+        # 2: there isn't a space after the '@' and the token following the '@'
+        # is an property, the start of an index '[' or is an property after
+        # the '::'
+        unless (isDot or (noSpace and (isProp or isAStart or isProtoProp)))
             return true
-
-
-
