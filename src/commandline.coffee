@@ -11,7 +11,7 @@ path = require('path')
 fs   = require('fs')
 os   = require('os')
 glob = require('glob')
-optimist = require('optimist')
+yargs = require('yargs')
 ignore = require('ignore')
 stripComments = require('strip-json-comments')
 thisdir = path.dirname(fs.realpathSync(__filename))
@@ -168,7 +168,7 @@ reportAndExit = (errorReport, options) ->
         process.exit errorReport.getExitCode()
 
 # Declare command line options.
-options = optimist
+options = yargs
             .usage('Usage: coffeelint [options] source [...]')
             .alias('f', 'file')
             .alias('h', 'help')
