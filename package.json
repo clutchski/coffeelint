@@ -22,18 +22,18 @@
     "coffeelint": "./bin/coffeelint"
   },
   "dependencies": {
-    "browserify": "~8.1.0",
+    "browserify": "~13.1.0",
     "coffee-script": "~1.10.0",
-    "coffeeify": "~1.0.0",
-    "glob": "^4.0.0",
-    "ignore": "^3.0.9",
-    "optimist": "^0.6.1",
-    "resolve": "^0.6.3",
-    "strip-json-comments": "^1.0.2"
+    "coffeeify": "~2.0.1",
+    "glob": "^7.0.5",
+    "ignore": "^3.1.5",
+    "yargs": "^5.0.0",
+    "resolve": "^1.1.7",
+    "strip-json-comments": "^2.0.1"
   },
   "devDependencies": {
-    "vows": ">=0.6.0",
-    "underscore": ">=1.4.4"
+    "vows": "^0.8.1",
+    "underscore": "^1.8.3"
   },
   "license": "MIT",
   "scripts": {
