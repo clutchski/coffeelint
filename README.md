@@ -1,4 +1,4 @@
-CoffeeLint
+CoffeeLint (:rotating_light: Not Maintained)
 ==========
 
 CoffeeLint is a style checker that helps keep CoffeeScript code
@@ -10,14 +10,22 @@ For guides on installing, using and configuring CoffeeLint, head over
 To suggest a feature, report a bug, or general discussion, head over
 [here](http://github.com/clutchski/coffeelint/issues/).
 
-## Team
+## :rotating_light: Team :rotating_light:
+
+There are no future plans for CoffeeLint. Only major bugs will be addressed
+here. If you need a rule, write and publish it on npm. See [the documentation on
+how to build your own
+rules.](https://github.com/clutchski/coffeelint/blob/master/doc/integration.md)
+
+[You Don't Need CoffeeScript. -Asa](https://gist.github.com/AsaAyers/2e6cb944753b667d5f90ae1c954607cb)
 
 Current:
 
-- [Shuan Wang](https://github.com/swang)
+- No one
 
 Past:
 
+- [Shuan Wang](https://github.com/swang)
 - [Asa Ayers](https://github.com/AsaAyers)
 - [Matt Perpick](https://github.com/clutchski)
 
