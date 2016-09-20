@@ -22,10 +22,10 @@
     "coffeelint": "./bin/coffeelint"
   },
   "dependencies": {
-    "browserify": "~8.1.0",
+    "browserify": "^13.1.0",
     "coffee-script": "~1.10.0",
     "coffeeify": "~1.0.0",
-    "glob": "^4.0.0",
+    "glob": "^7.0.6",
     "ignore": "^3.0.9",
     "optimist": "^0.6.1",
     "resolve": "^0.6.3",
