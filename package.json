@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "browserify": "^13.1.0",
-    "coffee-script": "~1.10.0",
+    "coffee-script": "~1.11.0",
     "coffeeify": "~1.0.0",
     "glob": "^7.0.6",
     "ignore": "^3.0.9",
@@ -32,7 +32,7 @@
     "strip-json-comments": "^1.0.2"
   },
   "devDependencies": {
-    "vows": ">=0.6.0",
+    "vows": ">=0.8.1",
     "underscore": ">=1.4.4"
   },
   "license": "MIT",
