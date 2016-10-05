@@ -18,7 +18,7 @@ Current:
 
 Past:
 
-- [Asa Ayers](https://github.com/AsaAyers)
+- [Asa Ayers](https://github.com/AsaAyers) - [You Don't Need CoffeeScript](https://gist.github.com/AsaAyers/d09e4de118b8d6b5e2d8fa3e38e496e0)
 - [Matt Perpick](https://github.com/clutchski)
 
 ## Contributing
