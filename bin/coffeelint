@@ -27,7 +27,7 @@ if (!existsFn(commandline)) {
         // Try to find a project-specific install first. This works the same
         // way grunt-cli does.
         filepath = resolve('coffeelint', { basedir: process.cwd() });
-        commandline = path.dirname(filepath) + path.sep + 'commandline.js';
+        commandline = path.dirname(filepath) + (path.sep || '/') + 'commandline.js';
     } catch (ex) {
     }
 
