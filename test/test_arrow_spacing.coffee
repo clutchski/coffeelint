@@ -189,7 +189,7 @@ vows.describe(RULE).addBatch({
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors, 0)
 
-    'Handle a nested arrow at end of file':
+    'Handle a nested arrow at beginning & end of file':
         topic:
             '''
             class A\n  f: ->

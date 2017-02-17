@@ -13,7 +13,7 @@ module.exports = class DuplicateKey
             '''
 
     # TODO: after <1.10.0 is not supported, remove 'IDENTIFIER' here
-    tokens: ['IDENTIFIER', 'PROPERTY', '{', '}']
+    tokens: ['IDENTIFIER', 'PROPERTY', 'STRING', '{', '}']
 
     constructor: ->
         @braceScopes = []   # A stack tracking keys defined in nexted scopes.
@@ -25,7 +25,7 @@ module.exports = class DuplicateKey
             return undefined
 
         # TODO: after <1.10.0 is not supported, remove 'IDENTIFIER' here
-        if type in ['IDENTIFIER', 'PROPERTY']
+        if type in ['IDENTIFIER', 'PROPERTY', 'STRING']
             @lintIdentifier arguments...
 
     lintIdentifier: (token, tokenApi) ->
@@ -43,6 +43,9 @@ module.exports = class DuplicateKey
 
         # Assigning "@something" and "something" are not the same thing
         key = "@#{key}" if previousToken[0] is '@'
+
+        # Normalize property, "property", and 'property'
+        key = m[2] if m = key.match /^(["'])(.*)\1$/
 
         # Added a prefix to not interfere with things like "constructor".
         key = "identifier-#{key}"

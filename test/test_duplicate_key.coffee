@@ -18,6 +18,8 @@ vows.describe(RULE).addBatch({
                   keyA: one
                   keyB: one
                   keyA: 2
+                  "keyC": 42
+                  'keyC': 42
               getConfig: ->
                 @config =
                   foo: 1
@@ -33,13 +35,17 @@ vows.describe(RULE).addBatch({
             errors = coffeelint.lint(source)
             # Verify the two actual duplicate keys are found and it is not
             # mistaking @getConfig as a duplicate key
-            assert.equal(errors.length, 2)
+            assert.equal(errors.length, 3)
             error = errors[0]
-            assert.equal(error.lineNumber, 8) # 2nd getA
+            assert.equal(error.lineNumber, 8) # 2nd keyA
             assert.equal(error.message, message)
             assert.equal(error.rule, RULE)
             error = errors[1]
-            assert.equal(error.lineNumber, 9) # 2nd getConfig
+            assert.equal(error.lineNumber, 10) # 2nd keyC
+            assert.equal(error.message, message)
+            assert.equal(error.rule, RULE)
+            error = errors[2]
+            assert.equal(error.lineNumber, 11) # 2nd getConfig
             assert.equal(error.message, message)
             assert.equal(error.rule, RULE)
 
