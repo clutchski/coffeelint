@@ -178,6 +178,7 @@ coffeelint.getRules = ->
     output
 
 # These all need to be explicitly listed so they get picked up by browserify.
+coffeelint.registerRule require './rules/array_initialization.coffee'
 coffeelint.registerRule require './rules/arrow_spacing.coffee'
 coffeelint.registerRule require './rules/braces_spacing.coffee'
 coffeelint.registerRule require './rules/no_tabs.coffee'
