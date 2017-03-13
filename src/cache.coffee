@@ -3,7 +3,7 @@ path = require 'path'
 crypto = require 'crypto'
 
 ltVer = require('./../package.json').version
-csVer = (window?.CoffeeScript or require 'coffee-script').VERSION
+csVer = (window?.CoffeeScript or require 'coffeescript').VERSION
 
 
 module.exports = class Cache

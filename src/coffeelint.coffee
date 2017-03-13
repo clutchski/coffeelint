@@ -24,7 +24,7 @@ if window?
 #
 # Atom has a `window`, but not a `window.CoffeeScript`. Calling `nodeRequire`
 # here should fix Atom without breaking anything else.
-CoffeeScript ?= nodeRequire 'coffee-script'
+CoffeeScript ?= nodeRequire 'coffeescript'
 
 unless CoffeeScript?
     throw new Error('Unable to find CoffeeScript')
