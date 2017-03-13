@@ -13,9 +13,10 @@ runLint = (source, is_strict) ->
     config[RULE].is_strict = is_strict
     coffeelint.lint source, config
 
-shouldError = (source, numErrors = 1, is_strict = false) ->
+shouldError = (source, numErrors, is_strict = false) ->
     topic: source
     'errors for missing arrow': (source) ->
+        numErrors ?= 1
         errors = runLint source, is_strict
         assert.lengthOf errors, numErrors,
             "Expected #{numErrors} errors, got #{inspect errors}"
