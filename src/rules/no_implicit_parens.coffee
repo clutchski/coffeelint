@@ -34,6 +34,7 @@ module.exports = class NoImplicitParens
                     t = tokenApi.peek(i)
                     sameLine = t[2].first_line is token[2].first_line
                     genCallStart = t[0] is 'CALL_START' and t.generated
+
                     if not t? or genCallStart and sameLine
                         return true
 
