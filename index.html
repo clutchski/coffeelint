@@ -151,6 +151,15 @@ class Gangster
 foo = "some/huge/line/string/with/embed/#{values}.that/surpasses/the/max/column/width"
 # coffeelint: enable=max_line_length
         </code></pre>
+
+        <p>
+          You can also disable all checks for a single line by appending <tt>#
+          noqa</tt> at the end of the line:
+        </p>
+
+        <code>
+throw "I should be an Error not a string but YOLO" # noqa
+        </code>
         <p>Here's a rundown of CoffeeLint's rules:</p>
         <table class="options">
           <thead>
