@@ -187,7 +187,7 @@ vows.describe(RULE).addBatch({
 
             assert.equal(error.rule, RULE)
             assert.equal(error.lineNumber, 9)
-            assert.equal(error.context, 'Expected 2 got 3')
+            assert.equal(error.context, 'Expected 2 got 1')
 
     'One chain invocations with bad indents':
         topic:
@@ -224,7 +224,7 @@ vows.describe(RULE).addBatch({
 
             assert.equal(error.rule, RULE)
             assert.equal(error.lineNumber, 5)
-            assert.equal(error.context, 'Expected 2 got 1')
+            assert.equal(error.context, 'Expected 2 got 3')
 
             error = errors[1]
 
@@ -577,6 +577,18 @@ vows.describe(RULE).addBatch({
         'is permitted': (source) ->
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
+    # a property/method in a class is now checked against in indentation
+    'Handle property/method in class':
+        topic:
+            '''
+            class A
+              B: (a, b, \
+                  c) ->
+                a + b + c
+            '''
 
+        'returns no errors': (source) ->
+            errors = coffeelint.lint(source)
+            assert.isEmpty(errors)
 
 }).export(module)
