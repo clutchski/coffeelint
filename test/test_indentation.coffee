@@ -577,6 +577,18 @@ vows.describe(RULE).addBatch({
         'is permitted': (source) ->
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
+    # a property/method in a class is now checked against in indentation
+    'Handle property/method in class':
+        topic:
+            '''
+            class A
+              B: (a, b, \
+                  c) ->
+                a + b + c
+            '''
 
+        'returns no errors': (source) ->
+            errors = coffeelint.lint(source)
+            assert.isEmpty(errors)
 
 }).export(module)
