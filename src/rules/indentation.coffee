@@ -27,8 +27,8 @@ module.exports = class Indentation
     keywords: [
       '->', '=>', '@', 'CATCH', 'CLASS', 'ELSE', 'FINALLY', 'FOR',
       'FORIN', 'FOROF', 'IDENTIFIER', 'IF', 'LEADING_WHEN', 'LOOP',
-      'RETURN', 'SWITCH', 'THROW', 'TRY', 'UNTIL', 'WHEN', 'WHILE',
-      'YIELD'
+      'PROPERTY', 'RETURN', 'SWITCH', 'THROW', 'TRY', 'UNTIL', 'WHEN',
+      'WHILE', 'YIELD'
     ]
 
     constructor: ->
