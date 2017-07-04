@@ -130,7 +130,7 @@ vows.describe('commandline').addBatch({
         'works': (error, stdout, stderr) ->
             assert.isNull(error)
 
-    'with --rule parameter for a custom plugin':
+    'with --rules parameter for a custom plugin':
         topic: () ->
             args = [
                 '--rules'
@@ -146,7 +146,10 @@ vows.describe('commandline').addBatch({
 
         'works': (error, stdout, stderr) ->
             assert.isNotNull(error)
-            assert.include(stdout.toLowerCase(), 'forbidden variable name')
+            assert.include(stdout.toLowerCase(), '#1: forbidden variable name')
+            assert.include(stdout.toLowerCase(), '#7: forbidden variable name')
+            assert.include(stdout.toLowerCase(), '#9: forbidden variable name')
+            assert.include(stdout.toLowerCase(), '#11: forbidden variable name')
 
     'with `module` specified for a specific rule':
         topic: () ->
