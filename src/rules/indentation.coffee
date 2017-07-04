@@ -36,11 +36,11 @@ module.exports = class Indentation
 
     # Return an error if the given indentation token is not correct.
     lintToken: (token, tokenApi) ->
-        [type, numIndents, { first_line: lineNumber }] = token
+        [type, numIndents] = token
+        { first_column: dotIndent } = token[2]
         { lines, lineNumber } = tokenApi
 
         expected = tokenApi.config[@rule.name].value
-
         # See: 'Indented chained invocations with bad indents'
         # This actually checks the chained call to see if its properly indented
         if type is '.'
@@ -49,7 +49,21 @@ module.exports = class Indentation
             # the line
             currentLine = lines[lineNumber]
             if currentLine.match(/\S/)?[0] is '.'
-                return @handleChain(tokenApi, expected)
+                next = tokenApi.peek(1)
+
+                if next[0] is 'PROPERTY'
+                    chain = '.' + next[1]
+                    startsWith = new RegExp('\\S{' + chain.length + '}')
+                    if currentLine.match(startsWith)?[0] is chain
+                        got = dotIndent
+                        if dotIndent - expected > expected
+                            got %= expected
+
+                        if dotIndent % expected isnt 0
+                            return {
+                                context: "Expected #{expected} got #{got}"
+                            }
+
             return undefined
 
         if type in ['[', ']']
@@ -98,54 +112,6 @@ module.exports = class Indentation
         # Return null, since we're not really linting
         # anything here.
         null
-
-    handleChain: (tokenApi, expected) ->
-        lastCheck = 1
-        callStart = 1
-        prevNum = 1
-
-        { lineNumber, lines } = tokenApi
-        currentLine = lines[lineNumber]
-
-        # Traverse up the token list until we see a CALL_START token.
-        # Don't scan above this line
-        findCallStart = tokenApi.peek(-callStart)
-        while (findCallStart and findCallStart[0] isnt 'TERMINATOR')
-            { first_line: lastCheck } = findCallStart[2]
-
-            callStart += 1
-            findCallStart = tokenApi.peek(-callStart)
-
-        # Keep going back until we are not at a comment or a blank lines
-        # and set a new "previousLine"
-        while (lineNumber - prevNum > lastCheck) and
-                not /^\s*\./.test(lines[lineNumber - prevNum])
-            prevNum += 1
-
-        checkNum = lineNumber - prevNum
-        if checkNum >= 0
-            prevLine = lines[checkNum]
-
-            # If this is just a one-chain function, or the "corrected"
-            # previous line begins with a '.', check for correct
-            # indentation
-            if prevLine.match(/\S/)[0] is '.' or checkNum is lastCheck
-                currentSpaces = currentLine.match(/\S/)?.index
-                prevSpaces = prevLine.match(/\S/)?.index
-                numIndents = currentSpaces - prevSpaces
-
-                # If both prev and current lines have uneven spacing,
-                # assume the current line could be lined by default
-                # indent spacing, and set numIndents to current
-                # number of spaces
-                prevIsIndent = prevSpaces % expected isnt 0
-                currIsIndent = currentSpaces % expected isnt 0
-
-                if prevIsIndent and currIsIndent
-                    numIndents = currentSpaces
-
-                if numIndents % expected isnt 0
-                    return { context: "Expected #{expected} got #{numIndents}" }
 
     grabLineTokens: (tokenApi, lineNumber, all = false) ->
         { tokensByLine } = tokenApi

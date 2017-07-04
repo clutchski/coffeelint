@@ -187,7 +187,7 @@ vows.describe(RULE).addBatch({
 
             assert.equal(error.rule, RULE)
             assert.equal(error.lineNumber, 9)
-            assert.equal(error.context, 'Expected 2 got 3')
+            assert.equal(error.context, 'Expected 2 got 1')
 
     'One chain invocations with bad indents':
         topic:
@@ -224,7 +224,7 @@ vows.describe(RULE).addBatch({
 
             assert.equal(error.rule, RULE)
             assert.equal(error.lineNumber, 5)
-            assert.equal(error.context, 'Expected 2 got 1')
+            assert.equal(error.context, 'Expected 2 got 3')
 
             error = errors[1]
 
