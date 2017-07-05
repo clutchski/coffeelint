@@ -153,6 +153,28 @@ vows.describe(RULE).addBatch({
         'is permitted': (source) ->
             assert.isEmpty(coffeelint.lint(source))
 
+    'Consecutive chained invocations with a prop method call':
+        topic:
+            '''
+            $('<input>')
+                .addClass('k')
+                .prop('placeholder', @$el.prop('placeholder'))
+                .hide()
+            '''
+
+        'is permitted': (source) ->
+            assert.isEmpty(coffeelint.lint(source))
+
+    'Consecutive chained invocations with string concatenation':
+        topic:
+            '''
+            $('body')
+                .addClass("hello-" + world).addClass("red")
+            '''
+
+        'is permitted': (source) ->
+            assert.isEmpty(coffeelint.lint(source))
+
     'Consecutive indented chained invocations and multi-line expression':
         topic:
             '''
