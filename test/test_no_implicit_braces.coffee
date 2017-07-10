@@ -220,4 +220,70 @@ vows.describe(RULE).addBatch({
             assert.equal(errors[2].lineNumber, 34)
             assert.equal(errors[2].line, '    enumerable: true')
 
+    'Test Class with initial code in class being a defined function':
+        topic: () ->
+            '''
+            class Foo
+
+              privateFun = -> 42
+
+              fun: -> privateFun()
+            '''
+
+        'should pass without errors': (source) ->
+
+            config =
+                no_implicit_braces:
+                    level: 'error'
+                    strict: true
+
+            errors = coffeelint.lint(source, config)
+
+            assert.isArray(errors)
+            assert.lengthOf(errors, 0)
+
+        'should pass without errors when strict=false': (source) ->
+
+            config =
+                no_implicit_braces:
+                    level: 'error'
+                    strict: false
+
+            errors = coffeelint.lint(source, config)
+
+            assert.isArray(errors)
+            assert.lengthOf(errors, 0)
+
+    'Test Class with @ in class name':
+        topic: () ->
+            '''
+            class @A
+              constructor: ->
+                @X = @Y
+            '''
+
+        'should pass without errors': (source) ->
+
+            config =
+                no_implicit_braces:
+                    level: 'error'
+                    strict: true
+
+            errors = coffeelint.lint(source, config)
+
+            assert.isArray(errors)
+            assert.lengthOf(errors, 0)
+
+        'should pass without errors when strict=false': (source) ->
+
+            config =
+                no_implicit_braces:
+                    level: 'error'
+                    strict: false
+
+            errors = coffeelint.lint(source, config)
+
+            assert.isArray(errors)
+            assert.lengthOf(errors, 0)
+
 }).export(module)

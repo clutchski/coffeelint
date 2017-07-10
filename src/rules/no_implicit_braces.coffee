@@ -23,7 +23,11 @@ module.exports = class NoImplicitBraces
             idiomatic CoffeeScript.
             '''
 
-    tokens: ['{', 'OUTDENT', 'CLASS', 'IDENTIFIER', 'EXTENDS']
+    tokens: [
+        '{', 'OUTDENT', 'INDENT', 'CLASS',
+        'IDENTIFIER', 'PROPERTY', 'EXTENDS'
+    ]
+    dent: 0
 
     constructor: ->
         @isClass = false
@@ -31,7 +35,7 @@ module.exports = class NoImplicitBraces
 
     lintToken: (token, tokenApi) ->
         [type, val, lineNum] = token
-        if type in ['OUTDENT', 'CLASS']
+        if type in ['OUTDENT', 'INDENT', 'CLASS']
             return @trackClass arguments...
 
         # reset "className" if class uses EXTENDS keyword
@@ -42,7 +46,7 @@ module.exports = class NoImplicitBraces
         # If we're looking at an IDENTIFIER, and we're in a class, and we've not
         # set a className (or the previous non-identifier was 'EXTENDS', set the
         # current identifier as the class name)
-        if type is 'IDENTIFIER' and @isClass and @className is ''
+        if type in ['IDENTIFIER', 'PROPERTY'] and @isClass and @className is ''
             # Backtrack to get the full classname
             c = 0
             while tokenApi.peek(c)[0] in ['IDENTIFIER', 'PROPERTY', '.']
@@ -82,9 +86,13 @@ module.exports = class NoImplicitBraces
             return true
 
     trackClass: (token, tokenApi) ->
+
         [[n0, ..., ln], [n1, ...]] = [token, tokenApi.peek()]
 
-        if n0 is 'OUTDENT' and n1 is 'TERMINATOR'
+        @dent++ if n0 is 'INDENT'
+        @dent-- if n0 is 'OUTDENT'
+
+        if @dent is 0 and n0 is 'OUTDENT' and n1 is 'TERMINATOR'
             @isClass = false
         if n0 is 'CLASS'
             @isClass = true
