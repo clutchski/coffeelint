@@ -8,7 +8,8 @@ module.exports = class SpaceOperators
             This rule enforces that operators have spaces around them.
             '''
 
-    tokens: ['+', '-', '=', '**', 'MATH', 'COMPARE', 'LOGIC', 'COMPOUND_ASSIGN',
+    tokens: ['+', '-', '=', '**', 'MATH', 'COMPARE',
+        '&', '^', '|', '&&', '||', 'COMPOUND_ASSIGN',
         'STRING_START', 'STRING_END', 'CALL_START', 'CALL_END']
 
     constructor: ->
@@ -16,21 +17,21 @@ module.exports = class SpaceOperators
         @parenTokens = []   # A stack tracking the parens token pairs.
         @interpolationLevel = 0
 
-    lintToken: ([type], tokenApi) ->
-
+    lintToken: (token, tokenApi) ->
+        [type, rest...] = token
         # These just keep track of state
         if type in ['CALL_START', 'CALL_END']
-            @trackCall arguments...
+            @trackCall token, tokenApi
             return
 
         if type in ['STRING_START', 'STRING_END']
-            return @trackParens arguments...
+            return @trackParens token, tokenApi
 
         # These may return errors
         if type in ['+', '-']
-            @lintPlus arguments...
+            @lintPlus token, tokenApi
         else
-            @lintMath arguments...
+            @lintMath token, tokenApi
 
     lintPlus: (token, tokenApi) ->
         # We can't check this inside of interpolations right now, because the
@@ -40,8 +41,8 @@ module.exports = class SpaceOperators
 
         p = tokenApi.peek(-1)
         unaries = ['TERMINATOR', '(', '=', '-', '+', ',', 'CALL_START',
-                    'INDEX_START', '..', '...', 'COMPARE', 'IF',
-                    'THROW', 'LOGIC', 'POST_IF', ':', '[', 'INDENT',
+                    'INDEX_START', '..', '...', 'COMPARE', 'IF', 'THROW',
+                    '&', '^', '|', '&&', '||', 'POST_IF', ':', '[', 'INDENT',
                     'COMPOUND_ASSIGN', 'RETURN', 'MATH', 'BY', 'LEADING_WHEN']
         isUnary = if not p then false else p[0] in unaries
         if (isUnary and token.spaced?) or
