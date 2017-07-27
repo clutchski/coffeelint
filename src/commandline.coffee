@@ -49,10 +49,11 @@ getAllExtention = (extension) ->
 findCoffeeScripts = (paths, extension) ->
     files = []
     allExtention = getAllExtention(extension)
+    opts = ignore: 'node_modules/**'
     for p in paths
         if fs.statSync(p).isDirectory()
             # The glob library only uses forward slashes.
-            files = files.concat(glob.sync("#{p}/**/*.#{allExtention}"))
+            files = files.concat(glob.sync("#{p}/**/*.#{allExtention}", opts))
         else
             files.push(p)
     # Normalize paths, converting './test/fixtures' to 'test/fixtures'.
