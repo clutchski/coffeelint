@@ -9,11 +9,7 @@ assert = require 'assert'
 ###
 
 coffeelint = require path.join('..', 'lib', 'coffeelint')
-RawReporter = require path.join('..', 'lib', 'reporters', 'raw')
-
-class PassThroughReporter extends RawReporter
-    print: (input) ->
-        return JSON.parse(input)
+PassThroughReporter = require path.join('..', 'lib', 'reporters', 'passthrough')
 
 vows.describe('reporters').addBatch({
 
@@ -28,12 +24,12 @@ vows.describe('reporters').addBatch({
 
             # Grab your own ErrorReport
             errorReport = coffeelint.getErrorReport()
-            # Lint your files, no need to save the results. They're captured
-            # inside the ErrorReport.
+            # Lint your files, no need to save the results.
+            # They're captured inside the ErrorReport.
             errorReport.lint 'stdin', code
 
-            # Construct a new reporter and publish the results. You can use the
-            # built in reporters, or make your own.
+            # Construct a new reporter and publish the results.
+            # You can use the built in reporters, or make your own.
             reporter = new PassThroughReporter errorReport
             result = reporter.publish()
 
@@ -42,4 +38,3 @@ vows.describe('reporters').addBatch({
             assert.equal(error.name, 'indentation')
 
 }).export(module)
-
