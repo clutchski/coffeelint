@@ -25,10 +25,10 @@ module.exports = class Indentation
     tokens: ['INDENT', '[', ']', '.']
 
     keywords: [
-      '->', '=>', '@', 'CATCH', 'CLASS', 'ELSE', 'FINALLY', 'FOR',
-      'FORIN', 'FOROF', 'IDENTIFIER', 'IF', 'LEADING_WHEN', 'LOOP',
-      'PROPERTY', 'RETURN', 'SWITCH', 'THROW', 'TRY', 'UNTIL', 'WHEN',
-      'WHILE', 'YIELD'
+      '->', '=>', '@', 'CATCH', 'CLASS', 'DEFAULT', 'ELSE', 'EXPORT',
+      'FINALLY', 'FOR', 'FORIN', 'FOROF', 'IDENTIFIER', 'IF', 'IMPORT',
+      'LEADING_WHEN', 'LOOP', 'PROPERTY', 'RETURN', 'SWITCH', 'THROW',
+      'TRY', 'UNTIL', 'WHEN', 'WHILE', 'YIELD'
     ]
 
     constructor: ->
