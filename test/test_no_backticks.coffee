@@ -28,5 +28,15 @@ vows.describe(RULE).addBatch({
             assert.isArray(errors)
             assert.isEmpty(errors)
 
+    'Ignore string interpolation from comments':
+        topic:
+            '''
+            <div>{### comment ###}</div>
+            '''
+        'are ignored when no_backtick rule is enabled': (source) ->
+            config = no_backticks: { level: 'error' }
+            errors = coffeelint.lint(source)
+            assert.isEmpty(errors)
+
 }).export(module)
 

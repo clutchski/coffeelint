@@ -19,7 +19,7 @@ coffeelint = require(path.join(thisdir, 'coffeelint'))
 configfinder = require(path.join(thisdir, 'configfinder'))
 ruleLoader = require(path.join(thisdir, 'ruleLoader'))
 Cache = require(path.join(thisdir, 'cache'))
-CoffeeScript = require 'coffee-script'
+CoffeeScript = require 'coffeescript'
 CoffeeScript.register()
 
 log = ->

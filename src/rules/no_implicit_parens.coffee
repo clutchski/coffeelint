@@ -32,14 +32,16 @@ module.exports = class NoImplicitParens
                 i = -1
                 loop
                     t = tokenApi.peek(i)
+                    sameLine = t[2].first_line is token[2].first_line
+                    genCallStart = t[0] is 'CALL_START' and t.generated
 
-                    if not t? or (t[0] is 'CALL_START' and t.generated)
+                    if not t? or genCallStart and sameLine
                         return true
 
                     # If we have not found a CALL_START token that is generated,
                     # and we've moved into a new line, this is fine and should
                     # just return.
-                    if t[2].first_line isnt token[2].first_line
+                    if not sameLine
                         return null
 
                     i -= 1

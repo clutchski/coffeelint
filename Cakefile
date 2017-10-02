@@ -2,7 +2,7 @@ fs = require 'fs'
 glob = require 'glob'
 path = require 'path'
 browserify = require 'browserify'
-CoffeeScript = require 'coffee-script'
+CoffeeScript = require 'coffeescript'
 { exec } = require 'child_process'
 
 copySync = (src, dest) ->

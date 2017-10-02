@@ -101,7 +101,11 @@ vows.describe(RULE).addBatch({
                 no_nested_string_interpolation: { level: 'ignore' }
 
             errors = coffeelint.lint(source, config)
-            assert.lengthOf(errors, source.split('\n').length)
+            sources = source.split('\n')
+
+            assert.equal(err.line, sources[i]) for err, i in errors
+            assert.equal(errors.length, sources.length)
+
             error = errors[0]
             assert.equal(error.rule, RULE)
             assert.equal(error.lineNumber, 1)
