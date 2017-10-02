@@ -1,7 +1,7 @@
 {
   "name": "coffeelint",
   "description": "Lint your CoffeeScript",
-  "version": "1.16.1",
+  "version": "2.0.0",
   "homepage": "http://www.coffeelint.org",
   "keywords": [
     "lint",
