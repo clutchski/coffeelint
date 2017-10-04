@@ -178,7 +178,6 @@ vows.describe(RULE).addBatch({
               .animate()
                 # comments are ignored
                  .hide() # this will check with '.animated()' and complain
-
             '''
         'fails with indent error': (source) ->
             errors = coffeelint.lint(source)
@@ -588,6 +587,22 @@ vows.describe(RULE).addBatch({
             '''
 
         'returns no errors': (source) ->
+            errors = coffeelint.lint(source)
+            assert.isEmpty(errors)
+    'Handle new keywords':
+        topic:
+            '''
+            ABCD
+              .e()
+              .f (abc) -> 1 + 1
+              .g (def) -> 2 + 2
+              .h ijk.lmn
+            '''
+        'returns no errors': (source) ->
+            config =
+                indentation:
+                    level: 'error'
+                    value: 2
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
 

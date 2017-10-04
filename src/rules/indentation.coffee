@@ -50,11 +50,11 @@ module.exports = class Indentation
             currentLine = lines[lineNumber]
             if currentLine.match(/\S/)?[0] is '.'
                 next = tokenApi.peek(1)
-
                 if next[0] is 'PROPERTY'
                     chain = '.' + next[1]
-                    startsWith = new RegExp('\\S{' + chain.length + '}')
-                    if currentLine.match(startsWith)?[0] is chain
+                    startsWith = new RegExp('^(\\s*)(\\' + chain + ')')
+                    regExRes = currentLine.match(startsWith)
+                    if regExRes?.index is 0
                         got = dotIndent
                         if dotIndent - expected > expected
                             got %= expected
