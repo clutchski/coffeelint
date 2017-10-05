@@ -54,7 +54,8 @@ module.exports = class Indentation
                     chain = '.' + next[1]
                     startsWith = new RegExp('^(\\s*)(\\' + chain + ')')
                     regExRes = currentLine.match(startsWith)
-                    if regExRes?.index is 0
+                    spaces = regExRes?[1].length or -1
+                    if regExRes?.index is 0 and spaces is dotIndent
                         got = dotIndent
                         if dotIndent - expected > expected
                             got %= expected

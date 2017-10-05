@@ -605,5 +605,21 @@ vows.describe(RULE).addBatch({
                     value: 2
             errors = coffeelint.lint(source)
             assert.isEmpty(errors)
+    'Make sure chain method with a same name later on isnt counted':
+        topic:
+            '''
+            newMethod: ->
+              getInfo('abc')
+                .def
+                  tree: true
+                .ghi @abc.ghi()
+            '''
+        'returns no errors': (source) ->
+            config =
+                indentation:
+                    level: 'error'
+                    value: 2
+            errors = coffeelint.lint(source)
+            assert.isEmpty(errors)
 
 }).export(module)
