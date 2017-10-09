@@ -35,5 +35,11 @@
     "braces_spacing": {
         "level": "error",
         "spaces": 1
+    },
+    "eol_last": {
+        "level": "error"
+    },
+    "line_endings": {
+        "level": "error"
     }
 }

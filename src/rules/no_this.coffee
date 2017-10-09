@@ -16,4 +16,3 @@ module.exports = class NoThis
         nextToken = tokenApi.peek(1)?[0]
 
         true unless level isnt 'ignore' and nextToken isnt '.'
-
