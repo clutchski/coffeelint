@@ -119,4 +119,3 @@ vows.describe(RULE).addBatch({
             assert.isEmpty(coffeelint.lint(source))
 
 }).export(module)
-
