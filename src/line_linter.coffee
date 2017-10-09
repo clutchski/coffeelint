@@ -141,4 +141,3 @@ module.exports = class LineLinter extends BaseLinter
         attrs.lineNumber = @lineNumber + 1 # Lines are indexed by zero.
         attrs.level = @config[rule]?.level
         super rule, attrs
-

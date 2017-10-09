@@ -39,4 +39,3 @@ module.exports = class ErrorReport
         for error in @paths[path]
             return true if error.level is level
         return false
-
