@@ -38,5 +38,8 @@
     },
     "eol_last": {
         "level": "error"
+    },
+    "line_endings": {
+        "level": "error"
     }
 }
