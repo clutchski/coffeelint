@@ -24,7 +24,7 @@
   "dependencies": {
     "browserify": "^13.1.0",
     "coffeeify": "~1.0.0",
-    "coffeescript": "2.0.0",
+    "coffeescript": "~2.0.x",
     "glob": "^7.0.6",
     "ignore": "^3.0.9",
     "optimist": "^0.6.1",
