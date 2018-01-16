@@ -52,4 +52,34 @@ vows.describe(RULE).addBatch({
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 0)
 
+    'Should not complain about CSX syntax':
+        topic:
+            '''
+            render = -> <Wrapper prop1="" flag1>
+              <Element prop2={myVal} />
+            </Wrapper>
+            '''
+
+        'will not return an error': (source) ->
+            config =
+                spacing_after_comma:
+                    level: 'error'
+            errors = coffeelint.lint(source, config)
+            assert.isEmpty(errors)
+
+    'Inside CSX interpolation':
+        topic:
+            '''
+            render = -> <Element prop={{k1:1,k2:v}}>{
+              Object.keys {a,b,c, }
+            }</Element>
+            '''
+
+        'will return an error': (source) ->
+            config =
+                spacing_after_comma:
+                    level: 'error'
+            errors = coffeelint.lint(source, config)
+            assert.lengthOf(errors, 3)
+
 }).export(module)

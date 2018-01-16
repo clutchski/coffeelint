@@ -42,7 +42,10 @@ module.exports = class ColonAssignmentSpacing
                 when 'left'
                     token[2].first_column - previousToken[2].last_column - 1
                 when 'right'
-                    nextToken[2].first_column - token[2].first_column - 1
+                    # csx tags 'column' resolves to the beginning of the tag definition, rather
+                    # than the '<'
+                    offset = if nextToken[0] != 'CSX_TAG' then -1 else -2
+                    nextToken[2].first_column - token[2].first_column + offset
 
         checkSpacing = (direction) ->
             spacing = getSpaceFromToken direction
@@ -57,7 +60,7 @@ module.exports = class ColonAssignmentSpacing
         [isLeftSpaced, leftSpacing] = checkSpacing 'left'
         [isRightSpaced, rightSpacing] = checkSpacing 'right'
 
-        if isLeftSpaced and isRightSpaced
+        if token.csxColon or isLeftSpaced and isRightSpaced
             null
         else
             context: "Incorrect spacing around column #{token[2].first_column}"

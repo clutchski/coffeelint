@@ -22,9 +22,27 @@ module.exports = class SpacingAfterComma
             @inRegex = false
             return
 
-        unless token.spaced or token.newLine or token.generated or
+        unless token.spaced or token.newLine or @isGenerated(token, tokenApi) or
                 @isRegexFlag(token, tokenApi)
             return true
+
+    # Coffeescript does some code generation when using CSX syntax, and it adds
+    # brackets & commas that are not marked as generated. The only way to check
+    # these is to see if the comma has the same column number as the last token.
+    isGenerated: (token, tokenApi) ->
+        return true if token.generated
+        offset = -1
+        prevToken = tokenApi.peek(offset)
+        while prevToken.generated
+            offset -= 1
+            prevToken = tokenApi.peek(offset)
+        pos = token[2]
+        prevPos = prevToken[2]
+        if pos.first_line == prevPos.first_line and
+               pos.first_column == prevPos.first_column
+            return true
+
+        return false
 
     # When generating a regex (///${whatever}///i) CoffeeScript generates tokens
     # for RegEx(whatever, "i") but doesn't bother to mark that comma as
