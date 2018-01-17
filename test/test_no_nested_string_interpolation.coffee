@@ -58,5 +58,23 @@ vows.describe(RULE).addBatch({
             assert.equal(errors[1].lineNumber, 2)
             assert.equal(errors[2].lineNumber, 3)
             assert.equal(errors[3].lineNumber, 3)
+    'Nested in CSX':
+        topic:
+            '''
+            output = <Provider test={"this is #{"fine"}"}> {[
+              <AppContainer>
+                <BrowserRouter>
+                  <App />
+                </BrowserRouter>
+              </AppContainer>
+              "this should break: #{"#{if true then 'no'} fine"}"
+            ]}</Provider>
+            '''
+
+        'only one warning': (source) ->
+            errors = coffeelint.lint(source)
+            assert.lengthOf(errors, 1)
+            assert.equal(errors[0].lineNumber, 7)
+
 
 }).export(module)
