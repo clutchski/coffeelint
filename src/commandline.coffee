@@ -254,10 +254,14 @@ else
         # Find scripts to lint.
         paths = options.argv._
         scripts = findCoffeeScripts(paths, options.argv.ext)
-        if fs.existsSync('.coffeelintignore')
-            scripts = ignore()
-            .add(fs.readFileSync('.coffeelintignore').toString())
-            .filter(scripts)
+        ignoreFile =
+            if fs.existsSync('.coffeelintignore')
+                read('.coffeelintignore')
+            else if fs.existsSync('.gitignore')
+                read('.gitignore')
+        scripts = ignore()
+        .add(ignoreFile)
+        .filter(scripts)
 
         # Lint the code.
         errorReport = lintFiles(scripts, config, options.argv.literate)
