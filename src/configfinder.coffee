@@ -28,12 +28,18 @@ findFile = (name, dir) ->
 # Possibly find CoffeeLint configuration within a package.json file.
 loadNpmConfig = (dir) ->
     fp = findFile('package.json', dir)
-    loadJSON(fp)?.coffeelintConfig  if fp
+    loadJSON(fp, 'coffeelintConfig') if fp
 
 # Parse a JSON file gracefully.
-loadJSON = (filename) ->
+loadJSON = (filename, attr = null) ->
     try
-        JSON.parse(stripComments(fs.readFileSync(filename).toString()))
+        config = JSON.parse(stripComments(fs.readFileSync(filename).toString()))
+        if attr
+            return null if not config[attr]?
+            config = config[attr]
+
+        config.__location__ = filename
+        return config
     catch e
         process.stderr.write "Could not load JSON file '#{filename}': #{e}"
         null
@@ -48,7 +54,7 @@ getConfig = (dir) ->
         return loadJSON(process.env.COFFEELINT_CONFIG)
 
     npmConfig = loadNpmConfig(dir)
-    return npmConfig  if npmConfig
+    return npmConfig if npmConfig
     projConfig = findFile('coffeelint.json', dir)
     return loadJSON(projConfig)  if projConfig
 
@@ -86,11 +92,16 @@ expandModuleNames = (dir, config) ->
 
     config
 
-extendConfig = (config) ->
+extendConfig = (dir, config) ->
     unless config.extends
         return config
+    try
+        parentConfig = require resolve config.extends,
+            basedir: dir
+            extensions: ['.js', '.coffee', '.json']
+    catch
+        parentConfig = require config.extends
 
-    parentConfig = require config.extends
     extendedConfig = {}
 
     for ruleName, rule of config
@@ -109,8 +120,9 @@ exports.getConfig = (filename = null) ->
 
     config = getConfig(dir)
 
+    dir = path.dirname(config.__location__)
     if config
-        config = extendConfig(config)
+        config = extendConfig(dir, config)
         config = expandModuleNames(dir, config)
 
     config
