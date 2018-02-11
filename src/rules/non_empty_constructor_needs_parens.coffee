@@ -10,6 +10,6 @@ module.exports = class NonEmptyConstructorNeedsParens extends ParentClass
             Requires constructors with parameters to include the parens
             '''
 
-    handleExpectedCallStart: (isCallStart) ->
+    handleExpectedCallStart: (isCallStart, tokenApi) ->
         if isCallStart[0] is 'CALL_START' and isCallStart.generated
-            return true
+            return { token: tokenApi.peek(isCallStart, 1) }

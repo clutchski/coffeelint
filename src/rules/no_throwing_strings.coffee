@@ -33,4 +33,5 @@ module.exports = class NoThrowingStrings
 
         nextIsString = n1 is 'STRING' or n1 is 'STRING_START'
 
-        return nextIsString
+        if nextIsString
+            { token }

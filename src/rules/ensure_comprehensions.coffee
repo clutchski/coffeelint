@@ -52,7 +52,7 @@ module.exports = class EnsureComprehensions
                 break
 
             if prevToken[0] is '=' and numParenEnds is numParenStarts
-                atEqual = true
+                atEqual = { token }
 
             peeker--
 
@@ -62,7 +62,7 @@ module.exports = class EnsureComprehensions
         # amount of CALL_START/CALL_END tokens. An unequal number means the list
         # comprehension is inside of a function call
         if atEqual and numCallStarts is numCallEnds
-            return { context: '' }
+            return { token, context: '' }
 
     findIdents: (tokenApi) ->
         peeker = 1

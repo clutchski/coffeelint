@@ -15,4 +15,4 @@ module.exports = class NoThis
         { config: { no_stand_alone_at: { level } } } = tokenApi
         nextToken = tokenApi.peek(1)?[0]
 
-        true unless level isnt 'ignore' and nextToken isnt '.'
+        { token } unless level isnt 'ignore' and nextToken isnt '.'

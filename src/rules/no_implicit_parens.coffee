@@ -25,7 +25,7 @@ module.exports = class NoImplicitParens
     lintToken: (token, tokenApi) ->
         if token.generated
             unless tokenApi.config[@rule.name].strict is false
-                return true
+                return { token }
             else
                 # If strict mode is turned off it allows implicit parens when
                 # the expression is spread over multiple lines.
@@ -36,7 +36,7 @@ module.exports = class NoImplicitParens
                     genCallStart = t[0] is 'CALL_START' and t.generated
 
                     if not t? or genCallStart and sameLine
-                        return true
+                        return { token: t or token }
 
                     # If we have not found a CALL_START token that is generated,
                     # and we've moved into a new line, this is fine and should

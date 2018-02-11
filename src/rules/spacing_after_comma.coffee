@@ -24,7 +24,7 @@ module.exports = class SpacingAfterComma
 
         unless token.spaced or token.newLine or @isGenerated(token, tokenApi) or
                 @isRegexFlag(token, tokenApi)
-            return true
+            return { token }
 
     # Coffeescript does some code generation when using CSX syntax, and it adds
     # brackets & commas that are not marked as generated. The only way to check

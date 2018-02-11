@@ -36,4 +36,4 @@ module.exports = class NoStandAloneAt
         # is an property, the start of an index '[' or is an property after
         # the '::'
         unless (isDot or (noSpace and (isProp or isAStart or isProtoProp)))
-            return true
+            return { token }

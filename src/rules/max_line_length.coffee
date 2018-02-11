@@ -41,5 +41,6 @@ module.exports = class MaxLineLength
                     return
 
             return {
+                columnNumber: max
                 context: "Length is #{lineLength}, max is #{max}"
             }

@@ -35,8 +35,8 @@ module.exports = class EmptyConstructorNeedsParens
             # line with implicit parens, and if your parameters start on the
             # next line, but is missing if there are no params and no parens.
             if isIdent and nextToken?
-                return @handleExpectedCallStart(nextToken)
+                return @handleExpectedCallStart(nextToken, tokenApi)
 
-    handleExpectedCallStart: (isCallStart) ->
+    handleExpectedCallStart: (isCallStart, tokenApi) ->
         if isCallStart[0] isnt 'CALL_START'
-            return true
+            return { token: tokenApi.peek(isCallStart, 1) }

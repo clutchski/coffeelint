@@ -74,12 +74,15 @@ module.exports = class ASTLinter extends BaseLinter
         lineNumber = -1
         if coffeeError.location?
             lineNumber = coffeeError.location.first_line + 1
+            columnNumber = coffeeError.location.first_column + 1
         else
             match = /line (\d+)/.exec message
             lineNumber = parseInt match[1], 10 if match?.length > 1
+            columnNumber = 1
         attrs = {
             message: message
             level: rule.level
             lineNumber: lineNumber
+            columnNumber: columnNumber
         }
         return @createError 'coffeescript_error', attrs

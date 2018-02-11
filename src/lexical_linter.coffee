@@ -64,4 +64,13 @@ module.exports = class LexicalLinter extends BaseLinter
         attrs.lineNumber ?= @lineNumber
         attrs.lineNumber += 1
         attrs.line = @tokenApi.lines[attrs.lineNumber - 1]
+        if attrs.token
+            token = attrs.token
+            attrs.lineNumber = token[2].first_line + 1
+            attrs.columnNumber = token[2].first_column + 1
+            if token[2].last_line
+                attrs.lineNumberEnd = token[2].last_line + 1
+            if token[2].last_column
+                attrs.columnNumberEnd = token[2].last_column + 1
+
         super ruleName, attrs

@@ -24,7 +24,13 @@ task 'compile:commandline', 'Compiles commandline.js', ->
     coffeeSync 'src/cache.coffee', 'lib/cache.js'
     coffeeSync 'src/ruleLoader.coffee', 'lib/ruleLoader.js'
     fs.mkdirSync 'lib/reporters' unless fs.existsSync 'lib/reporters'
+    fs.mkdirSync 'lib/rules' unless fs.existsSync 'lib/rules'
     for src in glob.sync('reporters/*.coffee', { cwd: 'src' })
+        # Slice the "coffee" extension of the end and replace with js
+        dest = src[...-6] + 'js'
+        coffeeSync "src/#{src}", "lib/#{dest}"
+
+    for src in glob.sync('rules/*.coffee', { cwd: 'src' })
         # Slice the "coffee" extension of the end and replace with js
         dest = src[...-6] + 'js'
         coffeeSync "src/#{src}", "lib/#{dest}"

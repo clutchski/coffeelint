@@ -48,4 +48,4 @@ module.exports = class CamelCaseClasses
 
         # Now check for the error.
         if not regexes.camelCase.test(className)
-            return { context: "class name: #{className}" }
+            return { token, context: "class name: #{className}" }

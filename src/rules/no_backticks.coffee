@@ -16,4 +16,5 @@ module.exports = class NoBackticks
     tokens: ['JS']
 
     lintToken: (token, tokenApi) ->
-        return not token.comments?
+        if not token.comments?
+            { token }

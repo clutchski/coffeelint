@@ -83,7 +83,7 @@ module.exports = class NoImplicitBraces
                 if peekIdent is @className
                     return
 
-            return true
+            return { token: tokenApi.peek(c + 1) }
 
     trackClass: (token, tokenApi) ->
 

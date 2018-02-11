@@ -57,6 +57,6 @@ module.exports = class ArrowSpacing
                 pp.generated? or #2
                 pp[0] is 'INDENT' or #3
                 (pp[1] is '(' and not pp.generated?)) #4
-            true
+            { token }
         else
             null

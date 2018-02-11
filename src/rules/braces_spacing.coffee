@@ -82,4 +82,4 @@ module.exports = class BracesSpacing
             msg = "There should be #{expected} space"
             msg += 's' unless expected is 1
             msg += " inside \"#{token[0]}\""
-            context: msg
+            { token, context: msg }

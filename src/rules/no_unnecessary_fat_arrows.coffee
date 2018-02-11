@@ -19,6 +19,7 @@ module.exports = class NoUnnecessaryFatArrows
         if (@isFatArrowCode node) and (not @needsFatArrow node)
             error = @astApi.createError
                 lineNumber: node.locationData.first_line + 1
+                columnNumber: node.locationData.first_column + 1
             @errors.push error
         node.eachChild (child) => @lintNode child
 

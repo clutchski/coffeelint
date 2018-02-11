@@ -63,4 +63,5 @@ module.exports = class ColonAssignmentSpacing
         if token.csxColon or isLeftSpaced and isRightSpaced
             null
         else
+            token: token
             context: "Incorrect spacing around column #{token[2].first_column}"

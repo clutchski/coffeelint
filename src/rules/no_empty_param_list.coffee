@@ -21,4 +21,5 @@ module.exports = class NoEmptyParamList
 
     lintToken: (token, tokenApi) ->
         nextType = tokenApi.peek()[0]
-        return nextType is 'PARAM_END'
+        if nextType is 'PARAM_END'
+            return { token }

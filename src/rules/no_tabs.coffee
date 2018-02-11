@@ -18,6 +18,6 @@ module.exports = class NoTabs
         # is the start of the expression.
         indentation = line.split(indentationRegex)[0]
         if lineApi.lineHasToken() and '\t' in indentation
-            true
+            { columnNumber: indentation.indexOf('\t') }
         else
             null
