@@ -181,6 +181,7 @@ coffeelint.getRules = ->
 coffeelint.registerRule require './rules/arrow_spacing.coffee'
 coffeelint.registerRule require './rules/braces_spacing.coffee'
 coffeelint.registerRule require './rules/no_tabs.coffee'
+coffeelint.registerRule require './rules/no_spaces.coffee'
 coffeelint.registerRule require './rules/no_trailing_whitespace.coffee'
 coffeelint.registerRule require './rules/max_line_length.coffee'
 coffeelint.registerRule require './rules/line_endings.coffee'
