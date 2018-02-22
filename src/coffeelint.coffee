@@ -222,13 +222,12 @@ coffeelint.registerRule require './rules/no_this.coffee'
 coffeelint.registerRule require './rules/eol_last.coffee'
 coffeelint.registerRule require './rules/no_private_function_fat_arrows.coffee'
 
-hasSyntaxError = (source) ->
+getTokens = (source) ->
     try
         # If there are syntax errors this will abort the lexical and line
         # linters.
-        CoffeeScript.tokens(source)
-        return false
-    return true
+        return CoffeeScript.tokens(source)
+    return null
 
 ErrorReport = require('./error_report.coffee')
 coffeelint.getErrorReport = ->
@@ -310,9 +309,10 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
 
     # only do further checks if the syntax is okay, otherwise they just fail
     # with syntax error exceptions
-    unless hasSyntaxError(source)
+    tokens = getTokens(source)
+    if tokens
         # Do lexical linting.
-        lexicalLinter = new LexicalLinter(source, config, _rules, CoffeeScript)
+        lexicalLinter = new LexicalLinter(source, config, _rules, CoffeeScript, tokens)
         lexErrors = lexicalLinter.lint()
         errors = errors.concat(lexErrors)
 
