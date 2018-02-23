@@ -18,6 +18,9 @@
     "space_operators": {
         "level": "error"
     },
+    "max_line_length": {
+        "value": "100"
+    },
     "cyclomatic_complexity": {
         "value": 11,
         "level": "warn"
