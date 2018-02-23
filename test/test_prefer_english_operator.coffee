@@ -4,6 +4,7 @@ assert = require 'assert'
 coffeelint = require path.join('..', 'lib', 'coffeelint')
 
 configError = { prefer_english_operator: { level: 'error' } }
+configBinaryOnly = { prefer_english_operator: { level: 'error', ops: ['and', 'or'] } }
 
 RULE = 'prefer_english_operator'
 
@@ -29,6 +30,24 @@ vows.describe(RULE).addBatch({
         'should warn when ! is used': ->
             result = coffeelint.lint('x = !y', configError)[0]
             assert.equal result.context, 'Replace "!" with "not"'
+
+    'non-English operators for and/or only':
+        'should not warn when == is used': ->
+            assert.isEmpty coffeelint.lint('1 == 1', configBinaryOnly)
+
+        'should not warn when != is used': ->
+            assert.isEmpty coffeelint.lint('1 != 1', configBinaryOnly)
+
+        'should warn when && is used': ->
+            result = coffeelint.lint('1 && 1', configBinaryOnly)[0]
+            assert.equal result.context, 'Replace "&&" with "and"'
+
+        'should warn when || is used': ->
+            result = coffeelint.lint('1 || 1', configBinaryOnly)[0]
+            assert.equal result.context, 'Replace "||" with "or"'
+
+        'should not warn when ! is used': ->
+            assert.isEmpty coffeelint.lint('x = !y', configBinaryOnly)
 
     'double not (!!)':
         'is ignored by default': ->
