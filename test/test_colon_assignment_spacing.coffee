@@ -116,4 +116,34 @@ vows.describe(RULE).addBatch({
             errors = coffeelint.lint(source, config)
             assert.isEmpty(errors)
 
+    'Should ignore exact specification in case of minimum spacing':
+        topic:
+            '''
+            object = {spacing: true}
+            object =
+              spacing: true
+            object =
+              spacing : true
+            object =
+              spacing:  true
+            object =
+              spacing    :    true
+            class Dog
+              barks: true
+            stringyObject =
+              'stringkey': 'ok'
+            '''
+
+        'will return an error': (source) ->
+            config =
+                colon_assignment_spacing:
+                    level: 'error'
+                    spacing:
+                        left: 1
+                        right: 1
+                        min_left: 0
+                        min_right: 1
+            errors = coffeelint.lint(source, config)
+            assert.isEmpty(errors)
+
 }).export(module)
