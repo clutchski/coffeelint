@@ -221,6 +221,7 @@ coffeelint.registerRule require './rules/ensure_comprehensions.coffee'
 coffeelint.registerRule require './rules/no_this.coffee'
 coffeelint.registerRule require './rules/eol_last.coffee'
 coffeelint.registerRule require './rules/no_private_function_fat_arrows.coffee'
+coffeelint.registerRule require './rules/missing_parseint_radix.coffee'
 
 hasSyntaxError = (source) ->
     try
