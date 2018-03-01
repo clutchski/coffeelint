@@ -13,7 +13,7 @@ vows.describe('coffeelint').addBatch({
 
     "CoffeeLint's errors":
         topic: () -> coffeelint.lint '''
-            a = () ->\t
+            a = () =>
                 1234
             '''
 

@@ -19,5 +19,7 @@ module.exports = class NoTabs
         indentation = line.split(indentationRegex)[0]
         if lineApi.lineHasToken() and '\t' in indentation
             true
+        else if lineApi.lineHasToken() and line.match(/\t *$/)
+            true
         else
             null

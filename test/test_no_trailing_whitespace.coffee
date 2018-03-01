@@ -107,7 +107,7 @@ vows.describe(RULE).addBatch({
 
         'are forbidden as well': (source) ->
             errors = coffeelint.lint(source)
-            assert.equal(errors.length, 1)
+            assert.equal(errors.length, 2)
 
     'Windows line endings':
         topic:
