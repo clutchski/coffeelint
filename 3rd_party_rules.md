@@ -66,3 +66,14 @@ Verify your installation using:
 You should get output similar to
 
     [Function: YourRuleName]
+
+Use a [yeoman][yo] generator
+-------------------------------------------
+
+You can use [generator-coffeelint][generator-npm] to simplify this setup.
+
+    npm install -g generator-coffeelint
+    yo coffeelint
+
+[yo]: http://yeoman.io
+[generator-npm]: https://www.npmjs.com/package/generator-coffeelint
