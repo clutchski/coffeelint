@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/clutchski/coffeelint.git"
+    "url": "git://github.com/JiFeRe/coffeelint.git"
   },
   "bin": {
     "coffeelint": "./bin/coffeelint"
