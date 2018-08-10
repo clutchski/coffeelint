@@ -11,10 +11,10 @@ vows.describe(RULE).addBatch({
             # Every line generated here is a comment.
             line = (length) ->
                 return '# ' + new Array(length - 1).join('-')
-            lengths = [50, 79, 80, 81, 100, 200]
+            lengths = [50, 99, 100, 101, 150, 200]
             (line(l) for l in lengths).join('\n')
 
-        'defaults to 80': (source) ->
+        'defaults to 100': (source) ->
             errors = coffeelint.lint(source)
             assert.equal(errors.length, 3)
             error = errors[0]
@@ -25,7 +25,7 @@ vows.describe(RULE).addBatch({
         'is configurable': (source) ->
             config =
                 max_line_length:
-                    value: 99
+                    value: 149
                     level: 'error'
             errors = coffeelint.lint(source, config)
             assert.equal(errors.length, 2)
@@ -48,15 +48,15 @@ vows.describe(RULE).addBatch({
             assert.isEmpty(errors)
 
         'respects Windows line breaks': ->
-            source = new Array(81).join('X') + '\r\n'
+            source = new Array(101).join('X') + '\r\n'
 
             errors = coffeelint.lint(source, {})
             assert.isEmpty(errors)
 
     'Literate Line Length':
         topic: ->
-            # This creates a line with 80 Xs.
-            source = new Array(81).join('X') + '\n'
+            # This creates a line with 100 Xs.
+            source = new Array(101).join('X') + '\n'
 
             # Long URLs are ignored by default even in Literate code.
             source += 'http://testing.example.com/really-really-long-url-' +

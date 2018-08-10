@@ -13,7 +13,7 @@ module.exports = class MaxLineLength
 
     rule:
         name: 'max_line_length'
-        value: 80
+        value: 100
         level: 'error'
         limitComments: true
         message: 'Line exceeds maximum allowed length'
