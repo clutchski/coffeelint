@@ -19,6 +19,7 @@ task 'compile', 'Compile Coffeelint', ->
     invoke 'compile:commandline'
 
 task 'compile:commandline', 'Compiles commandline.js', ->
+    coffeeSync 'src/commandline.coffee', 'lib/commandline.js'
     coffeeSync 'src/configfinder.coffee', 'lib/configfinder.js'
     coffeeSync 'src/cache.coffee', 'lib/cache.js'
     coffeeSync 'src/ruleLoader.coffee', 'lib/ruleLoader.js'
