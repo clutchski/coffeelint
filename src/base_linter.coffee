@@ -45,7 +45,7 @@ module.exports = class BaseLinter
                 if @acceptRule(rule)
                     @rules.push rule
             else if level isnt 'ignore'
-                throw new Error("unknown level #{level} for rule: #{rule}")
+                throw new Error("unknown level #{level} for rule: #{name}")
 
     normalizeResult: (p, result) ->
         if result is true
