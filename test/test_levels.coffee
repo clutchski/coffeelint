@@ -34,8 +34,10 @@ vows.describe('levels').addBatch({
 
         'catches unknown levels': (source) ->
             config = no_trailing_semicolons: { level: 'foobar' }
-            assert.throws () ->
-                coffeelint.lint(source, config)
+            assert.throws(
+                () -> coffeelint.lint(source, config)
+                /unknown level foobar for rule: no_trailing_semicolons/
+            )
 
 
 }).export(module)
