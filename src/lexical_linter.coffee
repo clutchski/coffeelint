@@ -43,6 +43,7 @@ module.exports = class LexicalLinter extends BaseLinter
     lintToken: (token) ->
         [type, value, { first_line: lineNumber }] = token
 
+        @token = token
         @tokensByLine[lineNumber] ?= []
         @tokensByLine[lineNumber].push(token)
         # CoffeeScript loses line numbers of interpolations and multi-line
@@ -64,4 +65,5 @@ module.exports = class LexicalLinter extends BaseLinter
         attrs.lineNumber ?= @lineNumber
         attrs.lineNumber += 1
         attrs.line = @tokenApi.lines[attrs.lineNumber - 1]
+        attrs.location ?= @token[2]
         super ruleName, attrs

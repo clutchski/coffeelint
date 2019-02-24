@@ -63,6 +63,8 @@ module.exports = class Indentation
                         if dotIndent % expected isnt 0
                             return {
                                 context: "Expected #{expected} got #{got}"
+                                expected: expected
+                                actual: got
                             }
 
             return undefined
@@ -97,7 +99,11 @@ module.exports = class Indentation
 
         # Now check the indentation.
         if not ignoreIndent and not (expected in numIndents)
-            return { context: "Expected #{expected} got #{numIndents[0]}" }
+            return {
+                context: "Expected #{expected} got #{numIndents[0]}"
+                expected: expected
+                actual: numIndents[0]
+            }
 
     # Return true if the current token is inside of an array.
     inArray: () ->

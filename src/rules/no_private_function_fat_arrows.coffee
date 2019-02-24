@@ -18,6 +18,7 @@ module.exports = class NoPrivateFunctionFatArrows
         if @isFatArrowCode(node) and node in functions
             error = @astApi.createError
                 lineNumber: node.locationData.first_line + 1
+                location: node.locationData
             @errors.push error
 
         node.eachChild (child) => @lintNode child,

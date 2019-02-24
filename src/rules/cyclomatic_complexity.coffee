@@ -47,6 +47,7 @@ module.exports = class CyclomaticComplexity
                 context: complexity + 1
                 lineNumber: node.locationData.first_line + 1
                 lineNumberEnd: node.locationData.last_line + 1
+                location: node.locationData
             }
             @errors.push error if error
 
