@@ -49,6 +49,7 @@ module.exports = class MissingFatArrows
                 (@needsFatArrow node)
             error = @astApi.createError
                 lineNumber: node.locationData.first_line + 1
+                location: node.locationData
             @errors.push error
 
         node.eachChild (child) => @lintNode child,
