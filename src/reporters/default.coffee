@@ -68,7 +68,7 @@ module.exports = class Reporter
             output = '#' + e.lineNumber + lineEnd
 
             pathReport += '     ' +
-                "#{o} #{@stylize(output, color)}: #{e.message}."
+                "#{o} #{@stylize(output, color)}: #{e.message}. (#{e.rule})"
             pathReport += " #{e.context}." if e.context
             pathReport += '\n'
 
