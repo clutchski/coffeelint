@@ -33,7 +33,9 @@ module.exports = class NoUnnecessaryDoubleQuotes
         if type in ['STRING_START', 'STRING_END']
             return @trackParens arguments...
 
-        stringValue = tokenValue.match(/^\"(.*)\"$/)
+        return false if tokenValue.quote? && tokenValue.quote[0] != '"'
+
+        stringValue = tokenValue.match(/^\"((.|\n)*)\"$/)
 
         return false unless stringValue # no double quotes, all OK
 
