@@ -35,6 +35,8 @@ module.exports = class NoUnnecessaryDoubleQuotes
 
         stringValue = tokenValue.match(/^\"(.*)\"$/)
 
+        return false if tokenValue.quote in ["'", "'''"]
+
         return false unless stringValue # no double quotes, all OK
 
         # When CoffeeScript generates calls to RegExp it double quotes the 2nd
