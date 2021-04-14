@@ -37,9 +37,16 @@ module.exports = class MaxLineLength
         if max and max < lineLength and not regexes.longUrlComment.test(line)
 
             unless limitComments
-                if lineApi.getLineTokens().length is 0
-                    return
-
+                lineTokens = lineApi.getLineTokens()
+                hasNoCode = (lineTokens.length is 0) ||
+                    (lineTokens[0][0] == 'JS' &&
+                    lineTokens[0][2].first_column ==
+                        lineTokens[0][2].last_column &&
+                    lineTokens[0][2].first_line == lineTokens[0][2].last_line &&
+                        (lineTokens.length is 1 ||
+                        (lineTokens[1][0] == 'TERMINATOR' &&
+                            lineTokens[1][1] ==  '\n')))
+                return false if hasNoCode
             return {
                 context: "Length is #{lineLength}, max is #{max}"
             }
