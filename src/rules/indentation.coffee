@@ -116,6 +116,7 @@ module.exports = class Indentation
 
     grabLineTokens: (tokenApi, lineNumber, all = false) ->
         { tokensByLine } = tokenApi
+        lineNumber = 0 if lineNumber < 0
         lineNumber-- until tokensByLine[lineNumber]? or lineNumber is 0
 
         if all
