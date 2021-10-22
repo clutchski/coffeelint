@@ -213,6 +213,7 @@ coffeelint.registerRule(
 )
 coffeelint.registerRule require './rules/no_empty_functions.coffee'
 coffeelint.registerRule require './rules/prefer_english_operator.coffee'
+coffeelint.registerRule require './rules/prefer_logical_operator.coffee'
 coffeelint.registerRule require './rules/spacing_after_comma.coffee'
 coffeelint.registerRule(
     require './rules/transform_messes_up_line_numbers.coffee'
