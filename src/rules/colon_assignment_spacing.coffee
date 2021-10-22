@@ -6,6 +6,8 @@ module.exports = class ColonAssignmentSpacing
         spacing:
             left: 0
             right: 0
+            min_left: -1
+            min_right: -1
         description: '''
             <p>This rule checks to see that there is spacing before and
             after the colon in a colon assignment (i.e., classes, objects).
@@ -37,27 +39,26 @@ module.exports = class ColonAssignmentSpacing
         previousToken = tokenApi.peek -1
         nextToken = tokenApi.peek 1
 
-        getSpaceFromToken = (direction) ->
-            switch direction
+        checkSpacing = (direction) ->
+            spacing = switch direction
                 when 'left'
                     token[2].first_column - previousToken[2].last_column - 1
-                when 'right'
+                else # when 'right'
                     nextToken[2].first_column - token[2].first_column - 1
 
-        checkSpacing = (direction) ->
-            spacing = getSpaceFromToken direction
             # when spacing is negative, the neighboring token is a newline
-            isSpaced = if spacing < 0
+            if spacing < 0
                 true
             else
-                spacing is parseInt spaceRules[direction]
+                minDirection = parseInt spaceRules['min_' + direction]
+                # if a minimal spacing is specified, only check that
+                if minDirection >= 0
+                    spacing >= minDirection
+                # otherwise check exact spacing
+                else
+                    spacing is parseInt spaceRules[direction]
 
-            [isSpaced, spacing]
-
-        [isLeftSpaced, leftSpacing] = checkSpacing 'left'
-        [isRightSpaced, rightSpacing] = checkSpacing 'right'
-
-        if isLeftSpaced and isRightSpaced
+        if (checkSpacing 'left') and (checkSpacing 'right')
             null
         else
             context: "Incorrect spacing around column #{token[2].first_column}"
